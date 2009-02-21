@@ -15,6 +15,7 @@ class ShripPackage(object):
 		self._author = 'Olivier Rolland <billl@users.sf.net>'
 		self._copyright = 'Copyright (C) 2004-2008 Olivier Rolland'
 		self._packager = 'Matthew Brennan Jones <mattjones@workhorsy.org>'
+		self._bug_mail = 'mattjones@workhorsy.org'
 		self._homepage = 'http://ogmrip.sourceforge.net'
 		self._license = 'GPL'
 
@@ -91,6 +92,10 @@ class ShripPackage(object):
 	def set_packager(self, value): self._packager = value
 	packager = property(get_packager, set_packager)
 
+	def get_bug_mail(self): return self._bug_mail
+	def set_bug_mail(self, value): self._bug_mail = value
+	bug_mail = property(get_bug_mail, set_bug_mail)
+
 	def get_homepage(self): return self._homepage
 	def set_homepage(self, value): self._homepage = value
 	homepage = property(get_homepage, set_homepage)
@@ -122,6 +127,7 @@ class ShripPackage(object):
 				'author' : self.author,
 				'copyright' : self.copyright,
 				'packager' : self.packager,
+				'bug_mail' : self.bug_mail,
 				'homepage' : self.homepage,
 				'license' : self.license,
 				'build_requirements' : self.build_requirements,
@@ -224,6 +230,7 @@ is licensed under the %(license)s, see above.
 'author' : package.author, 
 'copyright' : package.copyright, 
 'packager' : package.packager, 
+'bug_mail' : package.bug_mail,
 'homepage' : package.homepage, 
 'license' : package.license, 
 'build_requirements' : package.build_requirements, 
@@ -237,5 +244,45 @@ is licensed under the %(license)s, see above.
 
 f.close()
 
+
+# Create the control file
+f = open('control', 'w')
+
+f.write(\
+"""Source: %(name)s
+Section: %(section)s
+Priority: %(priority)s
+Maintainer: Ubuntu MOTU Developers <ubuntu-motu@lists.ubuntu.com>
+XSBC-Original-Maintainer: %(packager)s
+Bugs: mailto:%(bug_mail)s
+Build-Depends: %(build_requirements)s
+Standards-Version: 3.8.0
+Homepage: http://ogmrip.sourceforge.net
+
+Package: shrip
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         %(install_requirements)s
+%(short_description)s
+%(long_description)s
+""" % 
+{ 'name' : package._name, 
+'section' : package._section, 
+'priority' : package._priority, 
+'author' : package.author, 
+'copyright' : package.copyright, 
+'packager' : package.packager, 
+'bug_mail' : package.bug_mail, 
+'homepage' : package.homepage, 
+'license' : package.license, 
+'build_requirements' : str.join(', ', package.build_requirements), 
+'install_requirements' : str.join(', ', package.install_requirements), 
+'short_description' : package.short_description, 
+'long_description' : package.long_description,
+'year' : time.strftime("%Y", time.localtime())
+})
+
+f.close()
 
 
