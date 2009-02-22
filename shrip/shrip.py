@@ -4,6 +4,15 @@ import os, time
 import commands
 import pexpect
 
+# Get the root password
+root_password = "xxx"
+
+# Get the signature
+signature_key = "xxx"
+
+# clear sudo so we don't use it till needed
+commands.getoutput("sudo -k")
+
 # Move the path to the location of the current file
 os.chdir(os.sys.path[0])
 
@@ -55,7 +64,7 @@ class ShripPackage(object):
 
 		self._short_description = 'Application for ripping and encoding DVD into AVI/OGM files'
 
-		self._long_description = "shrip is an application and a set of libraries for ripping and encoding\n" + \
+		self._long_description = " shrip is an application and a set of libraries for ripping and encoding\n" + \
 								" DVD into AVI, OGM MP4 or Matroska files using a wide variety of codecs. It\n" + \
 								" relies on mplayer, mencoder, ogmtools, mkvtoolnix, oggenc, lame and faac to\n" + \
 								" perform its tasks.\n" + \
@@ -160,6 +169,7 @@ Public License can be found in `/usr/share/common-licenses/GPL'."""
 }
 
 # Uncompress the source code
+print "uncompressed source code ..."
 commands.getoutput("tar xzf shrip_0.4.1.orig.tar.gz")
 os.chdir("shrip-0.4.1")
 
@@ -168,6 +178,7 @@ os.environ['DEBFULLNAME'] = "Matthew Brennan Jones"
 os.environ['DEBEMAIL'] = "mattjones@workhorsy.org"
 
 # Run dh_make
+print "Running dh_make ..."
 command = 'bash -c "dh_make -s -c gpl -f ../shrip_0.4.1.orig.tar.gz"'
 child = pexpect.spawn(command)
 
@@ -197,10 +208,12 @@ while still_reading:
 child.close()
 
 # Remove the unnessesary debian files
+print "Removing unneeded files ..."
 os.chdir("debian")
 commands.getoutput('rm *.ex *.EX dirs docs info README.Debian copyright')
 
 # Create the copyright file
+print "Generating copyright file ..."
 f = open('copyright', 'w')
 
 f.write(\
@@ -246,6 +259,7 @@ f.close()
 
 
 # Create the control file
+print "Generating control file ..."
 f = open('control', 'w')
 
 f.write(\
@@ -264,7 +278,7 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          %(install_requirements)s
-%(short_description)s
+Description: %(short_description)s
 %(long_description)s
 """ % 
 { 'name' : package._name, 
@@ -284,5 +298,141 @@ Depends: ${shlibs:Depends},
 })
 
 f.close()
+
+
+# Create the changelog
+f = open('changelog', 'w')
+f.write(
+"""
+%(name)s (0.4.1-0ubuntu1) intrepid; urgency=low
+
+  * Initial release
+
+ -- %(packager)s  %(timestring)s
+
+""" % 
+{ 'name' : package._name, 
+'section' : package._section, 
+'priority' : package._priority, 
+'author' : package.author, 
+'copyright' : package.copyright, 
+'packager' : package.packager, 
+'bug_mail' : package.bug_mail, 
+'homepage' : package.homepage, 
+'license' : package.license, 
+'build_requirements' : str.join(', ', package.build_requirements), 
+'install_requirements' : str.join(', ', package.install_requirements), 
+'short_description' : package.short_description, 
+'long_description' : package.long_description,
+'year' : time.strftime("%Y", time.localtime()),
+'timestring' : time.strftime("%a, %d %b %Y %H:%M:%S %z", time.localtime()),
+})
+
+f.close()
+
+
+# Run debuild
+print "Running debuild ..."
+os.chdir("..")
+
+command = 'bash -c "debuild -S -sa"'
+child = pexpect.spawn(command, timeout=1200)
+
+expected_lines = ["dpkg-buildpackage -rfakeroot -d -us -uc -S -sa\r\n",
+					"dpkg-buildpackage: set CFLAGS to default value: -g -O2\r\n",
+					"dpkg-buildpackage: set CPPFLAGS to default value:\r\n",
+					"dpkg-buildpackage: set LDFLAGS to default value: -Wl,-Bsymbolic-functions\r\n",
+					"dpkg-buildpackage: set FFLAGS to default value: -g -O2\r\n",
+					"dpkg-buildpackage: set CXXFLAGS to default value: -g -O2\r\n",
+					"dpkg-buildpackage: source package " + package.name + "\r\n",
+					"dpkg-buildpackage: source version 0.4.1-1\r\n",
+					"dpkg-buildpackage: source changed by " + package.packager + "\r\n",
+					"fakeroot debian/rules clean",
+					"dh_testdir",
+					"dh_testroot",
+					"rm -f build-stamp",
+					"rm -f config.sub config.guess",
+					"dh_clean",
+					"dpkg-source -b shrip-0.4.1",
+					"dpkg-source: info: using source format `1.0'",
+					"dpkg-source: info: building shrip using existing shrip_0.4.1.orig.tar.gz",
+					"dpkg-source: info: building shrip in shrip_0.4.1-1.diff.gz",
+					"dpkg-source: info: building shrip in shrip_0.4.1-1.dsc",
+					"dpkg-genchanges: including full source code in upload",
+					"dpkg-buildpackage: source only upload (original source is included)",
+					"Now running lintian...",
+					"Finished running lintian.",
+					"Now signing changes and any dsc files...",
+					"dpkg-source: error:",
+					"dpkg-buildpackage: failure:",
+
+					"signfile shrip_0.4.1-0ubuntu1.dsc " + package.packager + "\r\n" +
+					"\r\n" +
+					"You need a passphrase to unlock the secret key for\r\n" +
+					"user: \"" + package.packager + "\"\r\n" +
+					"1024-bit DSA key, ID A21CDDE2, created \d*-\d*-\d*\r\n" +
+					"\r\n" +
+					"Enter passphrase: [\w|\s\W]*",
+
+					"signfile shrip_0.4.1-0ubuntu1_source.changes " + package.packager + "\r\n" +
+					"\r\n" +
+					"You need a passphrase to unlock the secret key for\r\n" +
+					"user: \"" + package.packager + "\"\r\n" +
+					"1024-bit DSA key, ID A21CDDE2, created \d*-\d*-\d*\r\n" +
+					"\r\n" +
+					"Enter passphrase: [\w|\s\W]*",
+
+					"Successfully signed dsc and changes files\r\n",
+					pexpect.EOF]
+
+still_reading = True
+while still_reading:
+	result = child.expect(expected_lines)
+
+	if result >= 0 and result <= 26:
+		pass
+	elif result == 27 or result == 28:
+		child.sendline(signature_key)
+	elif result == 29:
+		pass
+	elif result == len(expected_lines)-1:
+		still_reading = False
+
+child.close()
+
+
+# Run pbuilder
+print "Running pbuilder ..."
+os.chdir("..")
+
+command = 'bash -c "sudo pbuilder build shrip_0.4.1-0ubuntu1.dsc"'
+child = pexpect.spawn(command, timeout=1200)
+
+expected_lines = ["\[sudo\] password for [\w|\s]*: ",
+
+					"Sorry, try again.\r\n" +
+					"[sudo] password for [\w|\s]*: ",
+
+					pexpect.EOF]
+
+still_reading = True
+while still_reading:
+	result = child.expect(expected_lines)
+
+	if result == 0:
+		child.sendline(root_password)
+	elif result == 1:
+		print "Incorrect password. Exiting ..."
+		exit()
+	elif result == len(expected_lines)-1:
+		still_reading = False
+
+child.close()
+
+# Copy the deb from the cache
+command = "cp /var/cache/pbuilder/result/shrip_0.4.1-0ubuntu1_i386.deb shrip_0.4.1-0ubuntu1_i386.deb"
+commands.getoutput(command)
+
+print "Done"
 
 
