@@ -4,6 +4,7 @@ import os, time
 import commands
 import pexpect
 
+
 # Get the root password
 root_password = "xxx"
 
@@ -16,69 +17,7 @@ commands.getoutput("sudo -k")
 # Move the path to the location of the current file
 os.chdir(os.sys.path[0])
 
-class ShripPackage(object):
-	def __init__(self):
-		self._name = 'shrip'
-		self._version = '0.4.1'
-		self._section = 'graphics'
-		self._priority = 'optional'
-		self._author = 'Olivier Rolland <billl@users.sf.net>'
-		self._copyright = 'Copyright (C) 2004-2008 Olivier Rolland'
-		self._packager_name = 'Matthew Brennan Jones'
-		self._packager_email = 'mattjones@workhorsy.org'
-		self._bug_mail = 'mattjones@workhorsy.org'
-		self._homepage = 'http://ogmrip.sourceforge.net'
-		self._license = 'GPL'
-
-		self._build_requirements = ["debhelper (>= 7)",
-									"autotools-dev",
-									"libogmrip-dev (>= 0.10.0)",
-									"libdvdread-dev",
-									"libhal-dev",
-									"eject",
-									"mplayer",
-									"mencoder",
-									"libenchant-dev",
-									"vorbis-tools (>= 1.0)",
-									"lame",
-									"libgconf2-dev",
-									"libglade2-dev",
-									"mkvtoolnix (>= 0.9.5)",
-									"libtheora-dev",
-									"faac",
-									"libvorbis-dev",
-									"libdbus-glib-1-dev",
-									"libx264-dev",
-									"ogmtools",
-									"libxml-parser-perl",
-									"libnotify-dev-gtk2.10"]
-
-		self._install_requirements = ["ogmrip (>= 0.10.0)",
-									"mplayer",
-									"mencoder",
-									"ogmtools",
-									"vorbis-tools (>= 1.0)",
-									"lame (>= 3.96)",
-									"mkvtoolnix (>= 0.9.5)",
-									"faac (>= 1.24)",
-									"tesseract | ocrad | gocr",
-									"gpac"]
-
-		self._short_description = 'Application for ripping and encoding DVD into AVI/OGM files'
-
-		self._long_description = " shrip is an application and a set of libraries for ripping and encoding\n" + \
-								" DVD into AVI, OGM MP4 or Matroska files using a wide variety of codecs. It\n" + \
-								" relies on mplayer, mencoder, ogmtools, mkvtoolnix, oggenc, lame and faac to\n" + \
-								" perform its tasks.\n" + \
-								"  o transcodes from DVD or files\n" + \
-								"  o outputs ogm, avi, matroska or mp4 files\n" + \
-								"  o provides a lot of codecs (ogg vorbis, mp3, pcm, ac3, aac, dts, xvid, lavc, x264, theora)\n" + \
-								"  o calculates video bitrate for a given filesize\n" + \
-								"  o calculates cropping parameters and scaling factors\n" + \
-								"  o uses maximum quality codec switches\n" + \
-								"  o supports subtitles extraction\n" + \
-								"  o rips contiguous chapters"
-
+class BasePackage(object):
 	def get_name(self): return self._name
 	def set_name(self, value): self._name = value
 	name = property(get_name, set_name)
@@ -139,6 +78,91 @@ class ShripPackage(object):
 	def set_long_description(self, value): self._long_description = value
 	long_description = property(get_long_description, set_long_description)
 
+	def substitute_strings(self, string):
+		return string % { 'name' : package.name, 
+						'version' : package.version, 
+						'section' : package.section, 
+						'priority' : package.priority, 
+						'author' : package.author, 
+						'copyright' : package.copyright, 
+						'packager_name' : package.packager_name, 
+						'packager_email' : package.packager_email, 
+						'bug_mail' : package.bug_mail,
+						'homepage' : package.homepage, 
+						'license' : package.license, 
+						'build_requirements' : str.join(', ', package.build_requirements), 
+						'install_requirements' : str.join(', ', package.install_requirements), 
+						'short_description' : package.short_description, 
+						'long_description' : package.long_description,
+						'year' : time.strftime("%Y", time.localtime()),
+						'timestring' : time.strftime("%a, %d %b %Y %H:%M:%S %z", time.localtime()),
+						'license_text' : licenses[package.license]
+						}
+
+class ShripPackage(BasePackage):
+	def __init__(self):
+		self._name = 'shrip'
+		self._version = '0.4.1'
+		self._section = 'graphics'
+		self._priority = 'optional'
+		self._author = 'Olivier Rolland <billl@users.sf.net>'
+		self._copyright = 'Copyright (C) 2004-2008 Olivier Rolland'
+		self._packager_name = 'Matthew Brennan Jones'
+		self._packager_email = 'mattjones@workhorsy.org'
+		self._bug_mail = 'mattjones@workhorsy.org'
+		self._homepage = 'http://ogmrip.sourceforge.net'
+		self._license = 'GPL'
+
+		self._build_requirements = ["debhelper (>= 7)",
+									"autotools-dev",
+									"libogmrip-dev (>= 0.10.0)",
+									"libdvdread-dev",
+									"libhal-dev",
+									"eject",
+									"mplayer",
+									"mencoder",
+									"libenchant-dev",
+									"vorbis-tools (>= 1.0)",
+									"lame",
+									"libgconf2-dev",
+									"libglade2-dev",
+									"mkvtoolnix (>= 0.9.5)",
+									"libtheora-dev",
+									"faac",
+									"libvorbis-dev",
+									"libdbus-glib-1-dev",
+									"libx264-dev",
+									"ogmtools",
+									"libxml-parser-perl",
+									"libnotify-dev-gtk2.10"]
+
+		self._install_requirements = ["ogmrip (>= 0.10.0)",
+									"mplayer",
+									"mencoder",
+									"ogmtools",
+									"vorbis-tools (>= 1.0)",
+									"lame (>= 3.96)",
+									"mkvtoolnix (>= 0.9.5)",
+									"faac (>= 1.24)",
+									"tesseract | ocrad | gocr",
+									"gpac"]
+
+		self._short_description = 'Application for ripping and encoding DVD into AVI/OGM files'
+
+		# FIXME: Having a one space indent on this is a Debian specific thing and should be handled by the framework instead.
+		self._long_description = " shrip is an application and a set of libraries for ripping and encoding\n" + \
+								" DVD into AVI, OGM MP4 or Matroska files using a wide variety of codecs. It\n" + \
+								" relies on mplayer, mencoder, ogmtools, mkvtoolnix, oggenc, lame and faac to\n" + \
+								" perform its tasks.\n" + \
+								"  o transcodes from DVD or files\n" + \
+								"  o outputs ogm, avi, matroska or mp4 files\n" + \
+								"  o provides a lot of codecs (ogg vorbis, mp3, pcm, ac3, aac, dts, xvid, lavc, x264, theora)\n" + \
+								"  o calculates video bitrate for a given filesize\n" + \
+								"  o calculates cropping parameters and scaling factors\n" + \
+								"  o uses maximum quality codec switches\n" + \
+								"  o supports subtitles extraction\n" + \
+								"  o rips contiguous chapters"
+
 	def build(self):
 		self.configure_make_install()
 
@@ -165,8 +189,8 @@ Public License can be found in `/usr/share/common-licenses/GPL'."""
 
 # Uncompress the source code
 print "uncompressing source code ..."
-commands.getoutput("tar xzf " + package.name + "_" + package.version + ".orig.tar.gz")
-os.chdir(package.name + "-" + package.version)
+commands.getoutput(package.substitute_strings("tar xzf %(name)s_%(version)s.orig.tar.gz"))
+os.chdir(package.substitute_strings("%(name)s-%(version)s"))
 
 # Set the environmental variables for dh_make
 os.environ['DEBFULLNAME'] = package.packager_name
@@ -174,7 +198,7 @@ os.environ['DEBEMAIL'] = package.packager_email
 
 # Run dh_make
 print "Running dh_make ..."
-command = 'bash -c "dh_make -s -c gpl -f ../' + package.name + "_" + package.version + '.orig.tar.gz"'
+command = package.substitute_strings('bash -c "dh_make -s -c gpl -f ../%(name)s_%(version)s.orig.tar.gz"')
 child = pexpect.spawn(command)
 
 expected_lines = ["Maintainer name : [\w|\s]*\r\n",
@@ -211,7 +235,7 @@ commands.getoutput('rm *.ex *.EX dirs docs info README.Debian copyright control 
 print "Generating copyright file ..."
 f = open('copyright', 'w')
 
-f.write(\
+f.write(package.substitute_strings(
 """This package was debianized by %(packager_name)s <%(packager_email)s> on 
 %(timestring)s.
 
@@ -231,26 +255,7 @@ License:
 
 The Debian packaging is (C) %(year)s, %(packager_name)s <%(packager_email)s> and
 is licensed under the %(license)s, see above.
-""" % 
-{ 'name' : package.name, 
-'version' : package.version, 
-'section' : package.section, 
-'priority' : package.priority, 
-'author' : package.author, 
-'copyright' : package.copyright, 
-'packager_name' : package.packager_name, 
-'packager_email' : package.packager_email, 
-'bug_mail' : package.bug_mail,
-'homepage' : package.homepage, 
-'license' : package.license, 
-'build_requirements' : package.build_requirements, 
-'install_requirements' : package.install_requirements, 
-'short_description' : package.short_description, 
-'long_description' : package.long_description,
-'year' : time.strftime("%Y", time.localtime()),
-'timestring' : time.strftime("%a, %d %b %Y %H:%M:%S %z", time.localtime()),
-'license_text' : licenses['GPL'],
-})
+"""))
 
 f.close()
 
@@ -259,7 +264,7 @@ f.close()
 print "Generating control file ..."
 f = open('control', 'w')
 
-f.write(\
+f.write(package.substitute_strings(
 """Source: %(name)s
 Section: %(section)s
 Priority: %(priority)s
@@ -277,31 +282,14 @@ Depends: ${shlibs:Depends},
          %(install_requirements)s
 Description: %(short_description)s
 %(long_description)s
-""" % 
-{ 'name' : package.name, 
-'version' : package.version, 
-'section' : package.section, 
-'priority' : package.priority, 
-'author' : package.author, 
-'copyright' : package.copyright, 
-'packager_name' : package.packager_name, 
-'packager_email' : package.packager_email, 
-'bug_mail' : package.bug_mail, 
-'homepage' : package.homepage, 
-'license' : package.license, 
-'build_requirements' : str.join(', ', package.build_requirements), 
-'install_requirements' : str.join(', ', package.install_requirements), 
-'short_description' : package.short_description, 
-'long_description' : package.long_description,
-'year' : time.strftime("%Y", time.localtime())
-})
+"""))
 
 f.close()
 
 
 # Create the changelog
 f = open('changelog', 'w')
-f.write(
+f.write(package.substitute_strings(
 """
 %(name)s (%(version)s-0ubuntu1) intrepid; urgency=low
 
@@ -309,25 +297,7 @@ f.write(
 
  -- %(packager_name)s <%(packager_email)s>  %(timestring)s
 
-""" % 
-{ 'name' : package.name, 
-'version' : package.version, 
-'section' : package.section, 
-'priority' : package.priority, 
-'author' : package.author, 
-'copyright' : package.copyright, 
-'packager_name' : package.packager_name, 
-'packager_email' : package.packager_email, 
-'bug_mail' : package.bug_mail, 
-'homepage' : package.homepage, 
-'license' : package.license, 
-'build_requirements' : str.join(', ', package.build_requirements), 
-'install_requirements' : str.join(', ', package.install_requirements), 
-'short_description' : package.short_description, 
-'long_description' : package.long_description,
-'year' : time.strftime("%Y", time.localtime()),
-'timestring' : time.strftime("%a, %d %b %Y %H:%M:%S %z", time.localtime()),
-})
+"""))
 
 f.close()
 
