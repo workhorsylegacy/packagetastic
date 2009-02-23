@@ -19,11 +19,13 @@ os.chdir(os.sys.path[0])
 class ShripPackage(object):
 	def __init__(self):
 		self._name = 'shrip'
+		self._version = '0.4.1'
 		self._section = 'graphics'
 		self._priority = 'optional'
 		self._author = 'Olivier Rolland <billl@users.sf.net>'
 		self._copyright = 'Copyright (C) 2004-2008 Olivier Rolland'
-		self._packager = 'Matthew Brennan Jones <mattjones@workhorsy.org>'
+		self._packager_name = 'Matthew Brennan Jones'
+		self._packager_email = 'mattjones@workhorsy.org'
 		self._bug_mail = 'mattjones@workhorsy.org'
 		self._homepage = 'http://ogmrip.sourceforge.net'
 		self._license = 'GPL'
@@ -81,6 +83,10 @@ class ShripPackage(object):
 	def set_name(self, value): self._name = value
 	name = property(get_name, set_name)
 
+	def get_version(self): return self._version
+	def set_version(self, value): self._version = value
+	version = property(get_version, set_version)
+
 	def get_section(self): return self._section
 	def set_section(self, value): self._section = value
 	section = property(get_section, set_section)
@@ -97,9 +103,13 @@ class ShripPackage(object):
 	def set_copyright(self, value): self._copyright = value
 	copyright = property(get_copyright, set_copyright)
 
-	def get_packager(self): return self._packager
-	def set_packager(self, value): self._packager = value
-	packager = property(get_packager, set_packager)
+	def get_packager_name(self): return self._packager_name
+	def set_packager_name(self, value): self._packager_name = value
+	packager_name = property(get_packager_name, set_packager_name)
+
+	def get_packager_email(self): return self._packager_email
+	def set_packager_email(self, value): self._packager_email = value
+	packager_email = property(get_packager_email, set_packager_email)
 
 	def get_bug_mail(self): return self._bug_mail
 	def set_bug_mail(self, value): self._bug_mail = value
@@ -129,21 +139,6 @@ class ShripPackage(object):
 	def set_long_description(self, value): self._long_description = value
 	long_description = property(get_long_description, set_long_description)
 
-	def to_hash(self):
-		return { 'name' : self.name,
-				'section' : self.section,
-				'priority' : self.priority,
-				'author' : self.author,
-				'copyright' : self.copyright,
-				'packager' : self.packager,
-				'bug_mail' : self.bug_mail,
-				'homepage' : self.homepage,
-				'license' : self.license,
-				'build_requirements' : self.build_requirements,
-				'install_requirements' : self.install_requirements,
-				'short_description' : self.short_description,
-				'long_description' : self.long_description}
-
 	def build(self):
 		self.configure_make_install()
 
@@ -170,16 +165,16 @@ Public License can be found in `/usr/share/common-licenses/GPL'."""
 
 # Uncompress the source code
 print "uncompressing source code ..."
-commands.getoutput("tar xzf shrip_0.4.1.orig.tar.gz")
-os.chdir("shrip-0.4.1")
+commands.getoutput("tar xzf " + package.name + "_" + package.version + ".orig.tar.gz")
+os.chdir(package.name + "-" + package.version)
 
 # Set the environmental variables for dh_make
-os.environ['DEBFULLNAME'] = "Matthew Brennan Jones"
-os.environ['DEBEMAIL'] = "mattjones@workhorsy.org"
+os.environ['DEBFULLNAME'] = package.packager_name
+os.environ['DEBEMAIL'] = package.packager_email
 
 # Run dh_make
 print "Running dh_make ..."
-command = 'bash -c "dh_make -s -c gpl -f ../shrip_0.4.1.orig.tar.gz"'
+command = 'bash -c "dh_make -s -c gpl -f ../' + package.name + "_" + package.version + '.orig.tar.gz"'
 child = pexpect.spawn(command)
 
 expected_lines = ["Maintainer name : [\w|\s]*\r\n",
@@ -217,7 +212,7 @@ print "Generating copyright file ..."
 f = open('copyright', 'w')
 
 f.write(\
-"""This package was debianized by %(packager)s on 
+"""This package was debianized by %(packager_name)s <%(packager_email)s> on 
 %(timestring)s.
 
 It was downloaded from %(homepage)s
@@ -234,15 +229,17 @@ License:
 
 %(license_text)s
 
-The Debian packaging is (C) %(year)s, %(packager)s and
+The Debian packaging is (C) %(year)s, %(packager_name)s <%(packager_email)s> and
 is licensed under the %(license)s, see above.
 """ % 
 { 'name' : package.name, 
+'version' : package.version, 
 'section' : package.section, 
 'priority' : package.priority, 
 'author' : package.author, 
 'copyright' : package.copyright, 
-'packager' : package.packager, 
+'packager_name' : package.packager_name, 
+'packager_email' : package.packager_email, 
 'bug_mail' : package.bug_mail,
 'homepage' : package.homepage, 
 'license' : package.license, 
@@ -267,13 +264,13 @@ f.write(\
 Section: %(section)s
 Priority: %(priority)s
 Maintainer: Ubuntu MOTU Developers <ubuntu-motu@lists.ubuntu.com>
-XSBC-Original-Maintainer: %(packager)s
+XSBC-Original-Maintainer: %(packager_name)s <%(packager_email)s>
 Bugs: mailto:%(bug_mail)s
 Build-Depends: %(build_requirements)s
 Standards-Version: 3.8.0
 Homepage: http://ogmrip.sourceforge.net
 
-Package: shrip
+Package: %(name)s
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
@@ -282,11 +279,13 @@ Description: %(short_description)s
 %(long_description)s
 """ % 
 { 'name' : package.name, 
+'version' : package.version, 
 'section' : package.section, 
 'priority' : package.priority, 
 'author' : package.author, 
 'copyright' : package.copyright, 
-'packager' : package.packager, 
+'packager_name' : package.packager_name, 
+'packager_email' : package.packager_email, 
 'bug_mail' : package.bug_mail, 
 'homepage' : package.homepage, 
 'license' : package.license, 
@@ -304,19 +303,21 @@ f.close()
 f = open('changelog', 'w')
 f.write(
 """
-%(name)s (0.4.1-0ubuntu1) intrepid; urgency=low
+%(name)s (%(version)s-0ubuntu1) intrepid; urgency=low
 
   * Initial release
 
- -- %(packager)s  %(timestring)s
+ -- %(packager_name)s <%(packager_email)s>  %(timestring)s
 
 """ % 
 { 'name' : package.name, 
+'version' : package.version, 
 'section' : package.section, 
 'priority' : package.priority, 
 'author' : package.author, 
 'copyright' : package.copyright, 
-'packager' : package.packager, 
+'packager_name' : package.packager_name, 
+'packager_email' : package.packager_email, 
 'bug_mail' : package.bug_mail, 
 'homepage' : package.homepage, 
 'license' : package.license, 
@@ -345,19 +346,19 @@ expected_lines = ["dpkg-buildpackage -rfakeroot -d -us -uc -S -sa\r\n",
 					"dpkg-buildpackage: set FFLAGS to default value: -g -O2\r\n",
 					"dpkg-buildpackage: set CXXFLAGS to default value: -g -O2\r\n",
 					"dpkg-buildpackage: source package " + package.name + "\r\n",
-					"dpkg-buildpackage: source version 0.4.1-1\r\n",
-					"dpkg-buildpackage: source changed by " + package.packager + "\r\n",
+					"dpkg-buildpackage: source version " + package.version + "-0ubuntu1\r\n",
+					"dpkg-buildpackage: source changed by " + package.packager_name + " <" + package.packager_email + ">" + "\r\n",
 					"fakeroot debian/rules clean",
 					"dh_testdir",
 					"dh_testroot",
 					"rm -f build-stamp",
 					"rm -f config.sub config.guess",
 					"dh_clean",
-					"dpkg-source -b shrip-0.4.1",
+					"dpkg-source -b " + package.name + "-" + package.version,
 					"dpkg-source: info: using source format `1.0'",
-					"dpkg-source: info: building shrip using existing shrip_0.4.1.orig.tar.gz",
-					"dpkg-source: info: building shrip in shrip_0.4.1-1.diff.gz",
-					"dpkg-source: info: building shrip in shrip_0.4.1-1.dsc",
+					"dpkg-source: info: building " + package.name + " using existing " + package.name + "_" + package.version + ".orig.tar.gz",
+					"dpkg-source: info: building " + package.name + " in " + package.name + "_" + package.version + "-0ubuntu1.diff.gz",
+					"dpkg-source: info: building " + package.name + " in " + package.name + "_" + package.version + "-0ubuntu1.dsc",
 					"dpkg-genchanges: including full source code in upload",
 					"dpkg-buildpackage: source only upload (original source is included)",
 					"Now running lintian...",
@@ -367,7 +368,7 @@ expected_lines = ["dpkg-buildpackage -rfakeroot -d -us -uc -S -sa\r\n",
 					"dpkg-buildpackage: failure:",
 
 					"You need a passphrase to unlock the secret key for\r\n" +
-					"user: \"" + package.packager + "\"\r\n" +
+					"user: \"" + package.packager_name + " <" + package.packager_email + ">" + "\"\r\n" +
 					"1024-bit DSA key, ID A21CDDE2, created \d*-\d*-\d*\r\n" +
 					"\r\n" +
 					"Enter passphrase: [\w|\s\W]*",
@@ -400,7 +401,7 @@ child.close()
 print "Running pbuilder ..."
 os.chdir("..")
 
-command = 'bash -c "sudo pbuilder build shrip_0.4.1-0ubuntu1.dsc"'
+command = 'bash -c "sudo pbuilder build ' + package.name + '_' + package.version + '-0ubuntu1.dsc"'
 child = pexpect.spawn(command, timeout=1200)
 
 expected_lines = ["\[sudo\] password for [\w|\s]*: ",
@@ -426,7 +427,7 @@ child.close()
 
 # Copy the deb from the cache
 print "Getting deb file ..."
-command = "cp /var/cache/pbuilder/result/shrip_0.4.1-0ubuntu1_i386.deb shrip_0.4.1-0ubuntu1_i386.deb"
+command = "cp /var/cache/pbuilder/result/" + package.name + "_" + package.version + "-0ubuntu1_i386.deb " + package.name + "_" + package.version + "-0ubuntu1_i386.deb"
 commands.getoutput(command)
 
 print "Done"
