@@ -130,9 +130,9 @@ class ShripPackage(object):
 	long_description = property(get_long_description, set_long_description)
 
 	def to_hash(self):
-		return { 'name' : self._name,
-				'section' : self._section,
-				'priority' : self._priority,
+		return { 'name' : self.name,
+				'section' : self.section,
+				'priority' : self.priority,
 				'author' : self.author,
 				'copyright' : self.copyright,
 				'packager' : self.packager,
@@ -169,11 +169,11 @@ Public License can be found in `/usr/share/common-licenses/GPL'."""
 }
 
 # Uncompress the source code
-print "uncompressed source code ..."
+print "uncompressing source code ..."
 commands.getoutput("tar xzf shrip_0.4.1.orig.tar.gz")
 os.chdir("shrip-0.4.1")
 
-# Set the environmental variables fro dh_make
+# Set the environmental variables for dh_make
 os.environ['DEBFULLNAME'] = "Matthew Brennan Jones"
 os.environ['DEBEMAIL'] = "mattjones@workhorsy.org"
 
@@ -210,7 +210,7 @@ child.close()
 # Remove the unnessesary debian files
 print "Removing unneeded files ..."
 os.chdir("debian")
-commands.getoutput('rm *.ex *.EX dirs docs info README.Debian copyright')
+commands.getoutput('rm *.ex *.EX dirs docs info README.Debian copyright control changelog')
 
 # Create the copyright file
 print "Generating copyright file ..."
@@ -237,9 +237,9 @@ License:
 The Debian packaging is (C) %(year)s, %(packager)s and
 is licensed under the %(license)s, see above.
 """ % 
-{ 'name' : package._name, 
-'section' : package._section, 
-'priority' : package._priority, 
+{ 'name' : package.name, 
+'section' : package.section, 
+'priority' : package.priority, 
 'author' : package.author, 
 'copyright' : package.copyright, 
 'packager' : package.packager, 
@@ -281,9 +281,9 @@ Depends: ${shlibs:Depends},
 Description: %(short_description)s
 %(long_description)s
 """ % 
-{ 'name' : package._name, 
-'section' : package._section, 
-'priority' : package._priority, 
+{ 'name' : package.name, 
+'section' : package.section, 
+'priority' : package.priority, 
 'author' : package.author, 
 'copyright' : package.copyright, 
 'packager' : package.packager, 
@@ -311,9 +311,9 @@ f.write(
  -- %(packager)s  %(timestring)s
 
 """ % 
-{ 'name' : package._name, 
-'section' : package._section, 
-'priority' : package._priority, 
+{ 'name' : package.name, 
+'section' : package.section, 
+'priority' : package.priority, 
 'author' : package.author, 
 'copyright' : package.copyright, 
 'packager' : package.packager, 
@@ -366,21 +366,13 @@ expected_lines = ["dpkg-buildpackage -rfakeroot -d -us -uc -S -sa\r\n",
 					"dpkg-source: error:",
 					"dpkg-buildpackage: failure:",
 
-					"signfile shrip_0.4.1-0ubuntu1.dsc " + package.packager + "\r\n" +
-					"\r\n" +
 					"You need a passphrase to unlock the secret key for\r\n" +
 					"user: \"" + package.packager + "\"\r\n" +
 					"1024-bit DSA key, ID A21CDDE2, created \d*-\d*-\d*\r\n" +
 					"\r\n" +
 					"Enter passphrase: [\w|\s\W]*",
 
-					"signfile shrip_0.4.1-0ubuntu1_source.changes " + package.packager + "\r\n" +
-					"\r\n" +
-					"You need a passphrase to unlock the secret key for\r\n" +
-					"user: \"" + package.packager + "\"\r\n" +
-					"1024-bit DSA key, ID A21CDDE2, created \d*-\d*-\d*\r\n" +
-					"\r\n" +
-					"Enter passphrase: [\w|\s\W]*",
+					"gpg: Invalid passphrase; please try again ...",
 
 					"Successfully signed dsc and changes files\r\n",
 					pexpect.EOF]
@@ -391,8 +383,11 @@ while still_reading:
 
 	if result >= 0 and result <= 26:
 		pass
-	elif result == 27 or result == 28:
+	elif result == 27:
 		child.sendline(signature_key)
+	elif result == 28:
+		print "Invalid signing key. Exiting ..."
+		exit()
 	elif result == 29:
 		pass
 	elif result == len(expected_lines)-1:
@@ -422,7 +417,7 @@ while still_reading:
 	if result == 0:
 		child.sendline(root_password)
 	elif result == 1:
-		print "Incorrect password. Exiting ..."
+		print "Incorrect password for sudo. Exiting ..."
 		exit()
 	elif result == len(expected_lines)-1:
 		still_reading = False
@@ -430,6 +425,7 @@ while still_reading:
 child.close()
 
 # Copy the deb from the cache
+print "Getting deb file ..."
 command = "cp /var/cache/pbuilder/result/shrip_0.4.1-0ubuntu1_i386.deb shrip_0.4.1-0ubuntu1_i386.deb"
 commands.getoutput(command)
 
