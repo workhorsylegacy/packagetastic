@@ -8,6 +8,7 @@ os.chdir(os.sys.path[0])
 
 class ShripPackage(BasePackage):
 	def __init__(self):
+		self.call_parent_constructor()
 		self._name = 'shrip'
 		self._version = '0.4.1'
 		self._section = 'graphics'
@@ -21,6 +22,7 @@ class ShripPackage(BasePackage):
 		self._license = 'GPL'
 		self._source = 'http://downloads.sourceforge.net/ogmrip/shrip-0.4.1.tar.gz'
 
+		# FIXME: debhelper is a Debian specific package
 		self._build_requirements = ["debhelper (>= 7)",
 									"autotools-dev",
 									"libogmrip-dev (>= 0.10.0)",

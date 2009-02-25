@@ -26,6 +26,26 @@ Public License can be found in `/usr/share/common-licenses/GPL'."""
 
 
 class BasePackage(object):
+	# FIXME: This should be just a constructor that is called when children are __init__()
+	def call_parent_constructor(self):
+		self._name = None
+		self._version = None
+		self._mangle = None
+		self._section = None
+		self._priority = None
+		self._author = None
+		self._copyright = None
+		self._packager_name = None
+		self._packager_email = None
+		self._bug_mail = None
+		self._homepage = None
+		self._license = None
+		self._source = None
+		self._build_requirements = []
+		self._install_requirements = []
+		self._short_description = None
+		self._long_description = None
+
 	def get_name(self): return self._name
 	def set_name(self, value): self._name = value
 	name = property(get_name, set_name)
@@ -33,6 +53,10 @@ class BasePackage(object):
 	def get_version(self): return self._version
 	def set_version(self, value): self._version = value
 	version = property(get_version, set_version)
+
+	def get_mangle(self): return self._mangle
+	def set_mangle(self, value): self._mangle = value
+	mangle = property(get_mangle, set_mangle)
 
 	def get_section(self): return self._section
 	def set_section(self, value): self._section = value
@@ -93,6 +117,7 @@ class BasePackage(object):
 	def substitute_strings(self, string):
 		return string % { 'name' : self.name, 
 						'version' : self.version, 
+						'mangle' : self.mangle, 
 						'section' : self.section, 
 						'priority' : self.priority, 
 						'author' : self.author, 
@@ -165,7 +190,7 @@ def build_ubuntu(package):
 	# Remove the unnessesary debian files
 	print "Removing unneeded files ..."
 	os.chdir("debian")
-	commands.getoutput('rm *.ex *.EX dirs docs info README.Debian copyright control changelog')
+	commands.getoutput('rm *.ex *.EX dirs docs info README.Debian copyright control')
 
 	# Create the copyright file
 	print "Generating copyright file ..."
@@ -207,16 +232,14 @@ Section: %(section)s
 Priority: %(priority)s
 Maintainer: Ubuntu MOTU Developers <ubuntu-motu@lists.ubuntu.com>
 XSBC-Original-Maintainer: %(packager_name)s <%(packager_email)s>
-Bugs: mailto:%(bug_mail)s
 Build-Depends: %(build_requirements)s
+Bugs: mailto:%(bug_mail)s
 Standards-Version: 3.8.0
 Homepage: http://ogmrip.sourceforge.net
 
 Package: %(name)s
 Architecture: any
-Depends: ${shlibs:Depends},
-	     ${misc:Depends},
-	     %(install_requirements)s
+Depends: %(install_requirements)s
 Description: %(short_description)s
 %(long_description)s
 """
@@ -225,11 +248,15 @@ Description: %(short_description)s
 	f.close()
 
 
+	# Get the mangled gibberish that is on the end of a package file name
+	f = open('changelog', 'r')
+	package.mangle = f.readline().split(')')[0].split(package.version)[1]
+	f.close()
+
 	# Create the changelog
 	f = open('changelog', 'w')
 	f.write(package.substitute_strings(
-"""
-%(name)s (%(version)s-0ubuntu1) intrepid; urgency=low
+"""%(name)s (%(version)s%(mangle)s) intrepid; urgency=low
 
   * Initial release
 
@@ -239,7 +266,6 @@ Description: %(short_description)s
 	))
 
 	f.close()
-
 
 	# Run debuild
 	print "Running debuild ..."
@@ -255,7 +281,7 @@ Description: %(short_description)s
 						"dpkg-buildpackage: set FFLAGS to default value: -g -O2\r\n",
 						"dpkg-buildpackage: set CXXFLAGS to default value: -g -O2\r\n",
 						"dpkg-buildpackage: source package " + package.name + "\r\n",
-						"dpkg-buildpackage: source version " + package.version + "-0ubuntu1\r\n",
+						"dpkg-buildpackage: source version " + package.version + "" + package.mangle + "\r\n",
 						"dpkg-buildpackage: source changed by " + package.packager_name + " <" + package.packager_email + ">" + "\r\n",
 						"fakeroot debian/rules clean",
 						"dh_testdir",
@@ -266,8 +292,8 @@ Description: %(short_description)s
 						"dpkg-source -b " + package.name + "-" + package.version,
 						"dpkg-source: info: using source format `1.0'",
 						"dpkg-source: info: building " + package.name + " using existing " + package.name + "_" + package.version + ".orig.tar.gz",
-						"dpkg-source: info: building " + package.name + " in " + package.name + "_" + package.version + "-0ubuntu1.diff.gz",
-						"dpkg-source: info: building " + package.name + " in " + package.name + "_" + package.version + "-0ubuntu1.dsc",
+						"dpkg-source: info: building " + package.name + " in " + package.name + "_" + package.version + "" + package.mangle + ".diff.gz",
+						"dpkg-source: info: building " + package.name + " in " + package.name + "_" + package.version + "" + package.mangle + ".dsc",
 						"dpkg-genchanges: including full source code in upload",
 						"dpkg-buildpackage: source only upload (original source is included)",
 						"Now running lintian...",
@@ -284,6 +310,8 @@ Description: %(short_description)s
 
 						"gpg: Invalid passphrase; please try again ...",
 
+						"dpkg-source: error: syntax error in " + package.packager_name + "-" + package.version + "/debian/control at line \d*: ",
+
 						"Successfully signed dsc and changes files\r\n",
 						pexpect.EOF]
 
@@ -299,6 +327,10 @@ Description: %(short_description)s
 			print "Invalid signing key. Exiting ..."
 			exit()
 		elif result == 29:
+			print "Broke when reading the debian/control file '" + \
+			child.after + "'. Exiting ..."
+			exit()
+		elif result == 30:
 			pass
 		elif result == len(expected_lines)-1:
 			still_reading = False
@@ -310,7 +342,7 @@ Description: %(short_description)s
 	print "Running pbuilder ..."
 	os.chdir("..")
 
-	command = 'bash -c "sudo pbuilder build ' + package.name + '_' + package.version + '-0ubuntu1.dsc"'
+	command = 'bash -c "sudo pbuilder build ' + package.name + '_' + package.version + package.mangle + '.dsc"'
 	child = pexpect.spawn(command, timeout=1200)
 
 	expected_lines = ["\[sudo\] password for [\w|\s]*: ",
@@ -336,7 +368,7 @@ Description: %(short_description)s
 
 	# Copy the deb from the cache
 	print "Getting deb file ..."
-	command = "cp /var/cache/pbuilder/result/" + package.name + "_" + package.version + "-0ubuntu1_i386.deb " + package.name + "_" + package.version + "-0ubuntu1_i386.deb"
+	command = "cp /var/cache/pbuilder/result/" + package.name + "_" + package.version + package.mangle + "_i386.deb " + package.name + "_" + package.version + package.mangle + "_i386.deb"
 	commands.getoutput(command)
 
 	print "Done"
