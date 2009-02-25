@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from universal_packages import *
+from packagetastic import *
 
 # Move the path to the location of the current file
 os.chdir(os.sys.path[0])
