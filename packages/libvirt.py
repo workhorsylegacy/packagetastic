@@ -13,20 +13,20 @@ class LibVirtPackage(BasePackage):
 		self._version = '0.6.0'
 		self._section = 'development'
 		self._priority = 'optional'
-		self._author = 'Daniel Veillard <veillard@redhat.com>'
-		self._copyright = 'Copyright (C) 2000 Daniel Veillard; ' + \
-							'1991-2009 Free Software Foundation, Inc.; ' + \
-							'2008 IBM Corp.; ' + \
-							'2005-2009 Red Hat, Inc.; ' + \
-							'2006-2008 Daniel P. Berrange; ' + \
-							'2008 Virtual Iron Software, Inc.; ' + \
-							'2008 David F. Lively; ' + \
-							'2005 Anthony Liguori; ' + \
-							'2006, 2007 Binary Karma; ' + \
-							'2006 Shuveb Hussain; ' + \
-							'2007 Anoop Joe Cyriac; ' + \
-							'2000 Bjorn Reese; ' + \
-							'2006, 2007 Binary Karma'
+		self._authors = ['Daniel Veillard <veillard@redhat.com>']
+		self._copyright = ['2000 Daniel Veillard', 
+							'1991-2009 Free Software Foundation, Inc.', 
+							'2008 IBM Corp.', 
+							'2005-2009 Red Hat, Inc.', 
+							'2006-2008 Daniel P. Berrange', 
+							'2008 Virtual Iron Software, Inc.', 
+							'2008 David F. Lively', 
+							'2005 Anthony Liguori', 
+							'2006, 2007 Binary Karma', 
+							'2006 Shuveb Hussain', 
+							'2007 Anoop Joe Cyriac', 
+							'2000 Bjorn Reese', 
+							'2006, 2007 Binary Karma']
 		self._packager_name = 'Matthew Brennan Jones'
 		self._packager_email = 'mattjones@workhorsy.org'
 		self._bug_mail = 'mattjones@workhorsy.org'

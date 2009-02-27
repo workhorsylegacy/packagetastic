@@ -13,8 +13,8 @@ class HelloPackage(BasePackage):
 		self._version = '2.1.1'
 		self._section = 'devel'
 		self._priority = 'optional'
-		self._author = 'Free Software Foundation, Inc.'
-		self._copyright = 'Copyright (C) 1992, 1995, 1996, 1997-1999, 2000-2002 Free Software Foundation, Inc.'
+		self._authors = ['Free Software Foundation, Inc.']
+		self._copyright = ['1992, 1995, 1996, 1997-1999, 2000-2002 Free Software Foundation, Inc.']
 		self._packager_name = 'Matthew Brennan Jones'
 		self._packager_email = 'mattjones@workhorsy.org'
 		self._bug_mail = 'mattjones@workhorsy.org'

@@ -33,8 +33,8 @@ class BasePackage(object):
 		self._mangle = None
 		self._section = None
 		self._priority = None
-		self._author = None
-		self._copyright = None
+		self._authors = []
+		self._copyright = []
 		self._packager_name = None
 		self._packager_email = None
 		self._bug_mail = None
@@ -66,9 +66,9 @@ class BasePackage(object):
 	def set_priority(self, value): self._priority = value
 	priority = property(get_priority, set_priority)
 
-	def get_author(self): return self._author
-	def set_author(self, value): self._author = value
-	author = property(get_author, set_author)
+	def get_authors(self): return self._authors
+	def set_authors(self, value): self._authors = value
+	authors = property(get_authors, set_authors)
 
 	def get_copyright(self): return self._copyright
 	def set_copyright(self, value): self._copyright = value
@@ -120,8 +120,8 @@ class BasePackage(object):
 						'mangle' : self.mangle, 
 						'section' : self.section, 
 						'priority' : self.priority, 
-						'author' : self.author, 
-						'copyright' : self.copyright, 
+						'authors' : str.join("\n    ", self.authors), 
+						'copyright' : str.join("\n    ", self.copyright), 
 						'packager_name' : self.packager_name, 
 						'packager_email' : self.packager_email, 
 						'bug_mail' : self.bug_mail,
@@ -134,7 +134,8 @@ class BasePackage(object):
 						'long_description' : self.long_description,
 						'year' : time.strftime("%Y", time.localtime()),
 						'timestring' : time.strftime("%a, %d %b %Y %H:%M:%S %z", time.localtime()),
-						'license_text' : licenses[self.license]
+						'license_text' : licenses[self.license],
+						'upstream_authors' : ('Upstream Authors', 'Upstream Author')[ len(self.authors) > 0 ]
 						}
 
 
@@ -202,13 +203,13 @@ def build_ubuntu(package):
 
 It was downloaded from %(homepage)s
 
-Upstream Author(s):
+%(upstream_authors)s:
 
-	%(author)s
+    %(authors)s
 
 Copyright:
 
-	%(copyright)s
+    Copyright (C) %(copyright)s
 
 License:
 

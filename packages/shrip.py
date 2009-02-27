@@ -13,8 +13,8 @@ class ShripPackage(BasePackage):
 		self._version = '0.4.1'
 		self._section = 'graphics'
 		self._priority = 'optional'
-		self._author = 'Olivier Rolland <billl@users.sf.net>'
-		self._copyright = 'Copyright (C) 2004-2008 Olivier Rolland'
+		self._authors = ['Olivier Rolland <billl@users.sf.net>']
+		self._copyright = ['2004-2008 Olivier Rolland']
 		self._packager_name = 'Matthew Brennan Jones'
 		self._packager_email = 'mattjones@workhorsy.org'
 		self._bug_mail = 'mattjones@workhorsy.org'
@@ -46,7 +46,9 @@ class ShripPackage(BasePackage):
 									"libxml-parser-perl",
 									"libnotify-dev-gtk2.10"]
 
-		self._install_requirements = ["ogmrip (>= 0.10.0)",
+		self._install_requirements = ["${shlibs:Depends}", 
+									"${misc:Depends}",
+									"ogmrip (>= 0.10.0)",
 									"mplayer",
 									"mencoder",
 									"ogmtools",
