@@ -236,7 +236,7 @@ XSBC-Original-Maintainer: %(packager_name)s <%(packager_email)s>
 Build-Depends: %(build_requirements)s
 Bugs: mailto:%(bug_mail)s
 Standards-Version: 3.8.0
-Homepage: http://ogmrip.sourceforge.net
+Homepage: %(homepage)s
 
 Package: %(name)s
 Architecture: any
