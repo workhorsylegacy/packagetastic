@@ -305,7 +305,7 @@ Description: %(short_description)s
 
 						"You need a passphrase to unlock the secret key for\r\n" +
 						"user: \"" + package.packager_name + " <" + package.packager_email + ">" + "\"\r\n" +
-						"1024-bit DSA key, ID A21CDDE2, created \d*-\d*-\d*\r\n" +
+						"1024-bit DSA key, ID [\w]*, created \d*-\d*-\d*\r\n" +
 						"\r\n" +
 						"Enter passphrase: [\w|\s\W]*",
 
