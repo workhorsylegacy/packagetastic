@@ -42,5 +42,5 @@ class HelloPackage(BasePackage):
 
 
 
-build_fedora(HelloPackage())
+build_ubuntu(HelloPackage())
 

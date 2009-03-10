@@ -136,29 +136,34 @@ class BasePackage(object):
 				'mangle' : self.mangle, 
 				'section' : self.section, 
 				'priority' : self.priority, 
-				'authors' : str.join("\n    ", self.authors), 
-				'copyright' : str.join("\n    ", self.copyright), 
+				'authors' : self.authors, 
+				'copyright' : self.copyright, 
 				'packager_name' : self.packager_name, 
 				'packager_email' : self.packager_email, 
 				'bug_mail' : self.bug_mail,
 				'homepage' : self.homepage, 
 				'license' : self.license, 
 				'source' : self.source, 
-				'build_requirements' : str.join(', ', self.build_requirements), 
-				'install_requirements' : str.join(', ', self.install_requirements), 
+				'build_requirements' : self.build_requirements, 
+				'install_requirements' : self.install_requirements, 
 				'short_description' : self.short_description, 
-				'long_description' : self.long_description,
-				'year' : time.strftime("%Y", time.localtime()),
-				'timestring' : time.strftime("%a, %d %b %Y %H:%M:%S %z", time.localtime()),
-				'human_timestring' : time.strftime("%a %b %d %Y", time.localtime()), 
-				'license_text' : licenses[self.license],
-				'upstream_authors' : ('Upstream Authors', 'Upstream Author')[ len(self.authors) > 0 ]
+				'long_description' : self.long_description
 				}
 
 		if style == 'debian':
-			retval['long_description'] = " " + retval['long_description'].replace("\n", "\n ").replace("\n\n", "\n.\n")
+			retval['long_description'] = " " + retval['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n")
 			retval['build_requirements'] = retval['build_requirements'] + ["debhelper (>= 7)", "autotools-dev"]
 			retval['install_requirements'] = retval['install_requirements'] + ["${shlibs:Depends}", "${misc:Depends}"]
+
+		retval['authors'] = str.join("\n    ", retval['authors'])
+		retval['copyright'] = str.join("\n    ", retval['copyright'])
+		retval['build_requirements'] = str.join(', ', retval['build_requirements'])
+		retval['install_requirements'] = str.join(', ', retval['install_requirements'])
+		retval['year'] = time.strftime("%Y", time.localtime())
+		retval['timestring'] = time.strftime("%a, %d %b %Y %H:%M:%S %z", time.localtime())
+		retval['human_timestring'] = time.strftime("%a %b %d %Y", time.localtime())
+		retval['license_text'] = licenses[self.license]
+		retval['upstream_authors'] = ('Upstream Authors', 'Upstream Author')[ len(self.authors) > 0 ]
 
 		return retval
 
@@ -251,7 +256,7 @@ is licensed under the #{license}, see above.
 	f = open('control', 'w')
 
 	f.write(substitute_strings(
-"""Source: #{ame}
+"""Source: #{name}
 Section: #{section}
 Priority: #{priority}
 Maintainer: Ubuntu MOTU Developers <ubuntu-motu@lists.ubuntu.com>
