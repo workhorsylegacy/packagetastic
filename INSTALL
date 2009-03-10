@@ -1,13 +1,21 @@
 
 Getting started on Debain systems:
 
-install requirements:
-sudo apt-get install build-essential dh-make pbuilder fakeroot debhelper devscripts gnupg python-pexpect
+	install requirements:
+	sudo apt-get install build-essential dh-make pbuilder fakeroot debhelper devscripts gnupg python-pexpect
 
-create gpg key:
-gpg --gen-key
+	create gpg key:
+	gpg --gen-key
 
-setup pbuilder:
-cd ~
-echo "COMPONENTS=\"main restricted universe multiverse\"" >> ~/.pbuilderrc
-sudo pbuilder create
+	setup pbuilder:
+	cd ~
+	echo "COMPONENTS=\"main restricted universe multiverse\"" >> ~/.pbuilderrc
+	sudo pbuilder create
+
+Getting started on Fedora systems:
+
+	install requirements:
+	sudo yum groupinstall "Development Tools"
+	sudo yum install rpmdevtools pexpect
+
+

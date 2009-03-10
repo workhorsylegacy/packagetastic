@@ -23,9 +23,7 @@ class ShripPackage(BasePackage):
 		self._source = 'http://downloads.sourceforge.net/ogmrip/shrip-0.4.1.tar.gz'
 
 		# FIXME: debhelper is a Debian specific package
-		self._build_requirements = ["debhelper (>= 7)",
-									"autotools-dev",
-									"libogmrip-dev (>= 0.10.0)",
+		self._build_requirements = ["libogmrip-dev (>= 0.10.0)",
 									"libdvdread-dev",
 									"libhal-dev",
 									"eject",
@@ -46,9 +44,7 @@ class ShripPackage(BasePackage):
 									"libxml-parser-perl",
 									"libnotify-dev-gtk2.10"]
 
-		self._install_requirements = ["${shlibs:Depends}", 
-									"${misc:Depends}",
-									"ogmrip (>= 0.10.0)",
+		self._install_requirements = ["ogmrip (>= 0.10.0)",
 									"mplayer",
 									"mencoder",
 									"ogmtools",
@@ -61,19 +57,18 @@ class ShripPackage(BasePackage):
 
 		self._short_description = 'Application for ripping and encoding DVD into AVI/OGM files'
 
-		# FIXME: Having a one space indent on this is a Debian specific thing and should be handled by the framework instead.
-		self._long_description = " shrip is an application and a set of libraries for ripping and encoding\n" + \
-								" DVD into AVI, OGM MP4 or Matroska files using a wide variety of codecs. It\n" + \
-								" relies on mplayer, mencoder, ogmtools, mkvtoolnix, oggenc, lame and faac to\n" + \
-								" perform its tasks.\n" + \
-								"  o transcodes from DVD or files\n" + \
-								"  o outputs ogm, avi, matroska or mp4 files\n" + \
-								"  o provides a lot of codecs (ogg vorbis, mp3, pcm, ac3, aac, dts, xvid, lavc, x264, theora)\n" + \
-								"  o calculates video bitrate for a given filesize\n" + \
-								"  o calculates cropping parameters and scaling factors\n" + \
-								"  o uses maximum quality codec switches\n" + \
-								"  o supports subtitles extraction\n" + \
-								"  o rips contiguous chapters"
+		self._long_description = "shrip is an application and a set of libraries for ripping and encoding\n" + \
+								"DVD into AVI, OGM MP4 or Matroska files using a wide variety of codecs. It\n" + \
+								"relies on mplayer, mencoder, ogmtools, mkvtoolnix, oggenc, lame and faac to\n" + \
+								"perform its tasks.\n" + \
+								" o transcodes from DVD or files\n" + \
+								" o outputs ogm, avi, matroska or mp4 files\n" + \
+								" o provides a lot of codecs (ogg vorbis, mp3, pcm, ac3, aac, dts, xvid, lavc, x264, theora)\n" + \
+								" o calculates video bitrate for a given filesize\n" + \
+								" o calculates cropping parameters and scaling factors\n" + \
+								" o uses maximum quality codec switches\n" + \
+								" o supports subtitles extraction\n" + \
+								" o rips contiguous chapters"
 
 	def build(self):
 		self.configure_make_install()

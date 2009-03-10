@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os, time
+import os, time, re
 import commands
 import pexpect
 
@@ -24,6 +24,22 @@ On Debian systems, the complete text of the GNU General
 Public License can be found in `/usr/share/common-licenses/GPL'."""
 }
 
+def substitute_strings(string, sub_hash):
+	result = string[:]
+
+	for key, replacement in sub_hash.iteritems():
+		p = re.compile("#\{" + key + "\}")
+
+		while True:
+			# Look for a pattern, and return if there was none
+			match = p.search(result)
+			if match == None: break
+
+			# Replace the pattern with the replacement
+			start, end = match.span()
+			result = result[:start] + replacement + result[end:]
+
+	return result
 
 class BasePackage(object):
 	# FIXME: This should be just a constructor that is called when children are __init__()
@@ -114,29 +130,37 @@ class BasePackage(object):
 	def set_long_description(self, value): self._long_description = value
 	long_description = property(get_long_description, set_long_description)
 
-	def substitute_strings(self, string):
-		return string % { 'name' : self.name, 
-						'version' : self.version, 
-						'mangle' : self.mangle, 
-						'section' : self.section, 
-						'priority' : self.priority, 
-						'authors' : str.join("\n    ", self.authors), 
-						'copyright' : str.join("\n    ", self.copyright), 
-						'packager_name' : self.packager_name, 
-						'packager_email' : self.packager_email, 
-						'bug_mail' : self.bug_mail,
-						'homepage' : self.homepage, 
-						'license' : self.license, 
-						'source' : self.source, 
-						'build_requirements' : str.join(', ', self.build_requirements), 
-						'install_requirements' : str.join(', ', self.install_requirements), 
-						'short_description' : self.short_description, 
-						'long_description' : self.long_description,
-						'year' : time.strftime("%Y", time.localtime()),
-						'timestring' : time.strftime("%a, %d %b %Y %H:%M:%S %z", time.localtime()),
-						'license_text' : licenses[self.license],
-						'upstream_authors' : ('Upstream Authors', 'Upstream Author')[ len(self.authors) > 0 ]
-						}
+	def to_hash(self, style=None):
+		retval={ 'name' : self.name, 
+				'version' : self.version, 
+				'mangle' : self.mangle, 
+				'section' : self.section, 
+				'priority' : self.priority, 
+				'authors' : str.join("\n    ", self.authors), 
+				'copyright' : str.join("\n    ", self.copyright), 
+				'packager_name' : self.packager_name, 
+				'packager_email' : self.packager_email, 
+				'bug_mail' : self.bug_mail,
+				'homepage' : self.homepage, 
+				'license' : self.license, 
+				'source' : self.source, 
+				'build_requirements' : str.join(', ', self.build_requirements), 
+				'install_requirements' : str.join(', ', self.install_requirements), 
+				'short_description' : self.short_description, 
+				'long_description' : self.long_description,
+				'year' : time.strftime("%Y", time.localtime()),
+				'timestring' : time.strftime("%a, %d %b %Y %H:%M:%S %z", time.localtime()),
+				'human_timestring' : time.strftime("%a %b %d %Y", time.localtime()), 
+				'license_text' : licenses[self.license],
+				'upstream_authors' : ('Upstream Authors', 'Upstream Author')[ len(self.authors) > 0 ]
+				}
+
+		if style == 'debian':
+			retval['long_description'] = " " + retval['long_description'].replace("\n", "\n ").replace("\n\n", "\n.\n")
+			retval['build_requirements'] = retval['build_requirements'] + ["debhelper (>= 7)", "autotools-dev"]
+			retval['install_requirements'] = retval['install_requirements'] + ["${shlibs:Depends}", "${misc:Depends}"]
+
+		return retval
 
 
 def build_ubuntu(package):
@@ -151,8 +175,8 @@ def build_ubuntu(package):
 
 	# Uncompress the source code
 	print "uncompressing source code ..."
-	commands.getoutput(package.substitute_strings("tar xzf %(name)s_%(version)s.orig.tar.gz"))
-	os.chdir(package.substitute_strings("%(name)s-%(version)s"))
+	commands.getoutput(substitute_strings("tar xzf #{name}_#{version}.orig.tar.gz", package.to_hash('debian')))
+	os.chdir(substitute_strings("#{name}-#{version}", package.to_hash('debian')))
 
 	# Set the environmental variables for dh_make
 	os.environ['DEBFULLNAME'] = package.packager_name
@@ -160,7 +184,7 @@ def build_ubuntu(package):
 
 	# Run dh_make
 	print "Running dh_make ..."
-	command = package.substitute_strings('bash -c "dh_make -s -c gpl -f ../%(name)s_%(version)s.orig.tar.gz"')
+	command = substitute_strings('bash -c "dh_make -s -c gpl -f ../#{name}_#{version}.orig.tar.gz"', package.to_hash('debian'))
 	child = pexpect.spawn(command)
 
 	expected_lines = ["Maintainer name : [\w|\s]*\r\n",
@@ -197,28 +221,27 @@ def build_ubuntu(package):
 	print "Generating copyright file ..."
 	f = open('copyright', 'w')
 
-	f.write(package.substitute_strings(
-"""This package was debianized by %(packager_name)s <%(packager_email)s> on 
-%(timestring)s.
+	f.write(substitute_strings(
+"""This package was debianized by #{packager_name} <#{packager_email}> on 
+#{timestring}.
 
-It was downloaded from %(homepage)s
+It was downloaded from #{homepage}
 
-%(upstream_authors)s:
+#{upstream_authors}:
 
-    %(authors)s
+    #{authors}
 
 Copyright:
 
-    Copyright (C) %(copyright)s
+    Copyright (C) #{copyright}
 
 License:
 
-%(license_text)s
+#{license_text}
 
-The Debian packaging is (C) %(year)s, %(packager_name)s <%(packager_email)s> and
-is licensed under the %(license)s, see above.
-"""
-	))
+The Debian packaging is (C) #{year}, #{packager_name} <#{packager_email}> and
+is licensed under the #{license}, see above.
+""", package.to_hash('debian')))
 
 	f.close()
 
@@ -227,24 +250,23 @@ is licensed under the %(license)s, see above.
 	print "Generating control file ..."
 	f = open('control', 'w')
 
-	f.write(package.substitute_strings(
-"""Source: %(name)s
-Section: %(section)s
-Priority: %(priority)s
+	f.write(substitute_strings(
+"""Source: #{ame}
+Section: #{section}
+Priority: #{priority}
 Maintainer: Ubuntu MOTU Developers <ubuntu-motu@lists.ubuntu.com>
-XSBC-Original-Maintainer: %(packager_name)s <%(packager_email)s>
-Build-Depends: %(build_requirements)s
-Bugs: mailto:%(bug_mail)s
+XSBC-Original-Maintainer: #{packager_name} <#{packager_email}>
+Build-Depends: #{build_requirements}
+Bugs: mailto:#{bug_mail}
 Standards-Version: 3.8.0
-Homepage: %(homepage)s
+Homepage: #{homepage}
 
-Package: %(name)s
+Package: #{name}
 Architecture: any
-Depends: %(install_requirements)s
-Description: %(short_description)s
-%(long_description)s
-"""
-	))
+Depends: #{install_requirements}
+Description: #{short_description}
+#{long_description}
+""", package.to_hash('debian')))
 
 	f.close()
 
@@ -256,15 +278,14 @@ Description: %(short_description)s
 
 	# Create the changelog
 	f = open('changelog', 'w')
-	f.write(package.substitute_strings(
-"""%(name)s (%(version)s%(mangle)s) intrepid; urgency=low
+	f.write(substitute_strings(
+"""#{name} (#{version}#{mangle}) intrepid; urgency=low
 
   * Initial release
 
- -- %(packager_name)s <%(packager_email)s>  %(timestring)s
+ -- #{packager_name} <#{packager_email}>  #{timestring}
 
-"""
-	))
+""", package.to_hash('debian')))
 
 	f.close()
 
@@ -373,5 +394,77 @@ Description: %(short_description)s
 	commands.getoutput(command)
 
 	print "Done"
+
+
+def build_fedora(package):
+	# Setup the directories
+	commands.getoutput('rm -rf ~/rpmbuild')
+	commands.getoutput('rpmdev-setuptree')
+
+	# Copy the source code to the build tree
+	commands.getoutput('cp ' + package.source.split('/')[-1] + ' ~/rpmbuild/SOURCES/' + package.source.split('/')[-1])
+
+	# Create the spec file
+	commands.getoutput('touch ~/rpmbuild/SPECS/' + package.name + '.spec')
+	f = open('/home/matt/rpmbuild/SPECS/' + package.name + '.spec', 'w')
+	f.write(substitute_strings(
+"""Name:           #{name}
+Version:        #{version}
+Release:        1%{?dist}
+Summary:        #{short_description}
+Group:          Development/Tools
+License:        #{license}
+URL:            #{homepage}
+Source0:        #{source}
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+
+BuildRequires: #{build_requirements}
+Requires: #{install_requirements}
+
+
+%description
+#{long_description}
+
+
+%prep
+%setup -q
+
+
+%build
+%configure
+make %{?_smp_mflags}
+
+
+%install
+rm -rf $RPM_BUILD_ROOT
+make install DESTDIR=$RPM_BUILD_ROOT
+
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+
+%files
+%defattr(-,root,root,-)
+%doc COPYING
+%{_mandir}/man1/#{name}.1*
+%{_bindir}/#{name}
+%{_infodir}/#{name}.info*
+
+
+%changelog
+* #{human_timestring} #{packager_name} <#{packager_email}> - #{version}-1
+- Initial package.
+""", package.to_hash()))
+
+	f.close()
+
+	# Create the rpm file
+	#commands.getoutput("rpmbuild -ba ~/rpmbuild/SPECS/" + package.name + ".spec")
+	print "Done"
+
+
+
+
 
 

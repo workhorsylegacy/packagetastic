@@ -18,33 +18,29 @@ class HelloPackage(BasePackage):
 		self._packager_name = 'Matthew Brennan Jones'
 		self._packager_email = 'mattjones@workhorsy.org'
 		self._bug_mail = 'mattjones@workhorsy.org'
-		self._homepage = 'http://ftp.gnu.org'
+		self._homepage = 'http://www.gnu.org/software/hello/'
 		self._license = 'GPL'
 		self._source = 'http://ftp.gnu.org/gnu/hello/hello-2.1.1.tar.gz'
 
-		# FIXME: debhelper is a Debian specific package
-		self._build_requirements = ["debhelper (>= 7)", 
-									"autotools-dev"]
+		self._build_requirements = ["gettext"]
 
-		self._install_requirements = ["${shlibs:Depends}", 
-										"${misc:Depends}"]
+		self._install_requirements = ["info"]
 
 		self._short_description = 'The classic greeting, and a good example'
 
-		# FIXME: Having a one space indent on this is a Debian specific thing and should be handled by the framework instead.
-		self._long_description = " The GNU hello program produces a familiar, friendly greeting.  It\n" + \
-								" allows non-programmers to use a classic computer science tool which\n" + \
-								" would otherwise be unavailable to them.\n" + \
-								" .\n" + \
-								" Seriously, though: this is an example of how to do a Debian\n" + \
-								" package.\n" + \
-								" It is the Debian version of the GNU Project's `hello world' program\n" + \
-								" (which is itself an example for the GNU Project)."
+		self._long_description = "The GNU hello program produces a familiar, friendly greeting.  It\n" + \
+								"allows non-programmers to use a classic computer science tool which\n" + \
+								"would otherwise be unavailable to them.\n" + \
+								"\n" + \
+								"Seriously, though: this is an example of how to do a Debian\n" + \
+								"package.\n" + \
+								"It is the Debian version of the GNU Project's `hello world' program\n" + \
+								"(which is itself an example for the GNU Project)."
 
 	def build(self):
 		self.configure_make_install()
 
 
 
-build_ubuntu(HelloPackage())
+build_fedora(HelloPackage())
 
