@@ -30,6 +30,8 @@ def substitute_strings(string, sub_hash):
 	for key, replacement in sub_hash.iteritems():
 		p = re.compile("#\{" + key + "\}")
 
+		if replacement == None: replacement = ''
+
 		while True:
 			# Look for a pattern, and return if there was none
 			match = p.search(result)
@@ -38,7 +40,6 @@ def substitute_strings(string, sub_hash):
 			# Replace the pattern with the replacement
 			start, end = match.span()
 			result = result[:start] + replacement + result[end:]
-
 	return result
 
 class BasePackage(object):
@@ -130,6 +131,22 @@ class BasePackage(object):
 	def set_long_description(self, value): self._long_description = value
 	long_description = property(get_long_description, set_long_description)
 
+	def after_install(self): pass
+	def before_install(self): pass
+	def install(self): pass
+	def after_uninstall(self): pass
+	def before_uninstall(self): pass
+
+	def add_to_info(self):
+		return \
+"""/sbin/install-info %{_infodir}/%{name}.info %{_infodir}/dir || :"""
+
+	def delete_from_info(self):
+		return \
+"""if [ $1 = 0 ] ; then
+  /sbin/install-info --delete %{_infodir}/%{name}.info %{_infodir}/dir || :
+fi"""
+
 	def to_hash(self, style=None):
 		retval={ 'name' : self.name, 
 				'version' : self.version, 
@@ -147,7 +164,12 @@ class BasePackage(object):
 				'build_requirements' : self.build_requirements, 
 				'install_requirements' : self.install_requirements, 
 				'short_description' : self.short_description, 
-				'long_description' : self.long_description
+				'long_description' : self.long_description, 
+				'after_install' : self.after_install(), 
+				'before_install' : self.before_install(), 
+				'install' : self.install(), 
+				'after_uninstall' : self.after_uninstall(), 
+				'before_uninstall' : self.before_uninstall()
 				}
 
 		if style == 'debian':
@@ -403,15 +425,16 @@ Description: #{short_description}
 
 def build_fedora(package):
 	# Setup the directories
+	commands.getoutput('cd ~')
 	commands.getoutput('rm -rf ~/rpmbuild')
 	commands.getoutput('rpmdev-setuptree')
 
 	# Copy the source code to the build tree
-	commands.getoutput('cp ' + package.source.split('/')[-1] + ' ~/rpmbuild/SOURCES/' + package.source.split('/')[-1])
+	commands.getoutput('cp ~/' + package.source.split('/')[-1] + ' ~/rpmbuild/SOURCES/' + package.source.split('/')[-1])
 
 	# Create the spec file
-	commands.getoutput('touch ~/rpmbuild/SPECS/' + package.name + '.spec')
-	f = open('/home/matt/rpmbuild/SPECS/' + package.name + '.spec', 'w')
+	print commands.getoutput('touch ~/rpmbuild/SPECS/' + package.name + '.spec')
+	f = open(os.path.expanduser('~/rpmbuild/SPECS/') + package.name + '.spec', 'w')
 	f.write(substitute_strings(
 """Name:           #{name}
 Version:        #{version}
@@ -443,13 +466,28 @@ make %{?_smp_mflags}
 %install
 rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
+rm -f $RPM_BUILD_ROOT%{_infodir}/dir
+%find_lang #{name}
+
+
+%check
+cd tests
+make check-TESTS
 
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 
-%files
+%post
+#{after_install}
+
+
+%preun
+#{before_uninstall}
+
+
+%files -f #{name}.lang
 %defattr(-,root,root,-)
 %doc COPYING
 %{_mandir}/man1/#{name}.1*
@@ -465,7 +503,9 @@ rm -rf $RPM_BUILD_ROOT
 	f.close()
 
 	# Create the rpm file
-	#commands.getoutput("rpmbuild -ba ~/rpmbuild/SPECS/" + package.name + ".spec")
+	commands.getoutput("rpmbuild -ba ~/rpmbuild/SPECS/" + package.name + ".spec")
+	rpm = package.name + "-" + package.version + "-1.fc10.i386.rpm"
+	commands.getoutput("cp ~/rpmbuild/RPMS/i386/" + rpm + " ~/" + rpm)
 	print "Done"
 
 

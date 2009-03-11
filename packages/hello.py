@@ -37,10 +37,17 @@ class HelloPackage(BasePackage):
 								"It is the Debian version of the GNU Project's `hello world' program\n" + \
 								"(which is itself an example for the GNU Project)."
 
-	def build(self):
-		self.configure_make_install()
+	def after_install(self):
+		return self.add_to_info()
+
+	def install(self):
+		return ''
+		#return self.configure_make()
+
+	def before_uninstall(self):
+		return self.delete_from_info()
 
 
 
-build_ubuntu(HelloPackage())
+build_fedora(HelloPackage())
 
