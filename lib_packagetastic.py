@@ -202,6 +202,9 @@ def build_ubuntu(package):
 
 	# Uncompress the source code
 	print "uncompressing source code ..."
+	if not os.path.isdir("builds"): os.mkdir("builds")
+	commands.getoutput(substitute_strings("cp sources/#{name}-#{version}.tar.gz builds/#{name}_#{version}.orig.tar.gz", package.to_hash('debian')))
+	os.chdir("builds")
 	commands.getoutput(substitute_strings("tar xzf #{name}_#{version}.orig.tar.gz", package.to_hash('debian')))
 	os.chdir(substitute_strings("#{name}-#{version}", package.to_hash('debian')))
 
@@ -417,8 +420,10 @@ Description: #{short_description}
 
 	# Copy the deb from the cache
 	print "Getting deb file ..."
-	command = "cp /var/cache/pbuilder/result/" + package.name + "_" + package.version + package.mangle + "_i386.deb " + package.name + "_" + package.version + package.mangle + "_i386.deb"
-	commands.getoutput(command)
+	os.chdir('..')
+	if not os.path.isdir("packages"): os.mkdir("packages")
+	command = "cp /var/cache/pbuilder/result/" + package.name + "_" + package.version + package.mangle + "_i386.deb packages/" + package.name + "_" + package.version + package.mangle + "_i386.deb"
+	print commands.getoutput(command)
 
 	print "Done"
 

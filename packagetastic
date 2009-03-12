@@ -8,7 +8,7 @@ os.chdir(os.sys.path[0])
 
 # Get the package to build
 package_name = sys.argv[1]
-execfile(package_name + '.py')
+execfile('stems/' + package_name + '.py')
 package = eval(package_name.capitalize() + 'Package()')
 
 # Build the package
