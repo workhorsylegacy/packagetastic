@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from packagetastic import *
+from lib_packagetastic import *
 
 # Move the path to the location of the current file
 os.chdir(os.sys.path[0])
@@ -66,8 +66,7 @@ class LibVirtPackage(BasePackage):
 									" a long term stable C API for different virtualization mechanisms. It currently \n" + \
 									" supports QEMU, KVM, and XEN."
 
-	def build(self):
-		self.configure_make_install()
-
-build_ubuntu(LibVirtPackage())
+	def install(self):
+		return ''
+		#self.configure_make()
 

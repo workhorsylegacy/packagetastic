@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-from packagetastic import *
+import sys
+from lib_packagetastic import *
 
 # Move the path to the location of the current file
 os.chdir(os.sys.path[0])
@@ -48,6 +49,4 @@ class HelloPackage(BasePackage):
 		return self.delete_from_info()
 
 
-
-build_fedora(HelloPackage())
 

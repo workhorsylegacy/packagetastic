@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from packagetastic import *
+from lib_packagetastic import *
 
 # Move the path to the location of the current file
 os.chdir(os.sys.path[0])
@@ -70,10 +70,9 @@ class ShripPackage(BasePackage):
 								" o supports subtitles extraction\n" + \
 								" o rips contiguous chapters"
 
-	def build(self):
-		self.configure_make_install()
+	def install(self):
+		return ''
+		#self.configure_make()
 
 
-
-build_ubuntu(ShripPackage())
 

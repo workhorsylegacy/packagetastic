@@ -1,0 +1,20 @@
+#!/usr/bin/env python
+
+import os, sys
+import lib_packagetastic
+
+# Move the path to the location of the current file
+os.chdir(os.sys.path[0])
+
+# Get the package to build
+package_name = sys.argv[1]
+execfile(package_name + '.py')
+package = eval(package_name.capitalize() + 'Package()')
+
+# Build the package
+if sys.argv[2] == 'ubuntu':
+	lib_packagetastic.build_ubuntu(package)
+elif sys.argv[2] == 'fedora':
+	lib_packagetastic.build_fedora(package)
+
+
