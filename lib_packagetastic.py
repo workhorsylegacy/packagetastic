@@ -430,12 +430,11 @@ Description: #{short_description}
 
 def build_fedora(package):
 	# Setup the directories
-	commands.getoutput('cd ~')
 	commands.getoutput('rm -rf ~/rpmbuild')
 	commands.getoutput('rpmdev-setuptree')
 
 	# Copy the source code to the build tree
-	commands.getoutput('cp ~/' + package.source.split('/')[-1] + ' ~/rpmbuild/SOURCES/' + package.source.split('/')[-1])
+	commands.getoutput('cp sources/' + package.source.split('/')[-1] + ' ~/rpmbuild/SOURCES/' + package.source.split('/')[-1])
 
 	# Create the spec file
 	print commands.getoutput('touch ~/rpmbuild/SPECS/' + package.name + '.spec')
@@ -509,8 +508,10 @@ rm -rf $RPM_BUILD_ROOT
 
 	# Create the rpm file
 	commands.getoutput("rpmbuild -ba ~/rpmbuild/SPECS/" + package.name + ".spec")
+
+	if not os.path.isdir("packages"): os.mkdir("packages")
 	rpm = package.name + "-" + package.version + "-1.fc10.i386.rpm"
-	commands.getoutput("cp ~/rpmbuild/RPMS/i386/" + rpm + " ~/" + rpm)
+	commands.getoutput("cp ~/rpmbuild/RPMS/i386/" + rpm + " packages/" + rpm)
 	print "Done"
 
 
