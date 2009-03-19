@@ -429,15 +429,21 @@ Description: #{short_description}
 
 
 def build_fedora(package):
+	# clear sudo so we don't use it till needed
+	commands.getoutput("sudo -k")
+
 	# Setup the directories
+	print "Setting up the rpmdev directories ..."
 	commands.getoutput('rm -rf ~/rpmbuild')
 	commands.getoutput('rpmdev-setuptree')
 
 	# Copy the source code to the build tree
+	print "Copying the source code ..."
 	commands.getoutput('cp sources/' + package.source.split('/')[-1] + ' ~/rpmbuild/SOURCES/' + package.source.split('/')[-1])
 
 	# Create the spec file
-	print commands.getoutput('touch ~/rpmbuild/SPECS/' + package.name + '.spec')
+	print "Building the spec file ..."
+	commands.getoutput('touch ~/rpmbuild/SPECS/' + package.name + '.spec')
 	f = open(os.path.expanduser('~/rpmbuild/SPECS/') + package.name + '.spec', 'w')
 	f.write(substitute_strings(
 """Name:           #{name}
@@ -507,8 +513,10 @@ rm -rf $RPM_BUILD_ROOT
 	f.close()
 
 	# Create the rpm file
+	print "Building the rpm package ..."
 	commands.getoutput("rpmbuild -ba ~/rpmbuild/SPECS/" + package.name + ".spec")
 
+	print "Copying the rpm package to the packages directory ..."
 	if not os.path.isdir("packages"): os.mkdir("packages")
 	rpm = package.name + "-" + package.version + "-1.fc10.i386.rpm"
 	commands.getoutput("cp ~/rpmbuild/RPMS/i386/" + rpm + " packages/" + rpm)

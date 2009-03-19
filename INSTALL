@@ -22,3 +22,10 @@ Getting started on Fedora systems:
 	sudo yum install rpmdevtools pexpect
 
 
+Building packages:
+
+	# Run the packagetastic with arguments for package and distro
+	./packagetastic hello fedora
+	./packagetastic shrip ubuntu
+
+
