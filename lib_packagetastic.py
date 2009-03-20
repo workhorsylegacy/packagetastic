@@ -5,7 +5,7 @@ import commands
 import pexpect
 
 
-licenses = { 'GPL' : \
+licenses = { 'GPL2+' : \
 """    This package is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
@@ -22,6 +22,27 @@ licenses = { 'GPL' : \
 
 On Debian systems, the complete text of the GNU General
 Public License can be found in `/usr/share/common-licenses/GPL'."""
+,
+'MIT' : \
+"""
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+USE OR OTHER DEALINGS IN THE SOFTWARE.
+"""
 }
 
 def substitute_strings(string, sub_hash):
@@ -58,6 +79,7 @@ class BasePackage(object):
 		self._homepage = None
 		self._license = None
 		self._source = None
+		self._build_method = None
 		self._build_requirements = []
 		self._install_requirements = []
 		self._short_description = None
@@ -115,6 +137,10 @@ class BasePackage(object):
 	def set_source(self, value): self._source = value
 	source = property(get_source, set_source)
 
+	def get_build_method(self): return self._build_method
+	def set_build_method(self, value): self._build_method = value
+	build_method = property(get_build_method, set_build_method)
+
 	def get_build_requirements(self): return self._build_requirements
 	def set_build_requirements(self, value): self._build_requirements = value
 	build_requirements = property(get_build_requirements, set_build_requirements)
@@ -133,7 +159,6 @@ class BasePackage(object):
 
 	def after_install(self): pass
 	def before_install(self): pass
-	def install(self): pass
 	def after_uninstall(self): pass
 	def before_uninstall(self): pass
 
@@ -147,7 +172,7 @@ class BasePackage(object):
   /sbin/install-info --delete %{_infodir}/%{name}.info %{_infodir}/dir || :
 fi"""
 
-	def to_hash(self, style=None):
+	def to_hash(self, style):
 		retval={ 'name' : self.name, 
 				'version' : self.version, 
 				'mangle' : self.mangle, 
@@ -161,22 +186,26 @@ fi"""
 				'homepage' : self.homepage, 
 				'license' : self.license, 
 				'source' : self.source, 
+				'build_method' : self.build_method, 
 				'build_requirements' : self.build_requirements, 
 				'install_requirements' : self.install_requirements, 
 				'short_description' : self.short_description, 
 				'long_description' : self.long_description, 
 				'after_install' : self.after_install(), 
 				'before_install' : self.before_install(), 
-				'install' : self.install(), 
 				'after_uninstall' : self.after_uninstall(), 
 				'before_uninstall' : self.before_uninstall()
 				}
 
+		# Make changes that are distro and build method specific
 		if style == 'debian':
-			retval['long_description'] = " " + retval['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n")
-			retval['build_requirements'] = retval['build_requirements'] + ["debhelper (>= 7)", "autotools-dev"]
-			retval['install_requirements'] = retval['install_requirements'] + ["${shlibs:Depends}", "${misc:Depends}"]
+			retval = self.__filter_hash_for_debian(retval)
+		elif style == 'fedora':
+			retval = self.__filter_hash_for_fedora(retval)
+		else:
+			raise Exception("The hash style of '" + str(style) + "' is unknown.")
 
+		# Make changes that make data easier to use
 		retval['authors'] = str.join("\n    ", retval['authors'])
 		retval['copyright'] = str.join("\n    ", retval['copyright'])
 		retval['build_requirements'] = str.join(', ', retval['build_requirements'])
@@ -189,6 +218,48 @@ fi"""
 
 		return retval
 
+	def __filter_hash_for_fedora(self, retval):
+		if self._build_method == 'c configure make':
+
+			retval['install'] = substitute_strings(
+"""rm -rf $RPM_BUILD_ROOT
+make install DESTDIR=$RPM_BUILD_ROOT
+rm -f $RPM_BUILD_ROOT%{_infodir}/dir
+%find_lang #{name}""", retval)
+
+			retval['files'] = substitute_strings(
+"""-f #{name}.lang
+%defattr(-,root,root,-)
+%doc COPYING
+%{_mandir}/man1/#{name}.1*
+%{_bindir}/#{name}
+%{_infodir}/#{name}.info*""", retval)
+
+		elif self._build_method == 'pure python library':
+
+			retval['build_requirements'].append('python')
+			retval['install_requirements'].append('python')
+
+			retval['install'] = substitute_strings(
+"""install -d %{python_sitelib}/#{name}
+install -pm 0644 #{name}.py %{python_sitelib}/#{name}/""", retval)
+
+			retval['files'] = substitute_strings(
+"""
+%defattr(-,root,root,-)
+%dir %{python_sitelib}/#{name}
+%{python_sitelib}/#{name}/*.py
+%{python_sitelib}/#{name}/*.pyc""", retval)
+
+		return retval
+
+	def __filter_hash_for_debian(self, retval):
+		if style == 'debian':
+			retval['long_description'] = " " + retval['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n")
+			retval['build_requirements'] = retval['build_requirements'] + ["debhelper (>= 7)", "autotools-dev"]
+			retval['install_requirements'] = retval['install_requirements'] + ["${shlibs:Depends}", "${misc:Depends}"]
+
+		return retval
 
 def build_ubuntu(package):
 	# Get the root password
@@ -445,6 +516,11 @@ def build_fedora(package):
 	print "Building the spec file ..."
 	commands.getoutput('touch ~/rpmbuild/SPECS/' + package.name + '.spec')
 	f = open(os.path.expanduser('~/rpmbuild/SPECS/') + package.name + '.spec', 'w')
+
+	if package.build_method == 'pure python library':
+		f.write("%{!?python_sitelib: %global python_sitelib %(%{__python} -c " + \
+				"\"from distutils.sysconfig import get_python_lib; print get_python_lib()\")}\n\n")
+
 	f.write(substitute_strings(
 """Name:           #{name}
 Version:        #{version}
@@ -455,6 +531,7 @@ License:        #{license}
 URL:            #{homepage}
 Source0:        #{source}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+
 
 BuildRequires: #{build_requirements}
 Requires: #{install_requirements}
@@ -474,10 +551,7 @@ make %{?_smp_mflags}
 
 
 %install
-rm -rf $RPM_BUILD_ROOT
-make install DESTDIR=$RPM_BUILD_ROOT
-rm -f $RPM_BUILD_ROOT%{_infodir}/dir
-%find_lang #{name}
+#{install}
 
 
 %check
@@ -497,18 +571,13 @@ rm -rf $RPM_BUILD_ROOT
 #{before_uninstall}
 
 
-%files -f #{name}.lang
-%defattr(-,root,root,-)
-%doc COPYING
-%{_mandir}/man1/#{name}.1*
-%{_bindir}/#{name}
-%{_infodir}/#{name}.info*
+%files #{files}
 
 
 %changelog
 * #{human_timestring} #{packager_name} <#{packager_email}> - #{version}-1
 - Initial package.
-""", package.to_hash()))
+""", package.to_hash('fedora')))
 
 	f.close()
 

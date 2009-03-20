@@ -20,8 +20,9 @@ class HelloPackage(BasePackage):
 		self._packager_email = 'mattjones@workhorsy.org'
 		self._bug_mail = 'mattjones@workhorsy.org'
 		self._homepage = 'http://www.gnu.org/software/hello/'
-		self._license = 'GPL'
+		self._license = 'GPL2+'
 		self._source = 'http://ftp.gnu.org/gnu/hello/hello-2.1.1.tar.gz'
+		self._build_method = 'c configure make'
 
 		self._build_requirements = ["gettext"]
 
@@ -40,10 +41,6 @@ class HelloPackage(BasePackage):
 
 	def after_install(self):
 		return self.add_to_info()
-
-	def install(self):
-		return ''
-		#return self.configure_make()
 
 	def before_uninstall(self):
 		return self.delete_from_info()
