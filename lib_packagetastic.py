@@ -271,10 +271,9 @@ chmod 755 $RPM_BUILD_ROOT%{python_sitelib}/FSM.py""", retval)
 		return retval
 
 	def __filter_hash_for_debian(self, retval):
-		if style == 'debian':
-			retval['long_description'] = " " + retval['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n")
-			retval['build_requirements'] = retval['build_requirements'] + ["debhelper (>= 7)", "autotools-dev"]
-			retval['install_requirements'] = retval['install_requirements'] + ["${shlibs:Depends}", "${misc:Depends}"]
+		retval['long_description'] = " " + retval['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n")
+		retval['build_requirements'] = retval['build_requirements'] + ["debhelper (>= 7)", "autotools-dev"]
+		retval['install_requirements'] = retval['install_requirements'] + ["${shlibs:Depends}", "${misc:Depends}"]
 
 		return retval
 
