@@ -3,6 +3,7 @@
 import os, time, re
 import commands
 import pexpect
+import base64
 
 
 licenses = { 'GPL2+' : \
@@ -68,7 +69,6 @@ class BasePackage(object):
 	def call_parent_constructor(self):
 		self._name = None
 		self._version = None
-		self._mangle = None
 		self._section = None
 		self._priority = None
 		self._authors = []
@@ -92,10 +92,6 @@ class BasePackage(object):
 	def get_version(self): return self._version
 	def set_version(self, value): self._version = value
 	version = property(get_version, set_version)
-
-	def get_mangle(self): return self._mangle
-	def set_mangle(self, value): self._mangle = value
-	mangle = property(get_mangle, set_mangle)
 
 	def get_section(self): return self._section
 	def set_section(self, value): self._section = value
@@ -172,10 +168,9 @@ class BasePackage(object):
   /sbin/install-info --delete %{_infodir}/%{name}.info %{_infodir}/dir || :
 fi"""
 
-	def to_hash(self, style):
+	def to_hash(self, style, additional_fields=None):
 		retval={ 'name' : self.name, 
 				'version' : self.version, 
-				'mangle' : self.mangle, 
 				'section' : self.section, 
 				'priority' : self.priority, 
 				'authors' : self.authors, 
@@ -196,6 +191,10 @@ fi"""
 				'after_uninstall' : self.after_uninstall(), 
 				'before_uninstall' : self.before_uninstall()
 				}
+
+		# Add custom data
+		if additional_fields != None:
+			retval.update(additional_fields)
 
 		# Make changes that are distro and build method specific
 		if style == 'debian':
@@ -246,7 +245,7 @@ rm -f $RPM_BUILD_ROOT%{_infodir}/dir
 
 		elif self._build_method == 'pure python library':
 
-			retval['build_requirements'].append('python-devel')
+			retval['build_requirements'].append('python-devel').append('python-central (>= 0.5.6)')
 			retval['install_requirements'].append('python')
 			retval['build_arch'] = 'noarch'
 			retval['build'] = "%{__python} setup.py build"
@@ -273,16 +272,20 @@ chmod 755 $RPM_BUILD_ROOT%{python_sitelib}/FSM.py""", retval)
 	def __filter_hash_for_debian(self, retval):
 		retval['long_description'] = " " + retval['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n")
 		retval['build_requirements'] = retval['build_requirements'] + ["debhelper (>= 7)", "autotools-dev"]
-		retval['install_requirements'] = retval['install_requirements'] + ["${shlibs:Depends}", "${misc:Depends}"]
+
+		if self.build_method == 'c configure make':
+			retval['install_requirements'] = retval['install_requirements'] + ["${shlibs:Depends}", "${misc:Depends}"]
+		elif self.build_method == 'pure python application':
+			retval['install_requirements'] = retval['install_requirements'] + ["${python:Depends}"]
 
 		return retval
 
 def build_ubuntu(package):
 	# Get the root password
-	root_password = "xxx"
+	root_password = 'xxx'
 
 	# Get the signature
-	signature_key = "xxx"
+	signature_key = 'xxx'
 
 	# clear sudo so we don't use it till needed
 	commands.getoutput("sudo -k")
@@ -294,45 +297,32 @@ def build_ubuntu(package):
 	os.chdir("builds")
 	commands.getoutput(substitute_strings("tar xzf #{name}_#{version}.orig.tar.gz", package.to_hash('debian')))
 	os.chdir(substitute_strings("#{name}-#{version}", package.to_hash('debian')))
-
-	# Set the environmental variables for dh_make
-	os.environ['DEBFULLNAME'] = package.packager_name
-	os.environ['DEBEMAIL'] = package.packager_email
-
-	# Run dh_make
-	print "Running dh_make ..."
-	command = substitute_strings('bash -c "dh_make -s -c gpl -f ../#{name}_#{version}.orig.tar.gz"', package.to_hash('debian'))
-	child = pexpect.spawn(command)
-
-	expected_lines = ["Maintainer name : [\w|\s]*\r\n",
-						"Email-Address   : [\w|\s|\@|\.]*\r\n",
-						"Date            : [\w|\s|\,|\:|\-]*\r\n",
-						"Package Name    : [\w|\s|\,|\:|\-]*\r\n",
-						"Version         : [\w|\s|\-|\~|\.]*\r\n",
-						"License         : [\w|\s|\.]*\r\n",
-						"Using dpatch    : [\w|\s]*\r\n",
-						"Type of Package : [\w|\s]*\r\n",
-						"Hit \<enter\> to confirm:[\s]*",
-						"Done. [\w|\s\W]*",
-						pexpect.EOF]
-
-	still_reading = True
-	while still_reading:
-		result = child.expect(expected_lines)
-
-		if result >= 0 and result <= 7:
-			pass
-		elif result == 8:
-			child.sendline('')
-		elif result == 10:
-			still_reading = False
-
-	child.close()
-
-	# Remove the unnessesary debian files
-	print "Removing unneeded files ..."
+	if not os.path.isdir("debian"): os.mkdir("debian")
 	os.chdir("debian")
-	commands.getoutput('rm *.ex *.EX dirs docs info README.Debian copyright control')
+
+
+	# Generate the rules file
+	print "Generating rules file ..."
+	if package.build_method == 'c configure make':
+		generate_debian_rules_for_c_configure_make(package)
+	elif package.build_method == 'pure python application':
+		generate_debian_rules_for_pure_python_application(package)
+
+
+	# Create the compat file
+	print "Generating compat file ..."
+	f = open('compat', 'w')
+	f.write('7')
+	f.close()
+
+
+	# Create the control file
+	print "Generating control file ..."
+	if package.build_method == 'c configure make':
+		generate_debian_control_for_c_configure_make(package)
+	elif package.build_method == 'pure python application':
+		generate_debian_control_for_pure_python_application(package)
+
 
 	# Create the copyright file
 	print "Generating copyright file ..."
@@ -363,35 +353,8 @@ is licensed under the #{license}, see above.
 	f.close()
 
 
-	# Create the control file
-	print "Generating control file ..."
-	f = open('control', 'w')
-
-	f.write(substitute_strings(
-"""Source: #{name}
-Section: #{section}
-Priority: #{priority}
-Maintainer: Ubuntu MOTU Developers <ubuntu-motu@lists.ubuntu.com>
-XSBC-Original-Maintainer: #{packager_name} <#{packager_email}>
-Build-Depends: #{build_requirements}
-Bugs: mailto:#{bug_mail}
-Standards-Version: 3.8.0
-Homepage: #{homepage}
-
-Package: #{name}
-Architecture: any
-Depends: #{install_requirements}
-Description: #{short_description}
-#{long_description}
-""", package.to_hash('debian')))
-
-	f.close()
-
-
 	# Get the mangled gibberish that is on the end of a package file name
-	f = open('changelog', 'r')
-	package.mangle = f.readline().split(')')[0].split(package.version)[1]
-	f.close()
+	mangle = "-1"
 
 	# Create the changelog
 	f = open('changelog', 'w')
@@ -402,7 +365,7 @@ Description: #{short_description}
 
  -- #{packager_name} <#{packager_email}>  #{timestring}
 
-""", package.to_hash('debian')))
+""", package.to_hash('debian', {'mangle' : mangle})))
 
 	f.close()
 
@@ -420,7 +383,7 @@ Description: #{short_description}
 						"dpkg-buildpackage: set FFLAGS to default value: -g -O2\r\n",
 						"dpkg-buildpackage: set CXXFLAGS to default value: -g -O2\r\n",
 						"dpkg-buildpackage: source package " + package.name + "\r\n",
-						"dpkg-buildpackage: source version " + package.version + "" + package.mangle + "\r\n",
+						"dpkg-buildpackage: source version " + package.version + "" + mangle + "\r\n",
 						"dpkg-buildpackage: source changed by " + package.packager_name + " <" + package.packager_email + ">" + "\r\n",
 						"fakeroot debian/rules clean",
 						"dh_testdir",
@@ -431,8 +394,8 @@ Description: #{short_description}
 						"dpkg-source -b " + package.name + "-" + package.version,
 						"dpkg-source: info: using source format `1.0'",
 						"dpkg-source: info: building " + package.name + " using existing " + package.name + "_" + package.version + ".orig.tar.gz",
-						"dpkg-source: info: building " + package.name + " in " + package.name + "_" + package.version + "" + package.mangle + ".diff.gz",
-						"dpkg-source: info: building " + package.name + " in " + package.name + "_" + package.version + "" + package.mangle + ".dsc",
+						"dpkg-source: info: building " + package.name + " in " + package.name + "_" + package.version + "" + mangle + ".diff.gz",
+						"dpkg-source: info: building " + package.name + " in " + package.name + "_" + package.version + "" + mangle + ".dsc",
 						"dpkg-genchanges: including full source code in upload",
 						"dpkg-buildpackage: source only upload (original source is included)",
 						"Now running lintian...",
@@ -450,6 +413,8 @@ Description: #{short_description}
 						"gpg: Invalid passphrase; please try again ...",
 
 						"dpkg-source: error: syntax error in " + package.packager_name + "-" + package.version + "/debian/control at line \d*: ",
+
+						"dpkg-buildpackage: failure: fakeroot debian/rules clean gave error exit status 2", 
 
 						"Successfully signed dsc and changes files\r\n",
 						pexpect.EOF]
@@ -470,6 +435,10 @@ Description: #{short_description}
 			child.after + "'. Exiting ..."
 			exit()
 		elif result == 30:
+			print "Broke when running clean from the debian/rules file '" + \
+			child.after + "'. Exiting ..."
+			exit()
+		elif result == 31:
 			pass
 		elif result == len(expected_lines)-1:
 			still_reading = False
@@ -481,7 +450,7 @@ Description: #{short_description}
 	print "Running pbuilder ..."
 	os.chdir("..")
 
-	command = 'bash -c "sudo pbuilder build ' + package.name + '_' + package.version + package.mangle + '.dsc"'
+	command = 'bash -c "sudo pbuilder build ' + package.name + '_' + package.version + mangle + '.dsc"'
 	child = pexpect.spawn(command, timeout=1200)
 
 	expected_lines = ["\[sudo\] password for [\w|\s]*: ",
@@ -509,10 +478,194 @@ Description: #{short_description}
 	print "Getting deb file ..."
 	os.chdir('..')
 	if not os.path.isdir("packages"): os.mkdir("packages")
-	command = "cp /var/cache/pbuilder/result/" + package.name + "_" + package.version + package.mangle + "_i386.deb packages/" + package.name + "_" + package.version + package.mangle + "_i386.deb"
-	print commands.getoutput(command)
+	command = "cp /var/cache/pbuilder/result/" + package.name + "_" + package.version + mangle + "_i386.deb packages/" + package.name + "_" + package.version + mangle + "_i386.deb"
 
 	print "Done"
+
+def generate_debian_rules_for_c_configure_make(package):
+
+	f = open('rules', 'w')
+	f.write(substitute_strings(
+"""#!/usr/bin/make -f
+# -*- makefile -*-
+# Sample debian/rules that uses debhelper.
+# This file was originally written by Joey Hess and Craig Small.
+# As a special exception, when this file is copied by dh-make into a
+# dh-make output file, you may use that output file without restriction.
+# This special exception was added by Craig Small in version 0.37 of dh-make.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+
+# These are used for cross-compiling and for saving the configure script
+# from having to guess our platform (since we know it already)
+DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+ifneq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
+CROSS= --build $(DEB_BUILD_GNU_TYPE) --host $(DEB_HOST_GNU_TYPE)
+else
+CROSS= --build $(DEB_BUILD_GNU_TYPE)
+endif
+
+
+
+config.status: configure
+	dh_testdir
+	# Add here commands to configure the package.
+ifneq "$(wildcard /usr/share/misc/config.sub)" ""
+	cp -f /usr/share/misc/config.sub config.sub
+endif
+ifneq "$(wildcard /usr/share/misc/config.guess)" ""
+	cp -f /usr/share/misc/config.guess config.guess
+endif
+	./configure $(CROSS) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info CFLAGS="$(CFLAGS)" LDFLAGS="-Wl,-z,defs"
+
+
+build: build-stamp
+
+build-stamp:  config.status 
+	dh_testdir
+
+	# Add here commands to compile the package.
+	$(MAKE)
+	#docbook-to-man debian/#{name}.sgml > #{name}.1
+
+	touch $@
+
+clean: 
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp 
+
+	# Add here commands to clean up after the build process.
+	[ ! -f Makefile ] || $(MAKE) distclean
+	rm -f config.sub config.guess
+
+	dh_clean 
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k 
+	dh_installdirs
+
+	# Add here commands to install the package into debian/#{name}.
+	$(MAKE) DESTDIR=$(CURDIR)/debian/#{name} install
+
+
+# Build architecture-independent files here.
+binary-indep: build install
+# We have nothing to do by default.
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs ChangeLog
+	dh_installdocs
+	dh_installexamples
+#	dh_install
+#	dh_installmenu
+#	dh_installdebconf	
+#	dh_installlogrotate
+#	dh_installemacsen
+#	dh_installpam
+#	dh_installmime
+#	dh_python
+#	dh_installinit
+#	dh_installcron
+#	dh_installinfo
+	dh_installman
+	dh_link
+	dh_strip
+	dh_compress
+	dh_fixperms
+#	dh_perl
+#	dh_makeshlibs
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install 
+""", package.to_hash('debian')))
+
+	f.close()
+
+def generate_debian_rules_for_pure_python_application(package):
+
+	f = open('rules', 'w')
+	f.write(substitute_strings(
+"""#!/usr/bin/make -f
+# -*- makefile -*-
+DEB_PYTHON_SYSTEM = pycentral
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/python-distutils.mk
+include /usr/share/cdbs/1/rules/simple-patchsys.mk
+
+DEB_INSTALL_CHANGELOGS_ALL := ChangeLog
+
+binary-install/#{name}::
+	dh_icons -p#{name}
+
+clean::
+	rm -rf build/
+""", package.to_hash('debian')))
+
+	f.close()
+
+def generate_debian_control_for_c_configure_make(package):
+	f = open('control', 'w')
+
+	f.write(substitute_strings(
+"""Source: #{name}
+Section: #{section}
+Priority: #{priority}
+Maintainer: Ubuntu MOTU Developers <ubuntu-motu@lists.ubuntu.com>
+XSBC-Original-Maintainer: #{packager_name} <#{packager_email}>
+Build-Depends: #{build_requirements}
+Bugs: mailto:#{bug_mail}
+Standards-Version: 3.8.0
+Homepage: #{homepage}
+
+Package: #{name}
+Architecture: any
+Depends: #{install_requirements}
+Description: #{short_description}
+#{long_description}
+""", package.to_hash('debian')))
+
+	f.close()
+
+
+def generate_debian_control_for_pure_python_application(package):
+	f = open('control', 'w')
+
+	f.write(substitute_strings(
+"""Source: #{name}
+Section: #{section}
+XS-Python-Version: all
+Priority: #{priority}
+Maintainer: Ubuntu MOTU Developers <ubuntu-motu@lists.ubuntu.com>
+XSBC-Original-Maintainer: #{packager_name} <#{packager_email}>
+Build-Depends: debhelper (>= 5.0.62), python, cdbs (>= 0.4.49), #{build_requirements}
+Build-Depends-Indep: python-central (>= 0.5.6)
+Bugs: mailto:#{bug_mail}
+Standards-Version: 3.8.0
+Homepage: #{homepage}
+
+Package: #{name}
+Architecture: all
+Depends: #{install_requirements}
+Description: #{short_description}
+#{long_description}
+""", package.to_hash('debian')))
+
+	f.close()
 
 
 def build_fedora(package):
