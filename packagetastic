@@ -12,9 +12,7 @@ execfile('stems/' + package_name + '.py')
 package = eval(package_name.capitalize() + 'Package()')
 
 # Build the package
-if sys.argv[2] == 'ubuntu':
-	lib_packagetastic.build_ubuntu(package)
-elif sys.argv[2] == 'fedora':
-	lib_packagetastic.build_fedora(package)
+distro = sys.argv[2]
+lib_packagetastic.build(package, distro)
 
 
