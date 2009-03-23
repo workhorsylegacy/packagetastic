@@ -12,7 +12,7 @@ class PexpectPackage(BasePackage):
 		self.call_parent_constructor()
 		self._name = 'pexpect'
 		self._version = '2.3'
-		self._section = 'devel'
+		self._section = 'python'
 		self._priority = 'optional'
 		self._authors = ['Noah Spurrier <noah@noah.org>', 'Richard Holden', 'Marco Molteni', 'Kimberley Burchett',
 						'Robert Stone', 'Hartmut Goebel', 'Chad Schroeder', 'Erick Tryzelaar', 'Dave Kirby', 

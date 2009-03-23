@@ -28,7 +28,8 @@ class Builder(object):
 			self.generate_debian_rules_for_c_configure_make(package)
 		elif package.build_method == 'pure python application':
 			self.generate_debian_rules_for_pure_python_application(package)
-
+		elif package.build_method == 'pure python library':
+			self.generate_debian_rules_for_pure_python_library(package)
 
 		# Create the compat file
 		print "Generating compat file ..."
@@ -43,6 +44,8 @@ class Builder(object):
 			self.generate_debian_control_for_c_configure_make(package)
 		elif package.build_method == 'pure python application':
 			self.generate_debian_control_for_pure_python_application(package)
+		elif package.build_method == 'pure python library':
+			self.generate_debian_control_for_pure_python_library(package)
 
 
 		# Create the copyright file
@@ -201,6 +204,8 @@ is licensed under the #{license}, see above.
 			architecture = 'i386'
 		elif package.build_method == 'pure python application':
 			architecture = 'all'
+		elif package.build_method == 'pure python library':
+			architecture = 'all'
 
 		# Copy the deb from the cache
 		print "Getting deb file ..."
@@ -330,8 +335,11 @@ binary: binary-indep binary-arch
 		f.close()
 
 	def generate_debian_rules_for_pure_python_application(self, package):
-
+		# Make additions to fields
 		fields = package.to_hash()
+
+		if os.path.isfile('../ChangeLog'):
+			fields['changelog'] = "DEB_INSTALL_CHANGELOGS_ALL := ChangeLog"
 
 		f = open('rules', 'w')
 		f.write(substitute_strings(
@@ -343,7 +351,36 @@ include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/python-distutils.mk
 include /usr/share/cdbs/1/rules/simple-patchsys.mk
 
-DEB_INSTALL_CHANGELOGS_ALL := ChangeLog
+#{changelog}
+
+binary-install/#{name}::
+	dh_icons -p#{name}
+
+clean::
+	rm -rf build/
+""", fields))
+
+		f.close()
+
+	def generate_debian_rules_for_pure_python_library(self, package):
+		# Make additions to fields
+		fields = package.to_hash()
+
+		if os.path.isfile('../ChangeLog'):
+			fields['changelog'] = "DEB_INSTALL_CHANGELOGS_ALL := ChangeLog"
+
+
+		f = open('rules', 'w')
+		f.write(substitute_strings(
+"""#!/usr/bin/make -f
+# -*- makefile -*-
+DEB_PYTHON_SYSTEM = pycentral
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/python-distutils.mk
+include /usr/share/cdbs/1/rules/simple-patchsys.mk
+
+#{changelog}
 
 binary-install/#{name}::
 	dh_icons -p#{name}
@@ -421,4 +458,37 @@ Description: #{short_description}
 
 		f.close()
 
+	def generate_debian_control_for_pure_python_library(self, package):
+		# Make additions to fields
+		fields = package.to_hash({
+						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"] + package.build_requirements,
+						'install_requirements' : ["${python:Depends}", "${misc:Depends}"] + package.install_requirements
+		})
+
+		# Make changes to fields
+		fields['long_description'] = ' ' + fields['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n")
+
+		f = open('control', 'w')
+		f.write(substitute_strings(
+"""Source: #{name}
+Section: #{section}
+XS-Python-Version: all
+Priority: #{priority}
+Maintainer: Ubuntu MOTU Developers <ubuntu-motu@lists.ubuntu.com>
+XSBC-Original-Maintainer: #{packager_name} <#{packager_email}>
+Build-Depends: debhelper (>= 5.0.62), python, cdbs (>= 0.4.49), #{build_requirements}
+Build-Depends-Indep: python-central (>= 0.5.6)
+Bugs: mailto:#{bug_mail}
+Standards-Version: 3.8.0
+Homepage: #{homepage}
+
+Package: #{name}
+Architecture: all
+Depends: #{install_requirements}
+XB-Python-Version: ${python:Versions}
+Description: #{short_description}
+#{long_description}
+""", fields))
+
+		f.close()
 
