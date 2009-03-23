@@ -195,11 +195,21 @@ is licensed under the #{license}, see above.
 
 		child.close()
 
+		# Determine the architecture
+		architecture = 'any'
+		if package.build_method == 'c configure make':
+			architecture = 'i386'
+		elif package.build_method == 'pure python application':
+			architecture = 'all'
+
 		# Copy the deb from the cache
 		print "Getting deb file ..."
 		os.chdir('..')
 		if not os.path.isdir("packages"): os.mkdir("packages")
-		command = "cp /var/cache/pbuilder/result/" + package.name + "_" + package.version + mangle + "_i386.deb packages/" + package.name + "_" + package.version + mangle + "_i386.deb"
+		command = "cp /var/cache/pbuilder/result/" + \
+				package.name + "_" + package.version + mangle + "_" + architecture + ".deb " + \
+				"packages/" + \
+				package.name + "_" + package.version + mangle + "_" + architecture + ".deb"
 		print commands.getoutput(command)
 
 		print "Done"
@@ -348,8 +358,8 @@ clean::
 		# Make additions to fields
 		fields = package.to_hash()
 		fields = package.to_hash({
-						'build_requirements' : package.build_requirements + ["debhelper (>= 7)", "autotools-dev"],
-						'install_requirements' : package.install_requirements + ["${shlibs:Depends}", "${misc:Depends}"]
+						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"] + package.build_requirements,
+						'install_requirements' : ["${shlibs:Depends}", "${misc:Depends}"] + package.install_requirements
 		})
 
 		# Make changes to fields
@@ -380,12 +390,12 @@ Description: #{short_description}
 	def generate_debian_control_for_pure_python_application(self, package):
 		# Make additions to fields
 		fields = package.to_hash({
-						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"],
-						'install_requirements' : [["${python:Depends}"]]
+						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"] + package.build_requirements,
+						'install_requirements' : ["${python:Depends}", "${misc:Depends}"] + package.install_requirements
 		})
 
 		# Make changes to fields
-		fields['long_description'] = fields['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n")
+		fields['long_description'] = ' ' + fields['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n")
 
 		f = open('control', 'w')
 		f.write(substitute_strings(
@@ -404,6 +414,7 @@ Homepage: #{homepage}
 Package: #{name}
 Architecture: all
 Depends: #{install_requirements}
+XB-Python-Version: ${python:Versions}
 Description: #{short_description}
 #{long_description}
 """, fields))

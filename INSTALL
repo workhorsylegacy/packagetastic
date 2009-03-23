@@ -2,7 +2,7 @@
 Getting started on Debain systems:
 
 	# install requirements:
-	sudo apt-get install build-essential dh-make pbuilder fakeroot debhelper devscripts gnupg python-pexpect
+	sudo apt-get install build-essential cdbs dh-make pbuilder fakeroot debhelper devscripts gnupg python-pexpect
 
 	# create gpg key:
 	gpg --gen-key
