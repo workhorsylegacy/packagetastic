@@ -200,8 +200,8 @@ fi"""
 		# Make changes that make data easier to use
 		retval['authors'] = str.join("\n    ", retval['authors'])
 		retval['copyright'] = str.join("\n    ", retval['copyright'])
-		retval['build_requirements'] = str.join(', ', retval['build_requirements'])
-		retval['install_requirements'] = str.join(', ', retval['install_requirements'])
+		retval['build_requirements'] = str.join(' ', retval['build_requirements'])
+		retval['install_requirements'] = str.join(' ', retval['install_requirements'])
 		retval['year'] = time.strftime("%Y", time.localtime())
 		retval['timestring'] = time.strftime("%a, %d %b %Y %H:%M:%S %z", time.localtime())
 		retval['human_timestring'] = time.strftime("%a %b %d %Y", time.localtime())

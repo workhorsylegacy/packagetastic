@@ -24,7 +24,7 @@ class TerminatorPackage(BasePackage):
 		self._source = 'http://launchpad.net/terminator/trunk/0.11/+download/terminator_0.11.tar.gz'
 		self._build_method = 'pure python application'
 
-		self._build_requirements = []
+		self._build_requirements = ['python-devel', 'gettext', 'desktop-file-utils']
 
 		self._install_requirements = ['python-gobject', 'python-gtk2', 'python-gconf', 'python-vte']
 
