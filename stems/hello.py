@@ -39,11 +39,5 @@ class HelloPackage(BasePackage):
 								"It is the Debian version of the GNU Project's `hello world' program\n" + \
 								"(which is itself an example for the GNU Project)."
 
-	def after_install(self):
-		return self.add_to_info()
-
-	def before_uninstall(self):
-		return self.delete_from_info()
-
 
 

@@ -158,17 +158,6 @@ class BasePackage(object):
 	def after_uninstall(self): pass
 	def before_uninstall(self): pass
 
-	# FIXME: This is Fedora specific, and retarded
-	def add_to_info(self):
-		return \
-"""/sbin/install-info %{_infodir}/%{name}.info %{_infodir}/dir || :"""
-
-	def delete_from_info(self):
-		return \
-"""if [ $1 = 0 ] ; then
-  /sbin/install-info --delete %{_infodir}/%{name}.info %{_infodir}/dir || :
-fi"""
-
 	def to_hash(self, additional_fields=None):
 		retval={ 'name' : self.name, 
 				'version' : self.version, 

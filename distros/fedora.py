@@ -14,38 +14,71 @@ class Builder(object):
 		print "Copying the source code ..."
 		commands.getoutput('cp sources/' + package.source.split('/')[-1] + ' ~/rpmbuild/SOURCES/' + package.source.split('/')[-1])
 
+		# Uncompress the source code so we can examine it
+		print "Uncompressing source code ..."
+		if not os.path.isdir("builds"): os.mkdir("builds")
+		commands.getoutput(substitute_strings("cp sources/#{name}-#{version}.tar.gz builds/#{name}_#{version}.orig.tar.gz", package.to_hash()))
+		os.chdir("builds")
+		commands.getoutput(substitute_strings("tar xzf #{name}_#{version}.orig.tar.gz", package.to_hash()))
+		os.chdir(substitute_strings("#{name}-#{version}", package.to_hash()))
+
+		# FIXME: Figure out how %defattr(-,root,root,-) works
+		# Determine the params for %files
+		params = {}
+		params['docs'] = []
+		for doc in ['README', 'COPYING', 'ChangeLog', 'LICENSE']:
+			if os.path.isfile(doc):
+				params['docs'].append(doc)
+
+		for doc in ['doc', 'examples']:
+			if os.path.isdir(doc):
+				params['docs'].append(doc)
+
+		if os.path.isfile('doc/' + package.name + '.1'):
+			params['has_man1'] = True
+		elif os.path.isfile('man/' + package.name + '.1'):
+			params['has_man1'] = True
+		else:
+			params['has_man1'] = False
+
+		if os.path.isfile('doc/' + package.name + '_config.5'):
+			params['has_man5'] = True
+		elif os.path.isfile('man/' + package.name + '_config.5'):
+			params['has_man5'] = True
+		else:
+			params['has_man5'] = False
+
+		params['has_bindir'] = False
+		if package.build_method == 'c configure make':
+			params['has_bindir'] = True
+			params['import_sitelib'] = False
+		elif package.build_method == 'pure python library':
+			params['has_bindir'] = False
+			params['import_sitelib'] = True
+		elif package.build_method == 'pure python application':
+			params['has_bindir'] = True
+			params['import_sitelib'] = True
+
+		params['has_info'] = os.path.isfile('doc/' + package.name + '.info')
+
+		params['has_lang'] = os.path.isdir('po')
+
+		params['has_desktop_file'] = os.path.isfile('data/' + package.name + '.desktop')
+
 		# Create the spec file
+		os.chdir('../..')
 		print "Building the spec file ..."
 		commands.getoutput('touch ~/rpmbuild/SPECS/' + package.name + '.spec')
 		f = open(os.path.expanduser('~/rpmbuild/SPECS/') + package.name + '.spec', 'w')
 
-		# FIXME:Determine the %files and %doc
-		'''
-		%files
-		%defattr(-,root,root)
-		%doc README COPYING ChangeLog doc examples LICENSE
-
-		%{_mandir}/man1/%{name}.*
-		%{_mandir}/man5/%{name}_config.*
-
-		%{_bindir}/#{name}
-		%{_infodir}/#{name}.info*
-
-		%{python_sitelib}/*
-
-		%{_datadir}/applications/%{name}.desktop
-		%{_datadir}/icons/hicolor/*/*/%{name}*.png
-		%{_datadir}/icons/hicolor/*/*/%{name}*.svg
-		%{_datadir}/pixmaps/%{name}.png
-		'''
-
+		# Write the custom parts of the spec file
 		fields = None
 		if package.build_method == 'c configure make':
-			fields = self.generate_fedora_install_for_c_configure_make(f, package)
+			fields = self.generate_fedora_install_for_c_configure_make(f, package, params)
 		elif package.build_method == 'pure python library':
-			fields = self.generate_fedora_install_for_pure_python_library(f, package)
+			fields = self.generate_fedora_install_for_pure_python_library(f, package, params)
 		elif package.build_method == 'pure python application':
-			fields = self.generate_fedora_install_for_pure_python_library(f, package)
+			fields = self.generate_fedora_install_for_pure_python_library(f, package, params)
 
 		f.close()
 
@@ -61,10 +94,12 @@ class Builder(object):
 		commands.getoutput("cp ~/rpmbuild/RPMS/" + arch + "/" + rpm + " packages/" + rpm)
 		print "Done"
 
-	def generate_fedora_install_for_c_configure_make(self, f, package):
+	def generate_fedora_install_for_c_configure_make(self, f, package, params):
 		# Make additions to fields
 		fields = package.to_hash({
-				'build_arch' : 'i386'
+				'build_arch' : 'i386', 
+				'files' : self.generate_file(package, params), 
+				'post_and_preun' : self.generate_post_and_preun(package, params)
 		})
 
 		f.write(substitute_strings(
@@ -97,9 +132,9 @@ make %{?_smp_mflags}
 
 
 %install
-rm -rf $RPM_BUILD_ROOT
-make install DESTDIR=$RPM_BUILD_ROOT
-rm -f $RPM_BUILD_ROOT%{_infodir}/dir
+rm -rf %{buildroot}
+make install DESTDIR=%{buildroot}
+rm -f %{buildroot}%{_infodir}/dir
 %find_lang #{name}
 
 
@@ -109,23 +144,13 @@ make check-TESTS
 
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 
-%post
-#{after_install}
+#{post_and_preun}
 
 
-%preun
-#{before_uninstall}
-
-
-%files -f #{name}.lang
-%defattr(-,root,root,-)
-%doc COPYING
-%{_mandir}/man1/#{name}.1*
-%{_bindir}/#{name}
-%{_infodir}/#{name}.info*
+#{files}
 
 %changelog
 * #{human_timestring} #{packager_name} <#{packager_email}> - #{version}-1
@@ -134,14 +159,21 @@ rm -rf $RPM_BUILD_ROOT
 
 		return fields
 
-	def generate_fedora_install_for_pure_python_library(self, f, package):
+	def generate_fedora_install_for_pure_python_library(self, f, package, params):
 		# Make additions to fields
 		fields = package.to_hash()
 		fields = package.to_hash({
 				'build_arch' : 'noarch', 
 				'build_requirements' : ['python-devel'] + package.build_requirements, 
-				'install_requirements' : ['python'] + package.install_requirements
+				'install_requirements' : ['python'] + package.install_requirements, 
+				'files' : self.generate_file(package, params), 
+				'post_and_preun' : self.generate_post_and_preun(package, params)
 		})
+
+		if params['has_lang'] == True:
+			fields['find_lang'] = '%find_lang %{name}'
+		else:
+			fields['find_lang'] = ''
 
 		f.write(substitute_strings(
 """%{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
@@ -175,20 +207,24 @@ BuildArch: #{build_arch}
 
 
 %install
-rm -rf $RPM_BUILD_ROOT
-%{__python} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
+rm -rf %{buildroot}
+%{__python} setup.py install -O1 --skip-build --root %{buildroot}
+#{find_lang}
+#rm -f %{buildroot}/%{_datadir}/icons/hicolor/icon-theme.cache
+#rm -f %{buildroot}/%{_datadir}/applications/%{name}.desktop
+#desktop-file-install --dir=%{buildroot}%{_datadir}/applications data/%{name}.desktop
+
 
 #{after_install}
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 
-%files
-%defattr(-,root,root)
-%doc README COPYING ChangeLog
-%doc README doc examples LICENSE
-%{python_sitelib}/*
+#{post_and_preun}
+
+
+#{files}
 
 %changelog
 * #{human_timestring} #{packager_name} <#{packager_email}> - #{version}-1
@@ -196,4 +232,59 @@ rm -rf $RPM_BUILD_ROOT
 """, fields))
 
 		return fields
+
+	def generate_post_and_preun(self, package, params):
+
+		if params['has_info']:
+			return \
+				"%post\n" + \
+				"/sbin/install-info %{_infodir}/%{name}.info %{_infodir}/dir || :" + \
+				"\n\n\n" + \
+				"%preun\n" + \
+				"if [ $1 = 0 ] ; then\n" + \
+				"  /sbin/install-info --delete %{_infodir}/%{name}.info %{_infodir}/dir || :\n" + \
+				"fi"
+
+		return ''
+
+	def generate_file(self, package, params):
+		fields = []
+		lang = ''
+
+		if params['has_lang']:
+			lang = '-f %{name}.lang'
+
+		if len(params['docs']) > 0:
+			fields.append('%doc ' + str.join(' ', params['docs']))
+
+		if params['has_man1'] == True:
+			fields.append('%{_mandir}/man1/%{name}.1*')
+
+		if params['has_man5'] == True:
+			fields.append('%{_mandir}/man5/%{name}_config.5*')
+
+		if params['has_bindir'] == True:
+			fields.append('%{_bindir}/%{name}')
+
+		if params['has_info'] == True:
+			fields.append('%{_infodir}/%{name}.info*')
+
+		if params['import_sitelib'] == True:
+			fields.append('%{python_sitelib}/*')
+
+		if params['has_desktop_file'] == True:
+			fields.append('%{_datadir}/applications/%{name}.desktop')
+
+		return substitute_strings(
+"""%files #{lang}
+%defattr(-,root,root)
+#{fields}
+#%{_datadir}/icons/hicolor/*/*/%{name}*.png
+#%{_datadir}/icons/hicolor/*/*/%{name}*.svg
+#%{_datadir}/pixmaps/%{name}.png
+""", {
+		'lang' : lang, 
+		'fields' : str.join('\n', fields)
+	})
+
 

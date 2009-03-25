@@ -11,7 +11,7 @@ class TerminatorPackage(BasePackage):
 	def __init__(self):
 		self.call_parent_constructor()
 		self._name = 'terminator'
-		self._version = '0.11'
+		self._version = '0.12'
 		self._section = 'misc'
 		self._priority = 'optional'
 		self._authors = ['Chris Jones <cmsj@tenshu.net>']
@@ -21,7 +21,7 @@ class TerminatorPackage(BasePackage):
 		self._bug_mail = 'mattjones@workhorsy.org'
 		self._homepage = 'http://www.tenshu.net/terminator/'
 		self._license = 'GPL2+'
-		self._source = 'http://launchpad.net/terminator/trunk/0.11/+download/terminator_0.11.tar.gz'
+		self._source = 'http://launchpad.net/terminator/trunk/0.12/+download/terminator-0.12.tar.gz'
 		self._build_method = 'pure python application'
 
 		self._build_requirements = ['python-devel', 'gettext', 'desktop-file-utils']
