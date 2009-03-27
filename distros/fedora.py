@@ -65,6 +65,8 @@ class Builder(object):
 
 		params['has_desktop_file'] = os.path.isfile('data/' + package.name + '.desktop')
 
+		params['has_icons'] = os.path.isdir('data/icons')
+
 		# Create the spec file
 		os.chdir('../..')
 		print "Building the spec file ..."
@@ -99,7 +101,9 @@ class Builder(object):
 		fields = package.to_hash({
 				'build_arch' : 'i386', 
 				'files' : self.generate_file(package, params), 
-				'post_and_preun' : self.generate_post_and_preun(package, params)
+				'post_and_preun' : self.generate_post_and_preun(package, params), 
+				'install' : self.generate_install_for_c_configure_make(package, params), 
+				'install_extra' : self.generate_install_extras(package, params)
 		})
 
 		f.write(substitute_strings(
@@ -131,11 +135,8 @@ BuildArch: #{build_arch}
 make %{?_smp_mflags}
 
 
-%install
-rm -rf %{buildroot}
-make install DESTDIR=%{buildroot}
-rm -f %{buildroot}%{_infodir}/dir
-%find_lang #{name}
+#{install}
+#{install_extra}
 
 
 %check
@@ -167,13 +168,10 @@ rm -rf %{buildroot}
 				'build_requirements' : ['python-devel'] + package.build_requirements, 
 				'install_requirements' : ['python'] + package.install_requirements, 
 				'files' : self.generate_file(package, params), 
-				'post_and_preun' : self.generate_post_and_preun(package, params)
+				'post_and_preun' : self.generate_post_and_preun(package, params), 
+				'install' : self.generate_install_for_pure_python_library(package, params), 
+				'install_extra' : self.generate_install_extras(package, params)
 		})
-
-		if params['has_lang'] == True:
-			fields['find_lang'] = '%find_lang %{name}'
-		else:
-			fields['find_lang'] = ''
 
 		f.write(substitute_strings(
 """%{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
@@ -206,14 +204,8 @@ BuildArch: #{build_arch}
 %{__python} setup.py build
 
 
-%install
-rm -rf %{buildroot}
-%{__python} setup.py install -O1 --skip-build --root %{buildroot}
-#{find_lang}
-#rm -f %{buildroot}/%{_datadir}/icons/hicolor/icon-theme.cache
-#rm -f %{buildroot}/%{_datadir}/applications/%{name}.desktop
-#desktop-file-install --dir=%{buildroot}%{_datadir}/applications data/%{name}.desktop
-
+#{install}
+#{install_extra}
 
 #{after_install}
 
@@ -275,16 +267,58 @@ rm -rf %{buildroot}
 		if params['has_desktop_file'] == True:
 			fields.append('%{_datadir}/applications/%{name}.desktop')
 
+		if params['has_icons'] == True:
+			fields.append('%{_datadir}/icons/hicolor/*/*/%{name}*.png')
+			fields.append('%{_datadir}/icons/hicolor/*/*/%{name}*.svg')
+			fields.append('%{_datadir}/pixmaps/%{name}.png')
+			fields.append("\n\n%post\n" + \
+						"gtk-update-icon-cache -qf %{_datadir}/icons/hicolor &>/dev/null || :\n" + \
+						"\n\n" + \
+						"%postun\n" + \
+						"gtk-update-icon-cache -qf %{_datadir}/icons/hicolor &>/dev/null || :\n\n")
+
 		return substitute_strings(
 """%files #{lang}
 %defattr(-,root,root)
 #{fields}
-#%{_datadir}/icons/hicolor/*/*/%{name}*.png
-#%{_datadir}/icons/hicolor/*/*/%{name}*.svg
-#%{_datadir}/pixmaps/%{name}.png
 """, {
 		'lang' : lang, 
 		'fields' : str.join('\n', fields)
 	})
+
+	def generate_install_for_pure_python_library(self, package, params):
+		return \
+"""
+%install
+rm -rf %{buildroot}
+%{__python} setup.py install -O1 --skip-build --root %{buildroot}
+"""
+
+	def generate_install_for_c_configure_make(self, package, params):
+		return \
+""" %install
+rm -rf %{buildroot}
+make install DESTDIR=%{buildroot}
+rm -f %{buildroot}%{_infodir}/dir
+"""
+
+	def generate_install_extras(self, package, params):
+		retval = ''
+
+		if params['has_lang'] == True:
+			retval += \
+"""
+%find_lang %{name}
+"""
+
+		if params['has_icons'] == True:
+			retval += \
+"""
+rm -f %{buildroot}/%{_datadir}/icons/hicolor/icon-theme.cache
+rm -f %{buildroot}/%{_datadir}/applications/%{name}.desktop
+desktop-file-install --dir=%{buildroot}%{_datadir}/applications data/%{name}.desktop
+"""
+
+		return retval
 
 

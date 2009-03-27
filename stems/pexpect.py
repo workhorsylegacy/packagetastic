@@ -47,7 +47,7 @@ class PexpectPackage(BasePackage):
 								"that simple tasks are easy."
 
 	def after_install(self):
-		return
+		return \
 		"# Correct some permissions\n" + \
 		"find examples -type f -exec chmod a-x \{\} \;\n" + \
 		"chmod 755 $RPM_BUILD_ROOT%{python_sitelib}/FSM.py"
