@@ -84,6 +84,7 @@ class BasePackage(object):
 		self._install_requirements = []
 		self._short_description = None
 		self._long_description = None
+		self._distro_style = None
 
 	def get_name(self): return self._name
 	def set_name(self, value): self._name = value
@@ -153,6 +154,11 @@ class BasePackage(object):
 	def set_long_description(self, value): self._long_description = value
 	long_description = property(get_long_description, set_long_description)
 
+
+	def get_distro_style(self): return self._distro_style
+	def set_distro_style(self, value): self._distro_style = value
+	distro_style = property(get_distro_style, set_distro_style)
+
 	def after_install(self): pass
 	def before_install(self): pass
 	def after_uninstall(self): pass
@@ -186,11 +192,18 @@ class BasePackage(object):
 		if additional_fields != None:
 			retval.update(additional_fields)
 
+		# Get the distros current style for joining lists of items
+		join_style = ''
+		if self.distro_style == 'fedora':
+			join_style = ' '
+		elif self.distro_style == 'ubuntu':
+			join_style = ', '
+
 		# Make changes that make data easier to use
 		retval['authors'] = str.join("\n    ", retval['authors'])
 		retval['copyright'] = str.join("\n    ", retval['copyright'])
-		retval['build_requirements'] = str.join(' ', retval['build_requirements'])
-		retval['install_requirements'] = str.join(' ', retval['install_requirements'])
+		retval['build_requirements'] = str.join(join_style, retval['build_requirements'])
+		retval['install_requirements'] = str.join(join_style, retval['install_requirements'])
 		retval['year'] = time.strftime("%Y", time.localtime())
 		retval['timestring'] = time.strftime("%a, %d %b %Y %H:%M:%S %z", time.localtime())
 		retval['human_timestring'] = time.strftime("%a %b %d %Y", time.localtime())
@@ -217,6 +230,7 @@ def build(package, distro):
 	execfile('distros/' + distro + '.py')
 
 	# Build the package for that distro
+	package.distro_style = distro
 	builder = eval('Builder()')
 	builder.build(package)
 

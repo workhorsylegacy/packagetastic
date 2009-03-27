@@ -182,9 +182,12 @@ is licensed under the #{license}, see above.
 							"Sorry, try again.\r\n" +
 							"[sudo] password for [\w|\s]*: ",
 
+							"The following packages have unmet dependencies[\n\w|\s|\:\-]*\.",
+
 							pexpect.EOF]
 
 		still_reading = True
+		had_error = False
 		while still_reading:
 			result = child.expect(expected_lines)
 
@@ -193,10 +196,23 @@ is licensed under the #{license}, see above.
 			elif result == 1:
 				print "Incorrect password for sudo. Exiting ..."
 				exit()
+			elif result == 2:
+				packages = child.after.split("The following packages have unmet dependencies:\r\n" + \
+						"  pbuilder-satisfydepends-dummy: Depends: ")[1]
+
+				for crap in [" which is a virtual package."]:
+					if packages.endswith(crap):
+						packages = packages.split(crap)[0]
+
+				print "Error: Missing dependencies: " + packages + ". exiting ..."
+				had_error = True
 			elif result == len(expected_lines)-1:
 				still_reading = False
 
 		child.close()
+
+		if had_error:
+			exit()
 
 		# Determine the architecture
 		architecture = 'any'
