@@ -101,7 +101,7 @@ class Builder(object):
 		fields = package.to_hash({
 				'build_arch' : 'i386', 
 				'files' : self.generate_file(package, params), 
-				'post_and_preun' : self.generate_post_and_preun(package, params), 
+				'pre_and_post' : self.generate_pre_and_post_functions(package, params), 
 				'install' : self.generate_install_for_c_configure_make(package, params), 
 				'install_extra' : self.generate_install_extras(package, params)
 		})
@@ -148,7 +148,7 @@ make check-TESTS
 rm -rf %{buildroot}
 
 
-#{post_and_preun}
+#{pre_and_post}
 
 
 #{files}
@@ -168,7 +168,7 @@ rm -rf %{buildroot}
 				'build_requirements' : ['python-devel'] + package.build_requirements, 
 				'install_requirements' : ['python'] + package.install_requirements, 
 				'files' : self.generate_file(package, params), 
-				'post_and_preun' : self.generate_post_and_preun(package, params), 
+				'pre_and_post' : self.generate_pre_and_post_functions(package, params), 
 				'install' : self.generate_install_for_pure_python_library(package, params), 
 				'install_extra' : self.generate_install_extras(package, params)
 		})
@@ -213,7 +213,7 @@ BuildArch: #{build_arch}
 rm -rf %{buildroot}
 
 
-#{post_and_preun}
+#{pre_and_post}
 
 
 #{files}
@@ -225,19 +225,39 @@ rm -rf %{buildroot}
 
 		return fields
 
-	def generate_post_and_preun(self, package, params):
+	def generate_pre_and_post_functions(self, package, params):
+		pre, post, preun, postun = '', '', '', ''
 
 		if params['has_info']:
-			return \
-				"%post\n" + \
-				"/sbin/install-info %{_infodir}/%{name}.info %{_infodir}/dir || :" + \
-				"\n\n\n" + \
-				"%preun\n" + \
-				"if [ $1 = 0 ] ; then\n" + \
-				"  /sbin/install-info --delete %{_infodir}/%{name}.info %{_infodir}/dir || :\n" + \
-				"fi"
+			post += \
+"""/sbin/install-info %{_infodir}/%{name}.info %{_infodir}/dir || :
+"""
+			preun += \
+"""if [ $1 = 0 ] ; then
+  /sbin/install-info --delete %{_infodir}/%{name}.info %{_infodir}/dir || :
+fi
+"""
 
-		return ''
+		if params['has_icons'] == True:
+			post += \
+"""gtk-update-icon-cache -qf %{_datadir}/icons/hicolor &>/dev/null || :
+"""
+
+			postun += \
+"""gtk-update-icon-cache -qf %{_datadir}/icons/hicolor &>/dev/null || :
+"""
+
+		retval = ''
+		for name, body in {'pre':pre, 'post':post, 'preun':preun, 'postun':postun}.iteritems():
+			if len(body) > 0:
+				retval += substitute_strings(
+"""
+%#{name}
+#{body}
+""", {'name' : name, 'body' : body})
+
+		return retval
+
 
 	def generate_file(self, package, params):
 		fields = []
@@ -271,11 +291,6 @@ rm -rf %{buildroot}
 			fields.append('%{_datadir}/icons/hicolor/*/*/%{name}*.png')
 			fields.append('%{_datadir}/icons/hicolor/*/*/%{name}*.svg')
 			fields.append('%{_datadir}/pixmaps/%{name}.png')
-			fields.append("\n\n%post\n" + \
-						"gtk-update-icon-cache -qf %{_datadir}/icons/hicolor &>/dev/null || :\n" + \
-						"\n\n" + \
-						"%postun\n" + \
-						"gtk-update-icon-cache -qf %{_datadir}/icons/hicolor &>/dev/null || :\n\n")
 
 		return substitute_strings(
 """%files #{lang}
