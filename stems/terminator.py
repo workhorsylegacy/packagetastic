@@ -11,6 +11,7 @@ class TerminatorPackage(BasePackage):
 	def __init__(self):
 		self.call_parent_constructor()
 		self._name = 'terminator'
+		self._alternate_name = 'x-terminal-emulator'
 		self._version = '0.12'
 		self._section = 'misc'
 		self._priority = 'optional'

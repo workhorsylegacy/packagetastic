@@ -68,6 +68,7 @@ class BasePackage(object):
 	# FIXME: This should be just a constructor that is called when children are __init__()
 	def call_parent_constructor(self):
 		self._name = None
+		self._alternate_name = None
 		self._version = None
 		self._section = None
 		self._priority = None
@@ -89,6 +90,10 @@ class BasePackage(object):
 	def get_name(self): return self._name
 	def set_name(self, value): self._name = value
 	name = property(get_name, set_name)
+
+	def get_alternate_name(self): return self._alternate_name
+	def set_alternate_name(self, value): self._alternate_name = value
+	alternate_name = property(get_alternate_name, set_alternate_name)
 
 	def get_version(self): return self._version
 	def set_version(self, value): self._version = value
@@ -138,11 +143,11 @@ class BasePackage(object):
 	def set_build_method(self, value): self._build_method = value
 	build_method = property(get_build_method, set_build_method)
 
-	def get_build_requirements(self): return self._build_requirements
+	def get_build_requirements(self): return self.distroify_requirements(self._build_requirements)
 	def set_build_requirements(self, value): self._build_requirements = value
 	build_requirements = property(get_build_requirements, set_build_requirements)
 
-	def get_install_requirements(self): return self._install_requirements
+	def get_install_requirements(self): return self.distroify_requirements(self._install_requirements)
 	def set_install_requirements(self, value): self._install_requirements = value
 	install_requirements = property(get_install_requirements, set_install_requirements)
 
@@ -166,6 +171,7 @@ class BasePackage(object):
 
 	def to_hash(self, additional_fields=None):
 		retval={ 'name' : self.name, 
+				'alternate_name' : self.alternate_name, 
 				'version' : self.version, 
 				'section' : self.section, 
 				'priority' : self.priority, 
@@ -209,6 +215,19 @@ class BasePackage(object):
 		retval['human_timestring'] = time.strftime("%a %b %d %Y", time.localtime())
 		retval['license_text'] = licenses[self.license]
 		retval['upstream_authors'] = ('Upstream Authors', 'Upstream Author')[ len(self.authors) > 0 ]
+
+		return retval
+
+	def distroify_requirements(self, requirements):
+		# Convert the requirements to the style for the distro
+		retval = []
+		for req in requirements:
+			if self.distro_style == 'fedora' and req.endswith('-dev'):
+				req += 'el'
+			elif self.distro_style == 'ubuntu' and req.endswith('-devel'):
+				req = req[:-2]
+
+			retval.append(req)
 
 		return retval
 
