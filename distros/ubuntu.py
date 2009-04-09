@@ -221,6 +221,8 @@ fi
 
 							"The following packages have unmet dependencies[\n\w|\s|\:\-]*\.",
 
+							"pbuilder: Failed autobuilding of package", 
+
 							pexpect.EOF]
 
 		still_reading = True
@@ -241,7 +243,10 @@ fi
 					if packages.endswith(crap):
 						packages = packages.split(crap)[0]
 
-				print "Error: Missing dependencies: " + packages + ". exiting ..."
+				print "Error: Missing dependencies: " + packages + ". Exiting ..."
+				had_error = True
+			elif result == 3:
+				print "Failed to build package. Make sure it can be compiled manually before trying to package. Exiting ..."
 				had_error = True
 			elif result == len(expected_lines)-1:
 				still_reading = False
