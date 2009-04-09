@@ -10,7 +10,7 @@ class ShripPackage(BasePackage):
 	def __init__(self):
 		self.call_parent_constructor()
 		self._name = 'shrip'
-		self._version = '0.4.1'
+		self._version = '0.5.0'
 		self._section = 'graphics'
 		self._priority = 'optional'
 		self._authors = ['Olivier Rolland <billl@users.sf.net>']
@@ -20,7 +20,7 @@ class ShripPackage(BasePackage):
 		self._bug_mail = 'mattjones@workhorsy.org'
 		self._homepage = 'http://ogmrip.sourceforge.net'
 		self._license = 'GPL2+'
-		self._source = 'http://downloads.sourceforge.net/ogmrip/shrip-0.4.1.tar.gz'
+		self._source = 'http://downloads.sourceforge.net/ogmrip/shrip-0.5.0.tar.gz'
 		self._build_method = 'c configure make'
 
 		# FIXME: debhelper is a Debian specific package
