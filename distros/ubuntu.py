@@ -21,6 +21,14 @@ class Builder(object):
 		if not os.path.isdir("debian"): os.mkdir("debian")
 		os.chdir("debian")
 
+		# Copy any patches
+		if os.path.isdir("../../../patches/" + package.name) == True:
+			patch_files = os.listdir("../../../patches/" + package.name)
+			patch_files.sort()
+			if not os.path.isdir("patches"): os.mkdir("patches")
+			for patch_file in patch_files:
+				if not patch_file.endswith("patch"): continue
+				commands.getoutput("cp ../../../patches/" + package.name + "/" + patch_file + " patches/" + patch_file)
 
 		# Generate the rules file
 		print "Generating rules file ..."
@@ -206,7 +214,6 @@ fi
 
 		child.close()
 
-
 		# Run pbuilder
 		print "Running pbuilder ..."
 		os.chdir("..")
@@ -281,6 +288,16 @@ fi
 
 		fields = package.to_hash()
 
+		# Add patches
+		fields["patches"] = ""
+		if os.path.isdir("patches"):
+			patch_files = os.listdir("patches")
+			patch_files.sort()
+			for patch_file in patch_files:
+				fields["patches"] += "\tpatch -p0 < debian/patches/" + patch_file + "\n"
+
+			fields["patches"] += "\n"
+
 		f = open('rules', 'w')
 		f.write(substitute_strings(
 """#!/usr/bin/make -f
@@ -324,6 +341,7 @@ build: build-stamp
 build-stamp:  config.status 
 	dh_testdir
 
+#{patches}
 	# Add here commands to compile the package.
 	$(MAKE)
 	#docbook-to-man debian/#{name}.sgml > #{name}.1
