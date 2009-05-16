@@ -230,6 +230,8 @@ fi
 
 							"pbuilder: Failed autobuilding of package", 
 
+							"patching file [\w|\s|\d|\.|\-|\/]*\r\nHunk \#\d FAILED at [\d]*\.\r\nHunk \#\d FAILED at [\d]*\.\r\n", 
+
 							pexpect.EOF]
 
 		still_reading = True
@@ -254,6 +256,10 @@ fi
 				had_error = True
 			elif result == 3:
 				print "Failed to build package. Make sure it can be compiled manually before trying to package. Exiting ..."
+				had_error = True
+			elif result == 4:
+				print "Failed to build package. Broke when applying patch. Exiting ..."
+				print child.after
 				had_error = True
 			elif result == len(expected_lines)-1:
 				still_reading = False
