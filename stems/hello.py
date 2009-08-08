@@ -39,5 +39,7 @@ class HelloPackage(BasePackage):
 								"It is the Debian version of the GNU Project's `hello world' program\n" + \
 								"(which is itself an example for the GNU Project)."
 
+		self._changelog = [{"version" : "2.1.1", "time" : "Fri, 07 Aug 2009 18:32:26 -0700 ", "text" : "Initial release" } ]
+
 
 

@@ -1,0 +1,42 @@
+diff -urN tomboy-0.15.0.orig/Tomboy/IRemoteControl.cs tomboy-0.15.0/Tomboy/IRemoteControl.cs
+--- tomboy-0.15.0.orig/Tomboy/IRemoteControl.cs	2009-04-27 10:29:09.000000000 -0700
++++ tomboy-0.15.0/Tomboy/IRemoteControl.cs	2009-05-10 17:15:27.000000000 -0700
+@@ -6,6 +6,7 @@
+ 	{
+ 		bool AddTagToNote (string uri, string tag_name);
+ 		string CreateNamedNote (string linked_title);
++		string CreateNamedNoteWithUri (string linked_title, string uri);
+ 		string CreateNote ();
+ 		bool DeleteNote (string uri);
+ 		bool DisplayNote (string uri);
+diff -urN tomboy-0.15.0.orig/Tomboy/RemoteControl.cs tomboy-0.15.0/Tomboy/RemoteControl.cs
+--- tomboy-0.15.0.orig/Tomboy/RemoteControl.cs	2009-04-29 17:46:05.000000000 -0700
++++ tomboy-0.15.0/Tomboy/RemoteControl.cs	2009-05-10 17:17:13.000000000 -0700
+@@ -120,6 +120,27 @@
+ 		}
+ 	}
+ 
++	public string CreateNamedNoteWithUri (string linked_title, string uri)
++	{
++		Note note;
++		string guid = uri.Replace("note://tomboy/", "");
++
++		note = note_manager.Find (linked_title);
++		if (note != null)
++			return "";
++			
++		note = note_manager.FindByUri (uri);
++		if (note != null)
++			return "";
++
++		try {
++			note = note_manager.CreateWithGuid (linked_title, guid);
++			return note.Uri;
++		} catch {
++			return "";
++		}
++	}
++
+ 	public bool DeleteNote (string uri)
+ 		{
+ 			Note note;

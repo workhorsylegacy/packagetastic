@@ -38,6 +38,9 @@ class Builder(object):
 			self.generate_debian_rules_for_pure_python_application(package)
 		elif package.build_method == 'pure python library':
 			self.generate_debian_rules_for_pure_python_library(package)
+		else:
+			print "Unknown build method '" + package.build_method + "'. Exiting ..."
+			exit()
 
 		# Create the compat file
 		print "Generating compat file ..."
@@ -86,19 +89,40 @@ is licensed under the #{license}, see above.
 
 
 		# Get the mangled gibberish that is on the end of a package file name
-		mangle = "-1"
+		mangle = 1
 
 		# Create the changelog
+		changelog_body = ""
+		if package.changelog == None:
+			print "The changelog is missing. Exiting ..."
+			exit()
+
+		prev_version = '0'
+		reverse_entries = package.changelog[:]
+		reverse_entries.reverse()
+		for item in reverse_entries:
+			if prev_version == item['version']:
+				mangle += 1
+			else:
+				mangle = 0
+			prev_version = item['version']
+
+			entry = substitute_strings(
+"""#{name} (#{item_version}-#{mangle}) unstable; urgency=low
+
+  * #{item_text}
+
+ -- #{packager_name} <#{packager_email}>  #{item_time}
+
+""", package.to_hash({'mangle' : str(mangle), 
+					'item_version' : item['version'], 
+					'item_time' : item['time'], 
+					'item_text' : item['text']}))
+
+			changelog_body = entry + changelog_body
+
 		f = open('changelog', 'w')
-		f.write(substitute_strings(
-"""#{name} (#{version}#{mangle}) intrepid; urgency=low
-
-  * Initial release
-
- -- #{packager_name} <#{packager_email}>  #{timestring}
-
-""", package.to_hash({'mangle' : mangle})))
-
+		f.write(changelog_body)
 		f.close()
 
 		if package.alternate_name != None:
@@ -152,7 +176,7 @@ fi
 							"dpkg-buildpackage: set FFLAGS to default value: -g -O2\r\n",
 							"dpkg-buildpackage: set CXXFLAGS to default value: -g -O2\r\n",
 							"dpkg-buildpackage: source package " + package.name + "\r\n",
-							"dpkg-buildpackage: source version " + package.version + "" + mangle + "\r\n",
+							"dpkg-buildpackage: source version " + package.version + "-" + str(mangle) + "\r\n",
 							"dpkg-buildpackage: source changed by " + package.packager_name + " <" + package.packager_email + ">" + "\r\n",
 							"fakeroot debian/rules clean",
 							"dh_testdir",
@@ -163,8 +187,8 @@ fi
 							"dpkg-source -b " + package.name + "-" + package.version,
 							"dpkg-source: info: using source format `1.0'",
 							"dpkg-source: info: building " + package.name + " using existing " + package.name + "_" + package.version + ".orig.tar.gz",
-							"dpkg-source: info: building " + package.name + " in " + package.name + "_" + package.version + "" + mangle + ".diff.gz",
-							"dpkg-source: info: building " + package.name + " in " + package.name + "_" + package.version + "" + mangle + ".dsc",
+							"dpkg-source: info: building " + package.name + " in " + package.name + "_" + package.version + "-" + str(mangle) + ".diff.gz",
+							"dpkg-source: info: building " + package.name + " in " + package.name + "_" + package.version + "-" + str(mangle) + ".dsc",
 							"dpkg-genchanges: including full source code in upload",
 							"dpkg-buildpackage: source only upload (original source is included)",
 							"Now running lintian...",
@@ -218,7 +242,7 @@ fi
 		print "Running pbuilder ..."
 		os.chdir("..")
 
-		command = 'bash -c "sudo pbuilder build ' + package.name + '_' + package.version + mangle + '.dsc"'
+		command = 'bash -c "sudo pbuilder build ' + package.name + '_' + package.version + '-' + str(mangle) + '.dsc"'
 		child = pexpect.spawn(command, timeout=1200)
 
 		expected_lines = ["\[sudo\] password for [\w|\s]*: ",
@@ -283,9 +307,9 @@ fi
 		os.chdir('..')
 		if not os.path.isdir("packages"): os.mkdir("packages")
 		command = "cp /var/cache/pbuilder/result/" + \
-				package.name + "_" + package.version + mangle + "_" + architecture + ".deb " + \
+				package.name + "_" + package.version + '-' + str(mangle) + "_" + architecture + ".deb " + \
 				"packages/" + \
-				package.name + "_" + package.version + mangle + "_" + architecture + ".deb"
+				package.name + "_" + package.version + '-' + str(mangle) + "_" + architecture + ".deb"
 		print commands.getoutput(command)
 
 		print "Done"

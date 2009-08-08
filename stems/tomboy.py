@@ -7,23 +7,30 @@ from lib_packagetastic import *
 os.chdir(os.sys.path[0])
 
 
-class TerminatorPackage(BasePackage):
+class TomboyPackage(BasePackage):
 	def __init__(self):
 		self.call_parent_constructor()
-		self._name = 'terminator'
-		self._alternate_name = 'x-terminal-emulator'
-		self._version = '0.12'
-		self._section = 'misc'
+		self._name = 'tomboy'
+		self._version = '0.15.0'
+		self._section = 'gnome'
 		self._priority = 'optional'
-		self._authors = ['Chris Jones <cmsj@tenshu.net>']
-		self._copyright = ['2006-2008 Chris Jones']
+		self._authors = ['Alex Graveley <alex@beatniksoftware.com>', 
+							'Boyd Timothy <btimothy@gmail.com>', 
+							'Chris Scobell <chris@thescobells.com>', 
+							'David Trowbridge <trowbrds@gmail.com>', 
+							'Ryan Lortie <desrt@desrt.ca>', 
+							'Sandy Armstrong <sanfordarmstrong@gmail.com>', 
+							'Sebastian Rittau <srittau@jroger.in-berlin.de>', 
+							'Kevin Kubasik <kevin@kubasik.net>', 
+							'Stefan Schweizer <steve.schweizer@gmail.com>']
+		self._copyright = ['2004-2007 Alex Graveley']
 		self._packager_name = 'Matthew Brennan Jones'
 		self._packager_email = 'mattjones@workhorsy.org'
 		self._bug_mail = 'mattjones@workhorsy.org'
-		self._homepage = 'http://www.tenshu.net/terminator/'
-		self._license = 'GPL2+'
-		self._source = 'http://launchpad.net/terminator/trunk/0.12/+download/terminator_0.12.tar.gz'
-		self._build_method = 'pure python application'
+		self._homepage = 'http://projects.gnome.org/tomboy/'
+		self._license = 'LGPL2.1'
+		self._source = 'http://download.gnome.org/sources/tomboy/0.15/tomboy-0.15.0.tar.gz'
+		self._build_method = 'mono application with c libraries'
 
 		self._build_requirements = ['python-devel', 'gettext', 'desktop-file-utils']
 
@@ -38,7 +45,9 @@ class TerminatorPackage(BasePackage):
 									"key bindings to switch between them. See the manpage for\n" + \
 									"details."
 
-		self._changelog = [{"version" : "0.12", "time" : "Fri, 07 Aug 2009 18:32:26 -0700 ", "text" : "Initial release" } ]
+		self._changelog = [{"version" : "0.15.0", "time" : "Fri, 07 Aug 2009 18:32:26 -0700 ", "text" : "Initial release" } ]
+
+
 
 
 

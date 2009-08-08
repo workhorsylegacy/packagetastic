@@ -71,6 +71,9 @@ class ShripPackage(BasePackage):
 								" o supports subtitles extraction\n" + \
 								" o rips contiguous chapters"
 
+		self._changelog = [{ "version" : "0.5.0", "time" : "Sun, 17 May 2009 05:49:14 +0000", "text" : "No changes. Rebuilt for fun." }, 
+							{"version" : "0.5.0", "time" : "Sat, 16 May 2009 05:49:14 +0000", "text" : "Initial release" } ]
+
 	def install(self):
 		return ''
 		#self.configure_make()

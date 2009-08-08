@@ -20,9 +20,26 @@ licenses = { 'GPL2+' : \
     You should have received a copy of the GNU General Public License
     along with this package; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+"""
+,
+'AGPL3+' : \
+"""   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-On Debian systems, the complete text of the GNU General
-Public License can be found in `/usr/share/common-licenses/GPL'."""
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
+
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+,
+'LGPL2.1' : \
+"""
+"""
 ,
 'MIT' : \
 """
@@ -86,6 +103,7 @@ class BasePackage(object):
 		self._short_description = None
 		self._long_description = None
 		self._distro_style = None
+		self._changelog = None
 
 	def get_name(self): return self._name
 	def set_name(self, value): self._name = value
@@ -159,10 +177,13 @@ class BasePackage(object):
 	def set_long_description(self, value): self._long_description = value
 	long_description = property(get_long_description, set_long_description)
 
-
 	def get_distro_style(self): return self._distro_style
 	def set_distro_style(self, value): self._distro_style = value
 	distro_style = property(get_distro_style, set_distro_style)
+
+	def get_changelog(self): return self._changelog
+	def set_changelog(self, value): self._changelog = value
+	changelog = property(get_changelog, set_changelog)
 
 	def after_install(self): pass
 	def before_install(self): pass
@@ -243,7 +264,8 @@ def build(package, distro):
 			has_distro = True
 
 	if not has_distro:
-		raise Exception("Packagetastic does not know how to build for the distro '" + distro + "'.")
+		print "Packagetastic does not know how to build for the distro '" + distro + "'. Exiting ..."
+		exit()
 
 	# Load the distro file
 	execfile('distros/' + distro + '.py')
