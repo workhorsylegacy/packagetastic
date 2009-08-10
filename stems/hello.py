@@ -32,14 +32,9 @@ class HelloPackage(BasePackage):
 
 		self._long_description = "The GNU hello program produces a familiar, friendly greeting.  It\n" + \
 								"allows non-programmers to use a classic computer science tool which\n" + \
-								"would otherwise be unavailable to them.\n" + \
-								"\n" + \
-								"Seriously, though: this is an example of how to do a Debian\n" + \
-								"package.\n" + \
-								"It is the Debian version of the GNU Project's `hello world' program\n" + \
-								"(which is itself an example for the GNU Project)."
+								"would otherwise be unavailable to them."
 
-		self._changelog = [{"version" : "2.1.1", "time" : "Fri, 07 Aug 2009 18:32:26 -0700 ", "text" : "Initial release" } ]
+		self._changelog = [{"version" : "2.1.1", "time" : "Fri, 07 Aug 2009 18:32:26 -0700", "text" : "Initial release" } ]
 
 
 

@@ -11,6 +11,9 @@ class Builder(object):
 		commands.getoutput('rpmdev-setuptree')
 
 		# Copy the source code to the build tree
+		if not os.path.isfile('sources/' + package.source.split('/')[-1]):
+			print "Missing source code at: " + 'sources/' + package.source.split('/')[-1] + ". Exiting ..."
+			exit()
 		print "Copying the source code ..."
 		commands.getoutput('cp sources/' + package.source.split('/')[-1] + ' ~/rpmbuild/SOURCES/' + package.source.split('/')[-1])
 
@@ -81,6 +84,9 @@ class Builder(object):
 			fields = self.generate_fedora_install_for_pure_python_library(f, package, params)
 		elif package.build_method == 'pure python application':
 			fields = self.generate_fedora_install_for_pure_python_library(f, package, params)
+		else:
+			print "Unknown build method '" + package.build_method + "'. Exiting ..."
+			exit()
 
 		f.close()
 
@@ -92,7 +98,7 @@ class Builder(object):
 		print "Copying the rpm package to the packages directory ..."
 		if not os.path.isdir("packages"): os.mkdir("packages")
 		arch = fields['build_arch']
-		rpm = package.name + "-" + package.version + "-1.fc10." + arch + ".rpm"
+		rpm = package.name + "-" + package.version + "-1.fc11." + arch + ".rpm"
 		commands.getoutput("cp ~/rpmbuild/RPMS/" + arch + "/" + rpm + " packages/" + rpm)
 		print "Done"
 
@@ -103,7 +109,8 @@ class Builder(object):
 				'files' : self.generate_file(package, params), 
 				'pre_and_post' : self.generate_pre_and_post_functions(package, params), 
 				'install' : self.generate_install_for_c_configure_make(package, params), 
-				'install_extra' : self.generate_install_extras(package, params)
+				'install_extra' : self.generate_install_extras(package, params), 
+				'changelog' : self.generate_changelog(package)
 		})
 
 		f.write(substitute_strings(
@@ -154,8 +161,7 @@ rm -rf %{buildroot}
 #{files}
 
 %changelog
-* #{human_timestring} #{packager_name} <#{packager_email}> - #{version}-1
-- Initial package.
+#{changelog}
 """, fields))
 
 		return fields
@@ -170,7 +176,8 @@ rm -rf %{buildroot}
 				'files' : self.generate_file(package, params), 
 				'pre_and_post' : self.generate_pre_and_post_functions(package, params), 
 				'install' : self.generate_install_for_pure_python_library(package, params), 
-				'install_extra' : self.generate_install_extras(package, params)
+				'install_extra' : self.generate_install_extras(package, params), 
+				'changelog' : self.generate_changelog(package)
 		})
 
 		f.write(substitute_strings(
@@ -219,8 +226,7 @@ rm -rf %{buildroot}
 #{files}
 
 %changelog
-* #{human_timestring} #{packager_name} <#{packager_email}> - #{version}-1
-- Initial package.
+#{changelog}
 """, fields))
 
 		return fields
@@ -335,5 +341,33 @@ desktop-file-install --dir=%{buildroot}%{_datadir}/applications data/%{name}.des
 """
 
 		return retval
+
+	def generate_changelog(self, package):
+		# FIXME: These should be at the top.
+		from time import strftime
+		from email.utils import parsedate
+
+		# Create the changelog
+		changelog_body = ""
+		if package.changelog == None:
+			print "The changelog is missing. Exiting ..."
+			exit()
+
+		reverse_entries = package.changelog[:]
+		reverse_entries.reverse()
+		for item in reverse_entries:
+			item['time'] = time.strftime("%a %b %d %Y", parsedate(item['time']))
+
+			entry = substitute_strings(
+"""* #{item_time} - #{packager_email} - #{item_version}
+- #{item_text}
+
+""", package.to_hash({'item_version' : item['version'], 
+					'item_time' : item['time'], 
+					'item_text' : item['text']}))
+
+			changelog_body = entry + changelog_body
+
+		return changelog_body
 
 
