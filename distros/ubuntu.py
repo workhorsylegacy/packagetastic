@@ -11,6 +11,10 @@ class Builder(object):
 		# clear sudo so we don't use it till needed
 		commands.getoutput("sudo -k")
 
+		if not os.path.isfile('sources/' + package.source.split('/')[-1]):
+			print "Missing source code at: " + 'sources/' + package.source.split('/')[-1] + ". Exiting ..."
+			exit()
+
 		# Uncompress the source code
 		print "uncompressing source code ..."
 		if not os.path.isdir("builds"): os.mkdir("builds")
