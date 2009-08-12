@@ -41,8 +41,9 @@ class Builder(object):
 		# clear sudo so we don't use it till needed
 		commands.getoutput("sudo -k")
 
-		if not os.path.isfile('sources/' + package.source.split('/')[-1]):
-			print "Missing source code at: " + 'sources/' + package.source.split('/')[-1] + ". Exiting ..."
+		# Make sure the source code exists
+		if not os.path.isfile(substitute_strings("sources/#{name}-#{version}.tar.gz", package.to_hash())):
+			print substitute_strings("Missing source code at: sources/#{name}-#{version}.tar.gz. Exiting ...", package.to_hash())
 			exit()
 
 		# Uncompress the source code
