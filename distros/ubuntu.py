@@ -8,6 +8,36 @@ class Builder(object):
 		# Get the signature
 		signature_key = 'xxx'
 
+		# Make sure the password is legit
+		print "checking if we can use sudo ..."
+		child = pexpect.spawn('bash -c "sudo -k; sudo su"', timeout=5)
+
+		expected_lines = ["Sorry, try again.\r\n" + 
+							"\[sudo\] password for [\w|\s]*: ", 
+							"\[sudo\] password for [\w|\s]*: ", 
+							'[$%#]', # command prompt
+							pexpect.EOF]
+
+		still_reading = True
+		had_error = True
+		while still_reading:
+			result = child.expect(expected_lines)
+
+			if result == 0:
+				child.sendline("")
+			elif result == 1:
+				child.sendline(root_password)
+			elif result == 2:
+				child.sendline("exit")
+				had_error = False
+			elif result == len(expected_lines)-1:
+				still_reading = False
+
+		child.close()
+		if had_error:
+			print "Incorrect password for sudo. Exiting ..."
+			exit()
+
 		# clear sudo so we don't use it till needed
 		commands.getoutput("sudo -k")
 
@@ -251,9 +281,6 @@ fi
 
 		expected_lines = ["\[sudo\] password for [\w|\s]*: ",
 
-							"Sorry, try again.\r\n" +
-							"[sudo] password for [\w|\s]*: ",
-
 							"The following packages have unmet dependencies[\n\w|\s|\:\-]*\.",
 
 							"pbuilder: Failed autobuilding of package", 
@@ -270,9 +297,6 @@ fi
 			if result == 0:
 				child.sendline(root_password)
 			elif result == 1:
-				print "Incorrect password for sudo. Exiting ..."
-				exit()
-			elif result == 2:
 				packages = child.after.split("The following packages have unmet dependencies:\r\n" + \
 						"  pbuilder-satisfydepends-dummy: Depends: ")[1]
 
@@ -282,10 +306,10 @@ fi
 
 				print "Error: Missing dependencies: " + packages + ". Exiting ..."
 				had_error = True
-			elif result == 3:
+			elif result == 2:
 				print "Failed to build package. Make sure it can be compiled manually before trying to package. Exiting ..."
 				had_error = True
-			elif result == 4:
+			elif result == 3:
 				print "Failed to build package. Broke when applying patch. Exiting ..."
 				print child.after
 				had_error = True
@@ -293,7 +317,6 @@ fi
 				still_reading = False
 
 		child.close()
-
 		if had_error:
 			exit()
 
