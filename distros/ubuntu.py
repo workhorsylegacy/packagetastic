@@ -9,7 +9,7 @@ class Builder(object):
 		signature_key = 'xxx'
 
 		# Make sure the password is legit
-		print "checking if we can use sudo ..."
+		print "Checking if we can use sudo ..."
 		child = pexpect.spawn('bash -c "sudo -k; sudo su"', timeout=5)
 
 		expected_lines = ["Sorry, try again.\r\n" + 
@@ -47,7 +47,7 @@ class Builder(object):
 			exit()
 
 		# Uncompress the source code
-		print "uncompressing source code ..."
+		print "Uncompressing source code ..."
 		if not os.path.isdir("builds"): os.mkdir("builds")
 		commands.getoutput(substitute_strings("cp sources/#{name}-#{version}.tar.gz builds/#{name}_#{version}.orig.tar.gz", package.to_hash()))
 		os.chdir("builds")
@@ -73,8 +73,10 @@ class Builder(object):
 			self.generate_debian_rules_for_pure_python_application(package)
 		elif package.build_method == 'pure python library':
 			self.generate_debian_rules_for_pure_python_library(package)
+		elif package.build_method == 'mono application':
+			self.generate_debian_rules_for_mono_application(package)
 		else:
-			print "Unknown build method '" + package.build_method + "'. Exiting ..."
+			print "Unknown build method for generating rules file '" + package.build_method + "'. Exiting ..."
 			exit()
 
 		# Create the compat file
@@ -92,6 +94,11 @@ class Builder(object):
 			self.generate_debian_control_for_pure_python_application(package)
 		elif package.build_method == 'pure python library':
 			self.generate_debian_control_for_pure_python_library(package)
+		elif package.build_method == 'mono application':
+			self.generate_debian_control_for_mono_application(package)
+		else:
+			print "Unknown build method for generating control file '" + package.build_method + "'. Exiting ..."
+			exit()
 
 
 		# Create the copyright file
@@ -139,7 +146,7 @@ is licensed under the #{license}, see above.
 			if prev_version == item['version']:
 				mangle += 1
 			else:
-				mangle = 0
+				mangle = 1
 			prev_version = item['version']
 
 			entry = substitute_strings(
@@ -227,10 +234,11 @@ fi
 							"dpkg-genchanges: including full source code in upload",
 							"dpkg-buildpackage: source only upload (original source is included)",
 							"Now running lintian...",
-							"Finished running lintian.",
 							"Now signing changes and any dsc files...",
 							"dpkg-source: error:",
 							"dpkg-buildpackage: failure:",
+
+							"Finished running lintian.",
 
 							"You need a passphrase to unlock the secret key for\r\n" +
 							"user: \"" + package.packager_name + " <" + package.packager_email + ">" + "\"\r\n" +
@@ -245,14 +253,23 @@ fi
 							"dpkg-buildpackage: failure: fakeroot debian/rules clean gave error exit status 2", 
 
 							"Successfully signed dsc and changes files\r\n",
+
+							"W\: " + package.name + " source\: [\w|\d|\s|\W|\.|\-]*\r\n",
+
+							"E\: " + package.name + " source\: [\w|\d|\s|\W|\.|\-]*\r\n",
+
 							pexpect.EOF]
 
 		still_reading = True
+		had_lintian_error = False
 		while still_reading:
 			result = child.expect(expected_lines)
 
-			if result >= 0 and result <= 26:
+			if result >= 0 and result <= 25:
 				pass
+			elif result == 26 and had_lintian_error:
+				print "Exiting because of Lintian error ..."
+				exit()
 			elif result == 27:
 				child.sendline(signature_key)
 			elif result == 28:
@@ -268,6 +285,11 @@ fi
 				exit()
 			elif result == 31:
 				pass
+			elif result == 32:
+				print "    Lintian warning: " + child.after[3:-2]
+			elif result == 33:
+				print "    Lintian error: " + child.after[3:-2]
+				had_lintian_error = True
 			elif result == len(expected_lines)-1:
 				still_reading = False
 
@@ -329,6 +351,11 @@ fi
 			architecture = 'all'
 		elif package.build_method == 'pure python library':
 			architecture = 'all'
+		elif package.build_method == 'mono application':
+			architecture = 'i386'
+		else:
+			print "Unknown build method for setting architecture '" + package.build_method + "'. Exiting ..."
+			exit()
 
 		# Copy the deb from the cache
 		print "Getting deb file ..."
@@ -420,7 +447,133 @@ clean:
 install: build
 	dh_testdir
 	dh_testroot
-	dh_clean -k 
+	dh_prep  
+	dh_installdirs
+
+	# Add here commands to install the package into debian/#{name}.
+	$(MAKE) DESTDIR=$(CURDIR)/debian/#{name} install
+
+
+# Build architecture-independent files here.
+binary-indep: build install
+# We have nothing to do by default.
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs ChangeLog
+	dh_installdocs
+	dh_installexamples
+#	dh_install
+#	dh_installmenu
+#	dh_installdebconf
+#	dh_installlogrotate
+#	dh_installemacsen
+#	dh_installpam
+#	dh_installmime
+#	dh_python
+#	dh_installinit
+#	dh_installcron
+#	dh_installinfo
+	dh_installman
+	dh_link
+	dh_strip
+	dh_compress
+	dh_fixperms
+#	dh_perl
+#	dh_makeshlibs
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install 
+""", fields))
+
+		f.close()
+
+	def generate_debian_rules_for_mono_application(self, package):
+
+		fields = package.to_hash()
+
+		# Add patches
+		fields["patches"] = ""
+		if os.path.isdir("patches"):
+			patch_files = os.listdir("patches")
+			patch_files.sort()
+			for patch_file in patch_files:
+				fields["patches"] += "\tpatch -p0 < debian/patches/" + patch_file + "\n"
+
+			fields["patches"] += "\n"
+
+		f = open('rules', 'w')
+		f.write(substitute_strings(
+"""#!/usr/bin/make -f
+# -*- makefile -*-
+# Sample debian/rules that uses debhelper.
+# This file was originally written by Joey Hess and Craig Small.
+# As a special exception, when this file is copied by dh-make into a
+# dh-make output file, you may use that output file without restriction.
+# This special exception was added by Craig Small in version 0.37 of dh-make.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+
+# These are used for cross-compiling and for saving the configure script
+# from having to guess our platform (since we know it already)
+DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+ifneq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
+CROSS= --build $(DEB_BUILD_GNU_TYPE) --host $(DEB_HOST_GNU_TYPE)
+else
+CROSS= --build $(DEB_BUILD_GNU_TYPE)
+endif
+
+
+
+config.status: configure
+	dh_testdir
+	# Add here commands to configure the package.
+ifneq "$(wildcard /usr/share/misc/config.sub)" ""
+	cp -f /usr/share/misc/config.sub config.sub
+endif
+ifneq "$(wildcard /usr/share/misc/config.guess)" ""
+	cp -f /usr/share/misc/config.guess config.guess
+endif
+	./configure $(CROSS) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info CFLAGS="$(CFLAGS)" LDFLAGS="-Wl,-z,defs"
+
+
+build: build-stamp
+
+build-stamp:  config.status 
+	dh_testdir
+
+#{patches}
+	# Add here commands to compile the package.
+	$(MAKE)
+	#docbook-to-man debian/#{name}.sgml > #{name}.1
+
+	touch $@
+
+clean: 
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp 
+
+	# Add here commands to clean up after the build process.
+	[ ! -f Makefile ] || $(MAKE) distclean
+	rm -f config.sub config.guess
+
+	dh_clean 
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_prep  
 	dh_installdirs
 
 	# Add here commands to install the package into debian/#{name}.
@@ -527,7 +680,6 @@ clean::
 
 	def generate_debian_control_for_c_configure_make(self, package):
 		# Make additions to fields
-		fields = package.to_hash()
 		fields = package.to_hash({
 						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"] + package.build_requirements,
 						'install_requirements' : ["${shlibs:Depends}", "${misc:Depends}"] + package.install_requirements
@@ -557,6 +709,36 @@ Description: #{short_description}
 
 		f.close()
 
+	def generate_debian_control_for_mono_application(self, package):
+		# Make additions to fields
+		fields = package.to_hash({
+						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"] + package.build_requirements,
+						'install_requirements' : ["${cli:Depends}", "${misc:Depends}", "${shlibs:Depends}"] + package.install_requirements
+		})
+
+		# Make changes to fields
+		fields['long_description'] = ' ' + fields['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n")
+
+		f = open('control', 'w')
+		f.write(substitute_strings(
+"""Source: #{name}
+Section: #{section}
+Priority: #{priority}
+Maintainer: Ubuntu MOTU Developers <ubuntu-motu@lists.ubuntu.com>
+XSBC-Original-Maintainer: #{packager_name} <#{packager_email}>
+Build-Depends: #{build_requirements}
+Bugs: mailto:#{bug_mail}
+Standards-Version: 3.8.0
+Homepage: #{homepage}
+
+Package: #{name}
+Architecture: any
+Depends: #{install_requirements}
+Description: #{short_description}
+#{long_description}
+""", fields))
+
+		f.close()
 
 	def generate_debian_control_for_pure_python_application(self, package):
 		# Make additions to fields

@@ -30,22 +30,39 @@ class TomboyPackage(BasePackage):
 		self._homepage = 'http://projects.gnome.org/tomboy/'
 		self._license = 'LGPL2.1'
 		self._source = 'http://download.gnome.org/sources/tomboy/0.15/tomboy-0.15.0.tar.gz'
-		self._build_method = 'mono application with c libraries'
+		self._build_method = 'mono application'
 
-		self._build_requirements = ['python-devel', 'gettext', 'desktop-file-utils']
+		self._build_requirements = ['mono-devel (>= 2.0)', 
+									'libgtk2.0-cil (>= 2.10.4-2)', 
+									'libgnome2.24-cil (>= 2.16.1)', 
+									'libgconf2.24-cil', 
+									'libgtkspell-dev (>= 2.0.9)', 
+									'intltool', 
+									'libpanel-applet2-dev', 
+									'cli-common-dev (>= 0.4.4)', 
+									'sharutils', 
+									'libgtk2.0-dev (>= 2.10.0)', 
+									'libatk1.0-dev (>= 1.2.4)', 
+									'libgmime2.2a-cil', 
+									'gnome-doc-utils (>= 0.3.2)', 
+									'scrollkeeper', 
+									'libmono-cairo2.0-cil', 
+									'libndesk-dbus1.0-cil (>= 0.4)', 
+									'libndesk-dbus-glib1.0-cil (>= 0.3)', 
+									'libmono-addins0.2-cil (>= 0.2-4)', 
+									'libmono-addins-gui0.2-cil (>= 0.2-4)', 
+									'libgnomepanel2.24-cil']
 
-		self._install_requirements = ['python-gobject', 'python-gtk2', 'python-gconf', 'python-vte']
+		self._install_requirements = []
 
-		self._short_description = "multiple GNOME terminals in one window"
+		self._short_description = "desktop note taking program using Wiki style links"
 
-		self._long_description = "Terminator is a little project to produce an efficient way of\n" + \
-									"filling a large area of screen space with terminals.\n" + \
-									"\n" + \
-									"The user can have multiple terminals in one window and use\n" + \
-									"key bindings to switch between them. See the manpage for\n" + \
-									"details."
+		self._long_description = "desktop note taking program using Wiki style links\n" + \
+									"Tomboy is a desktop note-taking application which is simple and easy to\n" + \
+									"use. It lets you organise your notes intelligently by allowing you to\n" + \
+									"easily link ideas together with Wiki style interconnects."
 
-		self._changelog = [{"version" : "0.15.0", "time" : "Fri, 07 Aug 2009 18:32:26 -0700 ", "text" : "Initial release" } ]
+		self._changelog = [{"version" : "0.15.0", "time" : "Tue, 11 Aug 2009 20:31:55 -0700", "text" : "Initial release" } ]
 
 
 
