@@ -23,9 +23,15 @@ Getting started on Fedora systems:
 
 
 Building packages:
+	# Make sure you have a stem file for the package you want
+	ls stems/hello.py
 
-	# Run the packagetastic with arguments for package and distro
-	./packagetastic hello fedora
-	./packagetastic shrip ubuntu
+	# Download the source code mentioned in the stem file
+	cd sources
+	wget http://ftp.gnu.org/gnu/hello/hello-2.1.1.tar.gz
+	cd ..
+
+	# Run packagetastic with arguments for package and distro
+	./packagetastic ubuntu shrip
 
 
