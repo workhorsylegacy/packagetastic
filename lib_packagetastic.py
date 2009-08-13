@@ -266,25 +266,42 @@ class BasePackage(object):
 		return retval
 
 
-def build(package, distro):
+def build(distro_name, package_name):
 	# Make sure we have a distro file that matches the name
 	has_distro = False
 	for distro_file in os.listdir('distros/'):
 		if not distro_file.endswith('.py'):
 			continue
 
-		if distro_file.split('.')[0] == distro:
+		if distro_file.split('.')[0] == distro_name:
 			has_distro = True
 
 	if not has_distro:
-		print "Packagetastic does not know how to build for the distro '" + distro + "'. Exiting ..."
+		print "Packagetastic does not know how to build for the distro '" + distro_name + "'. Exiting ..."
 		exit()
 
-	# Load the distro file
-	execfile('distros/' + distro + '.py')
+	# Make sure we have a stem file that matches the name
+	has_package = False
+	for package_file in os.listdir('stems/'):
+		if not package_file.endswith('.py'):
+			continue
+
+		if package_file.split('.')[0] == package_name:
+			has_package = True
+
+	if not has_package:
+		print "Packagetastic does not have a stem file for the package '" + package_name + "'. Exiting ..."
+		exit()
+
+	# Load the distro and stem files
+	execfile('distros/' + distro_name + '.py')
+	execfile('stems/' + package_name + '.py')
+
+	# Get the package to build
+	package = eval(package_name.capitalize() + 'Package()')
 
 	# Build the package for that distro
-	package.distro_style = distro
+	package.distro_style = distro_name
 	builder = eval('Builder()')
 	builder.build(package)
 

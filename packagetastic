@@ -6,13 +6,17 @@ import lib_packagetastic
 # Move the path to the location of the current file
 os.chdir(os.sys.path[0])
 
-# Get the package to build
-package_name = sys.argv[1]
-execfile('stems/' + package_name + '.py')
-package = eval(package_name.capitalize() + 'Package()')
+# Show the usage if the args are wrong
+if len(sys.argv) != 3:
+	print "usage:"
+	print "./packagetastic [distro] [package]\n\n"
+	exit()
+
+# Get the arguments
+package_name = sys.argv[2]
+distro_name = sys.argv[1]
 
 # Build the package
-distro = sys.argv[2]
-lib_packagetastic.build(package, distro)
+lib_packagetastic.build(distro_name, package_name)
 
 
