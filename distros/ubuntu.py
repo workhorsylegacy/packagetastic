@@ -248,7 +248,7 @@ fi
 
 							"gpg: Invalid passphrase; please try again ...",
 
-							"dpkg-source: error: syntax error in " + package.packager_name + "-" + package.version + "/debian/control at line \d*: ",
+							"dpkg-source: error: syntax error in " + package.name + "-" + package.version + "/debian/control at line \d*: ",
 
 							"dpkg-buildpackage: failure: fakeroot debian/rules clean gave error exit status 2", 
 
@@ -693,10 +693,8 @@ clean::
 """Source: #{name}
 Section: #{section}
 Priority: #{priority}
-Maintainer: Ubuntu MOTU Developers <ubuntu-motu@lists.ubuntu.com>
-XSBC-Original-Maintainer: #{packager_name} <#{packager_email}>
+Maintainer: #{packager_name} <#{packager_email}>
 Build-Depends: #{build_requirements}
-Bugs: mailto:#{bug_mail}
 Standards-Version: 3.8.0
 Homepage: #{homepage}
 
@@ -724,10 +722,8 @@ Description: #{short_description}
 """Source: #{name}
 Section: #{section}
 Priority: #{priority}
-Maintainer: Ubuntu MOTU Developers <ubuntu-motu@lists.ubuntu.com>
-XSBC-Original-Maintainer: #{packager_name} <#{packager_email}>
+Maintainer: #{packager_name} <#{packager_email}>
 Build-Depends: #{build_requirements}
-Bugs: mailto:#{bug_mail}
 Standards-Version: 3.8.0
 Homepage: #{homepage}
 
@@ -756,11 +752,9 @@ Description: #{short_description}
 Section: #{section}
 XS-Python-Version: all
 Priority: #{priority}
-Maintainer: Ubuntu MOTU Developers <ubuntu-motu@lists.ubuntu.com>
-XSBC-Original-Maintainer: #{packager_name} <#{packager_email}>
+Maintainer: #{packager_name} <#{packager_email}>
 Build-Depends: debhelper (>= 5.0.62), python, cdbs (>= 0.4.49), #{build_requirements}
 Build-Depends-Indep: python-central (>= 0.5.6)
-Bugs: mailto:#{bug_mail}
 Standards-Version: 3.8.0
 Homepage: #{homepage}
 
@@ -790,11 +784,9 @@ Description: #{short_description}
 Section: #{section}
 XS-Python-Version: all
 Priority: #{priority}
-Maintainer: Ubuntu MOTU Developers <ubuntu-motu@lists.ubuntu.com>
-XSBC-Original-Maintainer: #{packager_name} <#{packager_email}>
+Maintainer: #{packager_name} <#{packager_email}>
 Build-Depends: debhelper (>= 5.0.62), python, cdbs (>= 0.4.49), #{build_requirements}
 Build-Depends-Indep: python-central (>= 0.5.6)
-Bugs: mailto:#{bug_mail}
 Standards-Version: 3.8.0
 Homepage: #{homepage}
 

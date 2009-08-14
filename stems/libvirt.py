@@ -27,9 +27,6 @@ class LibVirtPackage(BasePackage):
 							'2007 Anoop Joe Cyriac', 
 							'2000 Bjorn Reese', 
 							'2006, 2007 Binary Karma']
-		self._packager_name = 'Matthew Brennan Jones'
-		self._packager_email = 'mattjones@workhorsy.org'
-		self._bug_mail = 'mattjones@workhorsy.org'
 		self._homepage = 'http://libvirt.org'
 		self._license = 'GPL'
 		self._source = 'http://libvirt.org/sources/libvirt-0.6.0.tar.gz'

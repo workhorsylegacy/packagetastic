@@ -16,9 +16,6 @@ class HelloPackage(BasePackage):
 		self._priority = 'optional'
 		self._authors = ['Free Software Foundation, Inc.']
 		self._copyright = ['1992, 1995, 1996, 1997-1999, 2000-2002 Free Software Foundation, Inc.']
-		self._packager_name = 'Matthew Brennan Jones'
-		self._packager_email = 'mattjones@workhorsy.org'
-		self._bug_mail = 'mattjones@workhorsy.org'
 		self._homepage = 'http://www.gnu.org/software/hello/'
 		self._license = 'GPL2+'
 		self._source = 'http://ftp.gnu.org/gnu/hello/hello-2.1.1.tar.gz'

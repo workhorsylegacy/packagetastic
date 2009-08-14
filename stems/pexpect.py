@@ -21,9 +21,6 @@ class PexpectPackage(BasePackage):
 						'Fernando Perez', 'Corey Minyard', 'Jon Cohen', 'Guillaume Chazarain', 'Andrew Ryan', 
 						'Nick Craig-Wood', 'Andrew Stone', 'Jorgen Grahn']
 		self._copyright = ['2008 Noah Spurrier']
-		self._packager_name = 'Matthew Brennan Jones'
-		self._packager_email = 'mattjones@workhorsy.org'
-		self._bug_mail = 'mattjones@workhorsy.org'
 		self._homepage = 'http://pexpect.sourceforge.net'
 		self._license = 'MIT'
 		self._source = 'http://downloads.sourceforge.net/pexpect/pexpect-2.3.tar.gz'

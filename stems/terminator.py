@@ -17,9 +17,6 @@ class TerminatorPackage(BasePackage):
 		self._priority = 'optional'
 		self._authors = ['Chris Jones <cmsj@tenshu.net>']
 		self._copyright = ['2006-2008 Chris Jones']
-		self._packager_name = 'Matthew Brennan Jones'
-		self._packager_email = 'mattjones@workhorsy.org'
-		self._bug_mail = 'mattjones@workhorsy.org'
 		self._homepage = 'http://www.tenshu.net/terminator/'
 		self._license = 'GPL2+'
 		self._source = 'http://launchpad.net/terminator/trunk/0.12/+download/terminator_0.12.tar.gz'

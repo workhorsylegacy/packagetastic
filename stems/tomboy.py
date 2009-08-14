@@ -24,9 +24,6 @@ class TomboyPackage(BasePackage):
 							'Kevin Kubasik <kevin@kubasik.net>', 
 							'Stefan Schweizer <steve.schweizer@gmail.com>']
 		self._copyright = ['2004-2007 Alex Graveley']
-		self._packager_name = 'Matthew Brennan Jones'
-		self._packager_email = 'mattjones@workhorsy.org'
-		self._bug_mail = 'mattjones@workhorsy.org'
 		self._homepage = 'http://projects.gnome.org/tomboy/'
 		self._license = 'LGPL2.1'
 		self._source = 'http://download.gnome.org/sources/tomboy/0.15/tomboy-0.15.0.tar.gz'

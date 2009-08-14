@@ -16,9 +16,6 @@ class PyactiveresourcePackage(BasePackage):
 		self._priority = 'optional'
 		self._authors = ['Jared Kuolt <me@superjared.com>', 'Mark Roach <mrroach@google.com>']
 		self._copyright = ['2008 Jared Kuolt', '2008 Mark Roach', '2008 Google Inc.']
-		self._packager_name = 'Matthew Brennan Jones'
-		self._packager_email = 'mattjones@workhorsy.org'
-		self._bug_mail = 'mattjones@workhorsy.org'
 		self._homepage = 'http://code.google.com/p/pyactiveresource/'
 		self._license = 'MIT'
 		self._source = 'http://code.google.com/p/pyactiveresource/pyactiveresource-1.0.0.tar.gz'

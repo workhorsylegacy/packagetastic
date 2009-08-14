@@ -23,18 +23,18 @@ licenses = { 'GPL2+' : \
 """
 ,
 'AGPL3+' : \
-"""   This program is free software: you can redistribute it and/or modify
+"""   This package is free software: you can redistribute it and/or modify
    it under the terms of the GNU Affero General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
-   This program is distributed in the hope that it will be useful,
+   This package is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU Affero General Public License for more details.
 
    You should have received a copy of the GNU Affero General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   along with this package.  If not, see <http://www.gnu.org/licenses/>.
 """
 ,
 'LGPL2.1' : \
@@ -76,6 +76,21 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 }
 
+def to_package_class_name(package_name):
+	name = package_name.capitalize() + 'Package()'
+	retval = ''
+
+	prev_was_dash = False
+	for i in range(len(name)):
+		if prev_was_dash:
+			retval += name[i].capitalize()
+		else:
+			retval += name[i]
+
+		prev_was_dash = (name[i] == '-')
+
+	return retval.replace('-', '')
+
 def substitute_strings(string, sub_hash):
 	result = string[:]
 
@@ -106,7 +121,6 @@ class BasePackage(object):
 		self._copyright = []
 		self._packager_name = None
 		self._packager_email = None
-		self._bug_mail = None
 		self._homepage = None
 		self._license = None
 		self._source = None
@@ -153,10 +167,6 @@ class BasePackage(object):
 	def get_packager_email(self): return self._packager_email
 	def set_packager_email(self, value): self._packager_email = value
 	packager_email = property(get_packager_email, set_packager_email)
-
-	def get_bug_mail(self): return self._bug_mail
-	def set_bug_mail(self, value): self._bug_mail = value
-	bug_mail = property(get_bug_mail, set_bug_mail)
 
 	def get_homepage(self): return self._homepage
 	def set_homepage(self, value): self._homepage = value
@@ -213,7 +223,6 @@ class BasePackage(object):
 				'copyright' : self.copyright, 
 				'packager_name' : self.packager_name, 
 				'packager_email' : self.packager_email, 
-				'bug_mail' : self.bug_mail,
 				'homepage' : self.homepage, 
 				'license' : self.license, 
 				'source' : self.source, 
@@ -268,28 +277,12 @@ class BasePackage(object):
 
 def build(distro_name, package_name):
 	# Make sure we have a distro file that matches the name
-	has_distro = False
-	for distro_file in os.listdir('distros/'):
-		if not distro_file.endswith('.py'):
-			continue
-
-		if distro_file.split('.')[0] == distro_name:
-			has_distro = True
-
-	if not has_distro:
+	if not os.path.isfile('distros/' + distro_name + '.py'):
 		print "Packagetastic does not know how to build for the distro '" + distro_name + "'. Exiting ..."
 		exit()
 
 	# Make sure we have a stem file that matches the name
-	has_package = False
-	for package_file in os.listdir('stems/'):
-		if not package_file.endswith('.py'):
-			continue
-
-		if package_file.split('.')[0] == package_name:
-			has_package = True
-
-	if not has_package:
+	if not os.path.isfile('stems/' + package_name + '.py'):
 		print "Packagetastic does not have a stem file for the package '" + package_name + "'. Exiting ..."
 		exit()
 
@@ -298,7 +291,25 @@ def build(distro_name, package_name):
 	execfile('stems/' + package_name + '.py')
 
 	# Get the package to build
-	package = eval(package_name.capitalize() + 'Package()')
+	package = eval(to_package_class_name(package_name))
+
+	# Make sure the packager_name file exists
+	if not os.path.isfile('packager_name'):
+		print "Add the packager name to the 'packager_name' file."
+		exit()
+
+	# Make sure the packager_email file exists
+	if not os.path.isfile('packager_email'):
+		print "Add the packager email address to the 'packager_email' file."
+		exit()
+
+	f = open('packager_name')
+	package.packager_name = f.read()[0:-1]
+	f.close()
+
+	f = open('packager_email')
+	package.packager_email = f.read()[0:-1]
+	f.close()
 
 	# Build the package for that distro
 	package.distro_style = distro_name

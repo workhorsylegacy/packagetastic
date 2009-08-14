@@ -23,6 +23,10 @@ Getting started on Fedora systems:
 
 
 Building packages:
+	# Setup your packager and email info
+	echo "Joe Packager" > packager_name
+	echo "joe.packager@linux.com" > packager_email
+
 	# Make sure you have a stem file for the package you want
 	ls stems/hello.py
 
@@ -32,6 +36,6 @@ Building packages:
 	cd ..
 
 	# Run packagetastic with arguments for package and distro
-	./packagetastic ubuntu shrip
+	./packagetastic ubuntu hello
 
 

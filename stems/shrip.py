@@ -15,9 +15,6 @@ class ShripPackage(BasePackage):
 		self._priority = 'optional'
 		self._authors = ['Olivier Rolland <billl@users.sf.net>']
 		self._copyright = ['2004-2008 Olivier Rolland']
-		self._packager_name = 'Matthew Brennan Jones'
-		self._packager_email = 'mattjones@workhorsy.org'
-		self._bug_mail = 'mattjones@workhorsy.org'
 		self._homepage = 'http://ogmrip.sourceforge.net'
 		self._license = 'GPL2+'
 		self._source = 'http://downloads.sourceforge.net/ogmrip/shrip-0.5.0.tar.gz'
