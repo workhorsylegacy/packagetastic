@@ -2,9 +2,6 @@
 
 class Builder(object):
 	def build(self, package):
-		# clear sudo so we don't use it till needed
-		commands.getoutput("sudo -k")
-
 		# Setup the directories
 		print "Setting up the rpmdev directories ..."
 		commands.getoutput('rm -rf ~/rpmbuild')
@@ -168,7 +165,6 @@ rm -rf %{buildroot}
 
 	def generate_fedora_install_for_pure_python_library(self, f, package, params):
 		# Make additions to fields
-		fields = package.to_hash()
 		fields = package.to_hash({
 				'build_arch' : 'noarch', 
 				'build_requirements' : ['python-devel'] + package.build_requirements, 
