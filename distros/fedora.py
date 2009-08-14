@@ -7,17 +7,19 @@ class Builder(object):
 		commands.getoutput('rm -rf ~/rpmbuild')
 		commands.getoutput('rpmdev-setuptree')
 
-		# Copy the source code to the build tree
-		if not os.path.isfile('sources/' + package.source.split('/')[-1]):
-			print "Missing source code at: " + 'sources/' + package.source.split('/')[-1] + ". Exiting ..."
+		# Make sure the source code exists
+		if not os.path.isfile("sources/" + package.source.split('/')[-1]):
+			print substitute_strings("Missing source code at: sources/" + package.source.split('/')[-1] + ". Exiting ...", package.to_hash())
 			exit()
+
+		# Copy the source code to the build tree
 		print "Copying the source code ..."
-		commands.getoutput('cp sources/' + package.source.split('/')[-1] + ' ~/rpmbuild/SOURCES/' + package.source.split('/')[-1])
+		commands.getoutput(substitute_strings("cp sources/" + package.source.split('/')[-1] + " ~/rpmbuild/SOURCES/" + package.source.split('/')[-1], package.to_hash()))
 
 		# Uncompress the source code so we can examine it
 		print "Uncompressing source code ..."
 		if not os.path.isdir("builds"): os.mkdir("builds")
-		commands.getoutput(substitute_strings("cp sources/#{name}-#{version}.tar.gz builds/#{name}_#{version}.orig.tar.gz", package.to_hash()))
+		commands.getoutput(substitute_strings("cp sources/" + package.source.split('/')[-1] + " builds/#{name}_#{version}.orig.tar.gz", package.to_hash()))
 		os.chdir("builds")
 		commands.getoutput(substitute_strings("tar xzf #{name}_#{version}.orig.tar.gz", package.to_hash()))
 		os.chdir(substitute_strings("#{name}-#{version}", package.to_hash()))
@@ -88,11 +90,36 @@ class Builder(object):
 		f.close()
 
 		# Create the rpm file
+		packagetastic_dir = commands.getoutput('pwd')
+		os.chdir(os.path.expanduser("~"))
 		print "Building the rpm package ..."
 
-		print commands.getoutput("rpmbuild -ba ~/rpmbuild/SPECS/" + package.name + ".spec")
+		command = "rpmbuild -ba rpmbuild/SPECS/" + package.name + ".spec"
+		print commands.getoutput(command)
+		"""
+		child = pexpect.spawn(command, timeout=1200)
+
+		expected_lines = ["error: Failed build dependencies:\r\n" +
+							"[\W]*[\w|\d|\.|\-]* is needed by [\w|\d|\.|\-]*fc[\d]*.src",
+
+							pexpect.EOF]
+
+		still_reading = True
+		while still_reading:
+			result = child.expect(expected_lines)
+			#print "[[[" + str(child.before) + "]]]"
+			#print "[[[" + str(child.after) + "]]]"
+
+			if result == 0:
+				print child.after
+			elif result == len(expected_lines)-1:
+				still_reading = False
+
+		child.close()
+		"""
 
 		print "Copying the rpm package to the packages directory ..."
+		os.chdir(packagetastic_dir)
 		if not os.path.isdir("packages"): os.mkdir("packages")
 		arch = fields['build_arch']
 		rpm = package.name + "-" + package.version + "-1.fc11." + arch + ".rpm"
