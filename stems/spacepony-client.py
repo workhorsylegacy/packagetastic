@@ -19,7 +19,7 @@ class SpaceponyClientPackage(BasePackage):
 		self._homepage = 'http://launchpad.net/spacepony'
 		self._license = 'AGPL3+'
 		self._source = 'http://launchpad.net/spacepony/trunk/0.1.0/+download/spacepony-client-0.1.0.tar.gz'
-		self._build_method = 'pure python application'
+		self._build_method = 'python application'
 
 		self._build_requirements = ['python-devel', 'gettext', 'desktop-file-utils']
 

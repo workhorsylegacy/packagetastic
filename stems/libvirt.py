@@ -30,6 +30,7 @@ class LibVirtPackage(BasePackage):
 		self._homepage = 'http://libvirt.org'
 		self._license = 'GPL'
 		self._source = 'http://libvirt.org/sources/libvirt-0.6.0.tar.gz'
+		self._build_method = 'c library'
 
 		self._build_requirements = ["cdbs (>= 0.4.43)", 
 									"debhelper (>= 5.0.38)", 

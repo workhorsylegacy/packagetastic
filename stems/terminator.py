@@ -20,7 +20,7 @@ class TerminatorPackage(BasePackage):
 		self._homepage = 'http://www.tenshu.net/terminator/'
 		self._license = 'GPL2+'
 		self._source = 'http://launchpad.net/terminator/trunk/0.12/+download/terminator_0.12.tar.gz'
-		self._build_method = 'pure python application'
+		self._build_method = 'python application'
 
 		self._build_requirements = ['python-devel', 'gettext', 'desktop-file-utils']
 

@@ -24,7 +24,7 @@ class PexpectPackage(BasePackage):
 		self._homepage = 'http://pexpect.sourceforge.net'
 		self._license = 'MIT'
 		self._source = 'http://downloads.sourceforge.net/pexpect/pexpect-2.3.tar.gz'
-		self._build_method = 'pure python library'
+		self._build_method = 'python library'
 
 		self._build_requirements = []
 

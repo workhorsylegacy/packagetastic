@@ -19,7 +19,7 @@ class PyactiveresourcePackage(BasePackage):
 		self._homepage = 'http://code.google.com/p/pyactiveresource/'
 		self._license = 'MIT'
 		self._source = 'http://code.google.com/p/pyactiveresource/pyactiveresource-1.0.0.tar.gz'
-		self._build_method = 'pure python library'
+		self._build_method = 'python library'
 
 		self._build_requirements = []
 

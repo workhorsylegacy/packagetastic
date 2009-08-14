@@ -67,11 +67,11 @@ class Builder(object):
 
 		# Generate the rules file
 		print "Generating rules file ..."
-		if package.build_method == 'c configure make':
+		if package.build_method == 'c application' or package.build_method == 'c library':
 			self.generate_debian_rules_for_c_configure_make(package)
-		elif package.build_method == 'pure python application':
+		elif package.build_method == 'python application':
 			self.generate_debian_rules_for_pure_python_application(package)
-		elif package.build_method == 'pure python library':
+		elif package.build_method == 'python library':
 			self.generate_debian_rules_for_pure_python_library(package)
 		elif package.build_method == 'mono application':
 			self.generate_debian_rules_for_mono_application(package)
@@ -88,11 +88,11 @@ class Builder(object):
 
 		# Create the control file
 		print "Generating control file ..."
-		if package.build_method == 'c configure make':
+		if package.build_method == 'c application' or package.build_method == 'c library':
 			self.generate_debian_control_for_c_configure_make(package)
-		elif package.build_method == 'pure python application':
+		elif package.build_method == 'python application':
 			self.generate_debian_control_for_pure_python_application(package)
-		elif package.build_method == 'pure python library':
+		elif package.build_method == 'python library':
 			self.generate_debian_control_for_pure_python_library(package)
 		elif package.build_method == 'mono application':
 			self.generate_debian_control_for_mono_application(package)
@@ -345,11 +345,11 @@ fi
 
 		# Determine the architecture
 		architecture = 'any'
-		if package.build_method == 'c configure make':
+		if package.build_method == 'c application' or package.build_method == 'c library':
 			architecture = 'i386'
-		elif package.build_method == 'pure python application':
+		elif package.build_method == 'python application':
 			architecture = 'all'
-		elif package.build_method == 'pure python library':
+		elif package.build_method == 'python library':
 			architecture = 'all'
 		elif package.build_method == 'mono application':
 			architecture = 'i386'

@@ -18,7 +18,7 @@ class ShripPackage(BasePackage):
 		self._homepage = 'http://ogmrip.sourceforge.net'
 		self._license = 'GPL2+'
 		self._source = 'http://downloads.sourceforge.net/ogmrip/shrip-0.5.0.tar.gz'
-		self._build_method = 'c configure make'
+		self._build_method = 'c library'
 
 		# FIXME: debhelper is a Debian specific package
 		self._build_requirements = ["libogmrip-dev (>= 0.10.0)",

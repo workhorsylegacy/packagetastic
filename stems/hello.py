@@ -19,7 +19,7 @@ class HelloPackage(BasePackage):
 		self._homepage = 'http://www.gnu.org/software/hello/'
 		self._license = 'GPL2+'
 		self._source = 'http://ftp.gnu.org/gnu/hello/hello-2.1.1.tar.gz'
-		self._build_method = 'c configure make'
+		self._build_method = 'c application'
 
 		self._build_requirements = ["gettext"]
 

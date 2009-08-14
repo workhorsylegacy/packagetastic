@@ -52,13 +52,13 @@ class Builder(object):
 			params['has_man5'] = False
 
 		params['has_bindir'] = False
-		if package.build_method == 'c configure make':
+		if package.build_method == 'c application' or package.build_method == 'c library':
 			params['has_bindir'] = True
 			params['import_sitelib'] = False
-		elif package.build_method == 'pure python library':
+		elif package.build_method == 'python library':
 			params['has_bindir'] = False
 			params['import_sitelib'] = True
-		elif package.build_method == 'pure python application':
+		elif package.build_method == 'python application':
 			params['has_bindir'] = True
 			params['import_sitelib'] = True
 
@@ -78,11 +78,11 @@ class Builder(object):
 
 		# Write the custom parts of the spec file
 		fields = None
-		if package.build_method == 'c configure make':
+		if package.build_method == 'c application' or package.build_method == 'c library':
 			fields = self.generate_fedora_install_for_c_configure_make(f, package, params)
-		elif package.build_method == 'pure python library':
+		elif package.build_method == 'python library':
 			fields = self.generate_fedora_install_for_pure_python_library(f, package, params)
-		elif package.build_method == 'pure python application':
+		elif package.build_method == 'python application':
 			fields = self.generate_fedora_install_for_pure_python_library(f, package, params)
 		else:
 			print "Unknown build method '" + package.build_method + "'. Exiting ..."
