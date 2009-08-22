@@ -1,0 +1,29 @@
+diff -Nur -x '*.orig' -x '*~' pitivi-0.11.3/pitivi/timeline/timeline.py pitivi-0.11.3.new/pitivi/timeline/timeline.py
+--- pitivi-0.11.3/pitivi/timeline/timeline.py	2008-12-11 22:53:35.000000000 +1100
++++ pitivi-0.11.3.new/pitivi/timeline/timeline.py	2009-03-08 17:44:46.975647478 +1100
+@@ -195,8 +195,8 @@
+ 
+     def getAutoSettings(self):
+         vs = self.videocomp._getAutoSettings()
+-        as = self.audiocomp._getAutoSettings()
+-        if not vs and not as:
++        asettings = self.audiocomp._getAutoSettings()
++        if not vs and not asettings:
+             return None
+         # return an ExportSettings containing the combination of
+         # the autosettings from the audio and video composition.
+@@ -206,10 +206,10 @@
+             settings.videoheight = vs.videoheight
+             settings.videorate = vs.videorate
+             settings.videopar = vs.videopar
+-        if as:
+-            settings.audiochannels = as.audiochannels
+-            settings.audiorate = as.audiorate
+-            settings.audiodepth = as.audiodepth
++        if asettings:
++            settings.audiochannels = asettings.audiochannels
++            settings.audiorate = asettings.audiorate
++            settings.audiodepth = asettings.audiodepth
+         return settings
+ 
+     def getDuration(self):
