@@ -43,7 +43,7 @@ class PexpectPackage(BasePackage):
 								"the standard Python pty module. The Pexpect interface focuses on ease of use so\n" + \
 								"that simple tasks are easy."
 
-		self._changelog = [{"version" : "2.3", "time" : "Fri, 07 Aug 2009 18:32:26 -0700 ", "text" : "Initial release" } ]
+		self._changelog = [{"version" : "2.3", "time" : "Fri, 07 Aug 2009 18:32:26 -0700", "text" : "Initial release" } ]
 
 
 	def after_install(self):

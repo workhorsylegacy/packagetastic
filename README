@@ -9,7 +9,7 @@ Getting started on Debain systems:
 
 	# setup pbuilder:
 	cd ~
-	echo "COMPONENTS=\"main restricted universe multiverse\"" >> ~/.pbuilderrc
+	echo "COMPONENTS=\"main restricted universe multiverse\"" > ~/.pbuilderrc
 	sudo pbuilder create
 
 Getting started on Fedora systems:
