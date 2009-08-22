@@ -1,13 +1,7 @@
 
 
 class Builder(object):
-	def build(self, package):
-		# Get the root password
-		root_password = 'xxx'
-
-		# Get the signature
-		signature_key = 'xxx'
-
+	def build(self, package, root_password, gpg_password):
 		# Make sure the password is legit
 		print "Checking if we can use sudo ..."
 		child = pexpect.spawn('bash -c "sudo -k; sudo su"', timeout=5)
@@ -35,7 +29,7 @@ class Builder(object):
 
 		child.close()
 		if had_error:
-			print "Incorrect password for sudo. Exiting ..."
+			print "Incorrect password for root. Exiting ..."
 			exit()
 
 		# clear sudo so we don't use it till needed
@@ -273,9 +267,9 @@ fi
 				print "Exiting because of Lintian error ..."
 				exit()
 			elif result == 27:
-				child.sendline(signature_key)
+				child.sendline(gpg_password)
 			elif result == 28:
-				print "Invalid signing key. Exiting ..."
+				print "Invalid gpg password. Exiting ..."
 				exit()
 			elif result == 29:
 				print "Broke when reading the debian/control file '" + \

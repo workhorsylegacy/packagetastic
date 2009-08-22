@@ -318,6 +318,16 @@ def build(distro_name, package_name):
 		print "Add the packager email address to the 'packager_email' file."
 		exit()
 
+	# Make sure the root_password file exists
+	if not os.path.isfile('root_password'):
+		print "Add the root password to the 'root_password' file."
+		exit()
+
+	# Make sure the gpg_password file exists
+	if not os.path.isfile('gpg_password'):
+		print "Add the gpg password to the 'gpg_password' file."
+		exit()
+
 	f = open('packager_name')
 	package.packager_name = f.read()[0:-1]
 	f.close()
@@ -326,10 +336,18 @@ def build(distro_name, package_name):
 	package.packager_email = f.read()[0:-1]
 	f.close()
 
+	f = open('root_password')
+	root_password = f.read()[0:-1]
+	f.close()
+
+	f = open('gpg_password')
+	gpg_password = f.read()[0:-1]
+	f.close()
+
 	# Build the package for that distro
 	package.distro_style = distro_name
 	builder = eval('Builder()')
-	builder.build(package)
+	builder.build(package, root_password, gpg_password)
 
 
 

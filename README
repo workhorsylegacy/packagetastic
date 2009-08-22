@@ -5,12 +5,17 @@ Getting started on Debain systems:
 	sudo apt-get install build-essential cdbs dh-make pbuilder fakeroot debhelper devscripts gnupg python-pexpect
 
 	# create gpg key:
-	gpg --gen-key
+	gpg --no-use-agent --gen-key
 
 	# setup pbuilder:
 	cd ~
 	echo "COMPONENTS=\"main restricted universe multiverse\"" > ~/.pbuilderrc
 	sudo pbuilder create
+
+	# Turn off the gpg use agent. This makes it so we
+	# can sign the packages with the cli, instead of
+	# the popup dialog box.
+	sed -i 's/^use-agent$/#use-agent/' ~/.gnupg/gpg.conf
 
 Getting started on Fedora systems:
 
@@ -22,11 +27,14 @@ Getting started on Fedora systems:
 	sudo yum install rpmdevtools pexpect
 
 
-Building packages:
-	# Setup your packager and email info
+One time setup:
+	# Setup your name, email, and password files
 	echo "Joe Packager" > packager_name
 	echo "joe.packager@linux.com" > packager_email
+	echo "password" > root_password
+	echo "this is a secret" > gpg_password
 
+Building packages:
 	# Make sure you have a stem file for the package you want
 	ls stems/hello.py
 
