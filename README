@@ -1,5 +1,29 @@
+#
+#
+# Packagetastic is a generic packaging format, that can be automatically 
+# converted to distro specific packages, such as Dpkg and RPM.
+#
+# Development happens at:
+# http://launchpad.net/packagetastic
+#
+# The mailing list is located at:
+# http://lists.launchpad.net/packagetastic-developers
 
-Getting started on Debain systems:
+
+Getting started on Debian:
+
+	# install requirements:
+	sudo apt-get install build-essential cdbs dh-make pbuilder fakeroot debhelper devscripts gnupg python-pexpect
+
+	# create gpg key:
+	gpg --no-use-agent --gen-key
+
+	# setup pbuilder:
+	cd ~
+	echo "COMPONENTS=\"main contrib non-free\"" > ~/.pbuilderrc
+	sudo pbuilder create
+
+Getting started on Ubuntu:
 
 	# install requirements:
 	sudo apt-get install build-essential cdbs dh-make pbuilder fakeroot debhelper devscripts gnupg python-pexpect
@@ -26,8 +50,7 @@ Getting started on Fedora systems:
 	sudo yum groupinstall "Development Tools"
 	sudo yum install rpmdevtools pexpect
 
-
-One time setup:
+Packagetastic one time setup:
 	# Setup your name, email, and password files
 	echo "Joe Packager" > packager_name
 	echo "joe.packager@linux.com" > packager_email
