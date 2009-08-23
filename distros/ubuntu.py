@@ -309,6 +309,10 @@ fi
 
 							"patching file [\w|\s|\d|\.|\-|\/]*\r\nHunk \#\d FAILED at [\d]*\.\r\nHunk \#\d FAILED at [\d]*\.\r\n", 
 
+							"The following packages have unmet dependencies:\r\n" + 
+							"[\w|\W|\s|\d|\.|\-|\/|\r|\n]*" + 
+							"The following actions will resolve these dependencies:", 
+
 							pexpect.EOF]
 
 		still_reading = True
@@ -334,6 +338,10 @@ fi
 			elif result == 3:
 				print "Failed to build package. Broke when applying patch. Exiting ..."
 				print child.after
+				had_error = True
+			elif result == 4:
+				print "Failed to build package." + child.after.rstrip('The following actions will resolve these dependencies:')
+				print "You need to add a repository that has those packages. Exiting ..."
 				had_error = True
 			elif result == len(expected_lines)-1:
 				still_reading = False
