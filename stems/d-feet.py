@@ -9,7 +9,7 @@ os.chdir(os.sys.path[0])
 
 class DFeetPackage(BasePackage):
 	def __init__(self):
-		self.call_parent_constructor()
+		BasePackage.__init__(self)
 		self._name = 'd-feet'
 		self._version = '0.1.8'
 		self._section = 'misc'

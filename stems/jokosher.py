@@ -9,7 +9,7 @@ os.chdir(os.sys.path[0])
 
 class JokosherPackage(BasePackage):
 	def __init__(self):
-		self.call_parent_constructor()
+		BasePackage.__init__(self)
 		self._name = 'jokosher'
 		self._version = '0.11.1'
 		self._section = 'misc'

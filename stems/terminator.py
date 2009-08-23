@@ -9,7 +9,7 @@ os.chdir(os.sys.path[0])
 
 class TerminatorPackage(BasePackage):
 	def __init__(self):
-		self.call_parent_constructor()
+		BasePackage.__init__(self)
 		self._name = 'terminator'
 		self._alternate_name = 'x-terminal-emulator'
 		self._version = '0.12'

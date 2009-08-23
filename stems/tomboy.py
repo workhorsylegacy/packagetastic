@@ -9,7 +9,7 @@ os.chdir(os.sys.path[0])
 
 class TomboyPackage(BasePackage):
 	def __init__(self):
-		self.call_parent_constructor()
+		BasePackage.__init__(self)
 		self._name = 'tomboy'
 		self._version = '0.15.0'
 		self._section = 'gnome'

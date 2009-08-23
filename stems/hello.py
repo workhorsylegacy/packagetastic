@@ -9,7 +9,7 @@ os.chdir(os.sys.path[0])
 
 class HelloPackage(BasePackage):
 	def __init__(self):
-		self.call_parent_constructor()
+		BasePackage.__init__(self)
 		self._name = 'hello'
 		self._version = '2.1.1'
 		self._section = 'devel'

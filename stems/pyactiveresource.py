@@ -9,7 +9,7 @@ os.chdir(os.sys.path[0])
 
 class PyactiveresourcePackage(BasePackage):
 	def __init__(self):
-		self.call_parent_constructor()
+		BasePackage.__init__(self)
 		self._name = 'pyactiveresource'
 		self._version = '1.0.0'
 		self._section = 'python'

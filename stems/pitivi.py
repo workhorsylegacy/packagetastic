@@ -9,7 +9,7 @@ os.chdir(os.sys.path[0])
 
 class PitiviPackage(BasePackage):
 	def __init__(self):
-		self.call_parent_constructor()
+		BasePackage.__init__(self)
 		self._name = 'pitivi'
 		self._version = '0.11.3'
 		self._section = 'misc'

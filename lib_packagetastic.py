@@ -125,8 +125,7 @@ def substitute_strings(string, sub_hash):
 	return result
 
 class BasePackage(object):
-	# FIXME: This should be just a constructor that is called when children are __init__()
-	def call_parent_constructor(self):
+	def __init__(self):
 		self._name = None
 		self._alternate_name = None
 		self._version = None

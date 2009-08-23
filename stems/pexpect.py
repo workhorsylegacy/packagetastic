@@ -9,7 +9,7 @@ os.chdir(os.sys.path[0])
 
 class PexpectPackage(BasePackage):
 	def __init__(self):
-		self.call_parent_constructor()
+		BasePackage.__init__(self)
 		self._name = 'pexpect'
 		self._version = '2.3'
 		self._section = 'python'

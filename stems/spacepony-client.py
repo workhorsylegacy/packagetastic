@@ -9,7 +9,7 @@ os.chdir(os.sys.path[0])
 
 class SpaceponyClientPackage(BasePackage):
 	def __init__(self):
-		self.call_parent_constructor()
+		BasePackage.__init__(self)
 		self._name = 'spacepony-client'
 		self._version = '0.1.0'
 		self._section = 'misc'

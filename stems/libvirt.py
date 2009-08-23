@@ -8,7 +8,7 @@ os.chdir(os.sys.path[0])
 
 class LibVirtPackage(BasePackage):
 	def __init__(self):
-		self.call_parent_constructor()
+		BasePackage.__init__(self)
 		self._name = 'libvirt'
 		self._version = '0.6.0'
 		self._section = 'development'

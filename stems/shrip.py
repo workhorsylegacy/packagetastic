@@ -8,7 +8,7 @@ os.chdir(os.sys.path[0])
 
 class ShripPackage(BasePackage):
 	def __init__(self):
-		self.call_parent_constructor()
+		BasePackage.__init__(self)
 		self._name = 'shrip'
 		self._version = '0.5.0'
 		self._section = 'graphics'
