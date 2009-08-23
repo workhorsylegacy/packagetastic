@@ -303,8 +303,6 @@ fi
 
 		expected_lines = ["\[sudo\] password for [\w|\s]*: ",
 
-							"The following packages have unmet dependencies[\n\w|\s|\:\-]*\.",
-
 							"pbuilder: Failed autobuilding of package", 
 
 							"patching file [\w|\s|\d|\.|\-|\/]*\r\nHunk \#\d FAILED at [\d]*\.\r\nHunk \#\d FAILED at [\d]*\.\r\n", 
@@ -323,25 +321,17 @@ fi
 			if result == 0:
 				child.sendline(root_password)
 			elif result == 1:
-				packages = child.after.split("The following packages have unmet dependencies:\r\n" + \
-						"  pbuilder-satisfydepends-dummy: Depends: ")[1]
-
-				for crap in [" which is a virtual package."]:
-					if packages.endswith(crap):
-						packages = packages.split(crap)[0]
-
-				print "Error: Missing dependencies: " + packages + ". Exiting ..."
-				had_error = True
-			elif result == 2:
 				print "Failed to build package. Make sure it can be compiled manually before trying to package. Exiting ..."
 				had_error = True
-			elif result == 3:
+			elif result == 2:
 				print "Failed to build package. Broke when applying patch. Exiting ..."
 				print child.after
 				had_error = True
-			elif result == 4:
-				print "Failed to build package." + child.after.rstrip('The following actions will resolve these dependencies:')
-				print "You need to add a repository that has those packages. Exiting ..."
+			elif result == 3:
+				print "Failed to build. Dependencies not in the repositories:"
+				for entry in child.after.split('Depends: ')[1:]:
+					print entry.strip().split(' which is a')[0]
+				print "Exiting ..."
 				had_error = True
 			elif result == len(expected_lines)-1:
 				still_reading = False
