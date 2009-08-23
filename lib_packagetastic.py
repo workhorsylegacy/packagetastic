@@ -222,6 +222,10 @@ class BasePackage(object):
 	def set_changelog(self, value): self._changelog = value
 	changelog = property(get_changelog, set_changelog)
 
+	def get_version(self):
+		return self._changelog[0]['version']
+	version = property(get_version)
+
 	def after_install(self): pass
 	def before_install(self): pass
 	def after_uninstall(self): pass

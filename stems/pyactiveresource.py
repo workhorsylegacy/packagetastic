@@ -11,7 +11,6 @@ class PyactiveresourcePackage(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'pyactiveresource'
-		self._version = '1.0.0'
 		self._section = 'python'
 		self._priority = 'optional'
 		self._authors = ['Jared Kuolt <me@superjared.com>', 'Mark Roach <mrroach@google.com>']

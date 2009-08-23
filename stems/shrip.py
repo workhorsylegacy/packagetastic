@@ -10,7 +10,6 @@ class ShripPackage(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'shrip'
-		self._version = '0.5.0'
 		self._section = 'graphics'
 		self._priority = 'optional'
 		self._authors = ['Olivier Rolland <billl@users.sf.net>']

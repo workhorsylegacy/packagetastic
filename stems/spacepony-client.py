@@ -11,7 +11,6 @@ class SpaceponyClientPackage(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'spacepony-client'
-		self._version = '0.1.0'
 		self._section = 'misc'
 		self._priority = 'optional'
 		self._authors = ['Matthew Brennan Jones <mattjones@workhorsy.org>']

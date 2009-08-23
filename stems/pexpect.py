@@ -11,7 +11,6 @@ class PexpectPackage(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'pexpect'
-		self._version = '2.3'
 		self._section = 'python'
 		self._priority = 'optional'
 		self._authors = ['Noah Spurrier <noah@noah.org>', 'Richard Holden', 'Marco Molteni', 'Kimberley Burchett',

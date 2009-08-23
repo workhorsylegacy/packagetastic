@@ -12,7 +12,6 @@ class TerminatorPackage(BasePackage):
 		BasePackage.__init__(self)
 		self._name = 'terminator'
 		self._alternate_name = 'x-terminal-emulator'
-		self._version = '0.12'
 		self._section = 'misc'
 		self._priority = 'optional'
 		self._authors = ['Chris Jones <cmsj@tenshu.net>']

@@ -11,7 +11,6 @@ class TomboyPackage(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'tomboy'
-		self._version = '0.15.0'
 		self._section = 'gnome'
 		self._priority = 'optional'
 		self._authors = ['Alex Graveley <alex@beatniksoftware.com>', 

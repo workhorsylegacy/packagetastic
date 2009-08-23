@@ -11,7 +11,6 @@ class DFeetPackage(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'd-feet'
-		self._version = '0.1.8'
 		self._section = 'misc'
 		self._priority = 'optional'
 		self._authors = ['John (J5) Palmieri <johnp@redhat.com>']

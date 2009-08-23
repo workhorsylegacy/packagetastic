@@ -11,7 +11,6 @@ class PitiviPackage(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'pitivi'
-		self._version = '0.11.3'
 		self._section = 'misc'
 		self._priority = 'optional'
 		self._authors = ['Christophe Sauthier <christophe.sauthier@gmail.com>', 

@@ -10,7 +10,6 @@ class LibVirtPackage(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'libvirt'
-		self._version = '0.6.0'
 		self._section = 'development'
 		self._priority = 'optional'
 		self._authors = ['Daniel Veillard <veillard@redhat.com>']
@@ -63,6 +62,8 @@ class LibVirtPackage(BasePackage):
 									" of recent versions of Linux (and other OSes). The library aims at providing \n" + \
 									" a long term stable C API for different virtualization mechanisms. It currently \n" + \
 									" supports QEMU, KVM, and XEN."
+
+		self._changelog = [{"version" : "0.6.0", "time" : "Fri, 21 Aug 2009 19:49:12 -0700", "text" : "Initial release" } ]
 
 	def install(self):
 		return ''

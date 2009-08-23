@@ -11,7 +11,6 @@ class JokosherPackage(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'jokosher'
-		self._version = '0.11.1'
 		self._section = 'misc'
 		self._priority = 'optional'
 		self._authors = ['Jono Bacon <jono@jonobacon.org>', 

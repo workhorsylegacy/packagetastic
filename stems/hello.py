@@ -11,7 +11,6 @@ class HelloPackage(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'hello'
-		self._version = '2.1.1'
 		self._section = 'devel'
 		self._priority = 'optional'
 		self._authors = ['Free Software Foundation, Inc.']
