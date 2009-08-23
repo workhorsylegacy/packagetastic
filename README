@@ -1,13 +1,15 @@
-#
-#
-# Packagetastic is a generic packaging format, that can be automatically 
-# converted to distro specific packages, such as Dpkg and RPM.
-#
-# Development happens at:
-# http://launchpad.net/packagetastic
-#
-# The mailing list is located at:
-# http://lists.launchpad.net/packagetastic-developers
+
+
+Packagetastic is a new software packaging system for Linux. It is designed to 
+replace traditional packaging systems, while being backwards compatible with 
+them. For Example, you can create a Packagetastic package and install it, or 
+have a Dpkg or RPM package automatically generated from it.
+
+Development happens at:
+http://launchpad.net/packagetastic
+
+The mailing list is located at:
+http://lists.launchpad.net/packagetastic-developers
 
 
 Getting started on Debian:
@@ -52,6 +54,7 @@ Getting started on Fedora systems:
 
 Packagetastic one time setup:
 	# Setup your name, email, and password files
+	# Make sure to use the same email and name as in your gpg key
 	echo "Joe Packager" > packager_name
 	echo "joe.packager@linux.com" > packager_email
 	echo "password" > root_password
@@ -67,6 +70,7 @@ Building packages:
 	cd ..
 
 	# Run packagetastic with arguments for package and distro
+	# For now, use ubuntu as the distro name instead of debian
 	./packagetastic ubuntu hello
 
 
