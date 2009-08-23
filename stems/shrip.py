@@ -1,10 +1,5 @@
 #!/usr/bin/env python
-
 from lib_packagetastic import *
-
-# Move the path to the location of the current file
-os.chdir(os.sys.path[0])
-
 
 class ShripPackage(BasePackage):
 	def __init__(self):
