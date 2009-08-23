@@ -36,14 +36,14 @@ class Builder(object):
 		commands.getoutput("sudo -k")
 
 		# Make sure the source code exists
-		if not os.path.isfile(substitute_strings("sources/#{name}-#{version}.tar.gz", package.to_hash())):
-			print substitute_strings("Missing source code at: sources/#{name}-#{version}.tar.gz. Exiting ...", package.to_hash())
+		if not os.path.isfile("sources/" + package.source.split('/')[-1]):
+			print substitute_strings("Missing source code at: sources/" + package.source.split('/')[-1] + ". Exiting ...", package.to_hash())
 			exit()
 
 		# Uncompress the source code
 		print "Uncompressing source code ..."
 		if not os.path.isdir("builds"): os.mkdir("builds")
-		commands.getoutput(substitute_strings("cp sources/#{name}-#{version}.tar.gz builds/#{name}_#{version}.orig.tar.gz", package.to_hash()))
+		commands.getoutput(substitute_strings("cp sources/" + package.source.split('/')[-1] + " builds/#{name}_#{version}.orig.tar.gz", package.to_hash()))
 		os.chdir("builds")
 		commands.getoutput(substitute_strings("tar xzf #{name}_#{version}.orig.tar.gz", package.to_hash()))
 		os.chdir(substitute_strings("#{name}-#{version}", package.to_hash()))
