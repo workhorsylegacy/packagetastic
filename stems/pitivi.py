@@ -1,11 +1,12 @@
 #!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 from lib_packagetastic import *
 
-class PitiviPackage(BasePackage):
+class Meta(BaseMeta):
 	def __init__(self):
-		BasePackage.__init__(self)
+		BaseMeta.__init__(self)
 		self._name = 'pitivi'
-		self._section = 'misc'
+		self._section = 'gnome'
 		self._priority = 'optional'
 		self._authors = ['Christophe Sauthier <christophe.sauthier@gmail.com>', 
 							'Laszlo Pandy <laszlok2@gmail.com>', 
@@ -30,6 +31,22 @@ class PitiviPackage(BasePackage):
 		self._build_requirements = ['libxml-parser-perl', 
 										'intltool (>= 0.35)']
 
+		self._short_description = "non-linear audio/video editor using GStreamer"
+
+		self._long_description = "PiTiVi allows users to easily edit audio/video projects based on the\n" + \
+									"GStreamer framework.  PiTIVi provides several ways of creating and\n" + \
+									"modifying a timeline.  Ranging from a simple synopsis view (a-la\n" + \
+									"iMovie) to the full-blown editing view (aka Complex View) which puts\n" + \
+									"you in complete control of your editing."
+
+		self._changelog = [{"version" : "0.11.3", "time" : "Fri, 21 Aug 2009 18:20:25 -0700", "text" : "Initial release" } ]
+
+class Pitivi(BasePackage):
+	def __init__(self):
+		BasePackage.__init__(self)
+		self._name = 'pitivi'
+		self._section = 'gnome'
+		self._priority = 'optional'
 		self._install_requirements = ['python-gtk2 (>= 2.8)', 
 										'python-gst0.10 (>= 0.10.6)', 
 										'gstreamer0.10-gnonlin (>= 0.10.10)', 
@@ -46,16 +63,4 @@ class PitiviPackage(BasePackage):
 										'gstreamer0.10-x', 
 										'gnome-icon-theme', 
 										'python-pygoocanvas']
-
-		self._short_description = "non-linear audio/video editor using GStreamer"
-
-		self._long_description = "PiTiVi allows users to easily edit audio/video projects based on the\n" + \
-									"GStreamer framework.  PiTIVi provides several ways of creating and\n" + \
-									"modifying a timeline.  Ranging from a simple synopsis view (a-la\n" + \
-									"iMovie) to the full-blown editing view (aka Complex View) which puts\n" + \
-									"you in complete control of your editing."
-
-		self._changelog = [{"version" : "0.11.3", "time" : "Fri, 21 Aug 2009 18:20:25 -0700", "text" : "Initial release" } ]
-
-
 

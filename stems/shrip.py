@@ -1,9 +1,10 @@
 #!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 from lib_packagetastic import *
 
-class ShripPackage(BasePackage):
+class Meta(BaseMeta):
 	def __init__(self):
-		BasePackage.__init__(self)
+		BaseMeta.__init__(self)
 		self._name = 'shrip'
 		self._section = 'graphics'
 		self._priority = 'optional'
@@ -14,7 +15,6 @@ class ShripPackage(BasePackage):
 		self._source = 'http://downloads.sourceforge.net/ogmrip/shrip-0.5.0.tar.gz'
 		self._build_method = 'c library'
 
-		# FIXME: debhelper is a Debian specific package
 		self._build_requirements = ["libogmrip-dev (>= 0.10.0)",
 									"libdvdread-dev",
 									"libhal-dev",
@@ -36,17 +36,6 @@ class ShripPackage(BasePackage):
 									"libxml-parser-perl",
 									"libnotify-dev-gtk2.10"]
 
-		self._install_requirements = ["ogmrip (>= 0.10.0)",
-									"mplayer",
-									"mencoder",
-									"ogmtools",
-									"vorbis-tools (>= 1.0)",
-									"lame (>= 3.96)",
-									"mkvtoolnix (>= 0.9.5)",
-									"faac (>= 1.24)",
-									"tesseract | ocrad | gocr",
-									"gpac"]
-
 		self._short_description = 'Application for ripping and encoding DVD into AVI/OGM files'
 
 		self._long_description = "shrip is an application and a set of libraries for ripping and encoding\n" + \
@@ -65,9 +54,22 @@ class ShripPackage(BasePackage):
 		self._changelog = [{ "version" : "0.5.0", "time" : "Sun, 17 May 2009 05:49:14 +0000", "text" : "No changes. Rebuilt for fun." }, 
 							{"version" : "0.5.0", "time" : "Sat, 16 May 2009 05:49:14 +0000", "text" : "Initial release" } ]
 
-	def install(self):
-		return ''
-		#self.configure_make()
+class Shrip(BasePackage):
+	def __init__(self):
+		BasePackage.__init__(self)
+		self._name = 'shrip'
+		self._section = 'graphics'
+		self._priority = 'optional'
+		self._install_requirements = ["ogmrip (>= 0.10.0)",
+									"mplayer",
+									"mencoder",
+									"ogmtools",
+									"vorbis-tools (>= 1.0)",
+									"lame (>= 3.96)",
+									"mkvtoolnix (>= 0.9.5)",
+									"faac (>= 1.24)",
+									"tesseract | ocrad | gocr",
+									"gpac"]
 
 
 

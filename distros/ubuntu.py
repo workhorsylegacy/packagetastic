@@ -1,7 +1,7 @@
 
 
 class Builder(object):
-	def build(self, package, root_password, gpg_password):
+	def build(self, meta, packages, root_password, gpg_password):
 		# Make sure the password is legit
 		print "Checking if we can use sudo ..."
 		child = pexpect.spawn('bash -c "sudo -k; sudo su"', timeout=5)
@@ -36,41 +36,53 @@ class Builder(object):
 		commands.getoutput("sudo -k")
 
 		# Make sure the source code exists
-		if not os.path.isfile("sources/" + package.source.split('/')[-1]):
-			print substitute_strings("Missing source code at: sources/" + package.source.split('/')[-1] + ". Exiting ...", package.to_hash())
+		if not os.path.isfile("sources/" + meta.source.split('/')[-1]):
+			print substitute_strings("Missing source code at: sources/" + meta.source.split('/')[-1] + ". Exiting ...", meta.to_hash())
 			exit()
+
+		# Convert any .tar.bz2 files to .tar.gz
+		if meta.source.split('/')[-1].endswith('.tar.bz2'):
+			os.chdir('sources')
+			dir_name = meta.source.split('/')[-1].rstrip('.tar.bz2')
+			print "Converting bzip source code to gzip ..."
+			commands.getoutput("tar xjf " + meta.source.split('/')[-1])
+			commands.getoutput(substitute_strings("mv " + dir_name + " #{name}-#{version}", meta.to_hash()))
+			commands.getoutput(substitute_strings("tar -czf #{name}-#{version}.tar.gz #{name}-#{version}", meta.to_hash()))
+			commands.getoutput(substitute_strings("rm -rf #{name}-#{version}", meta.to_hash()))
+			meta.source = meta.source.rstrip(meta.source.split('/')[-1]) + substitute_strings("#{name}-#{version}.tar.gz", meta.to_hash())
+			os.chdir('..')
 
 		# Uncompress the source code
 		print "Uncompressing source code ..."
 		if not os.path.isdir("builds"): os.mkdir("builds")
-		commands.getoutput(substitute_strings("cp sources/" + package.source.split('/')[-1] + " builds/#{name}_#{version}.orig.tar.gz", package.to_hash()))
+		commands.getoutput(substitute_strings("cp sources/" + meta.source.split('/')[-1] + " builds/#{name}_#{version}.orig.tar.gz", meta.to_hash()))
 		os.chdir("builds")
-		commands.getoutput(substitute_strings("tar xzf #{name}_#{version}.orig.tar.gz", package.to_hash()))
-		os.chdir(substitute_strings("#{name}-#{version}", package.to_hash()))
+		commands.getoutput(substitute_strings("tar xzf #{name}_#{version}.orig.tar.gz", meta.to_hash()))
+		os.chdir(substitute_strings("#{name}-#{version}", meta.to_hash()))
 
 		# Create the debian dir
 		if not os.path.isdir("debian"): os.mkdir("debian")
 		os.chdir("debian")
 
 		# Copy any patches
-		if os.path.isdir("../../../patches/" + package.name) == True:
-			patch_files = os.listdir("../../../patches/" + package.name)
+		if os.path.isdir("../../../patches/" + meta.name) == True:
+			patch_files = os.listdir("../../../patches/" + meta.name)
 			patch_files.sort()
 			if not os.path.isdir("patches"): os.mkdir("patches")
 			for patch_file in patch_files:
 				if not patch_file.endswith("patch"): continue
-				commands.getoutput("cp ../../../patches/" + package.name + "/" + patch_file + " patches/" + patch_file)
+				commands.getoutput("cp ../../../patches/" + meta.name + "/" + patch_file + " patches/" + patch_file)
 
 		# Generate the rules file
 		print "Generating the rules file ..."
-		if package.build_method == 'c application' or package.build_method == 'c library':
-			self.generate_rules_file_for_c(package)
-		elif package.build_method == 'python application' or package.build_method == 'python library':
-			self.generate_rules_file_for_python(package)
-		elif package.build_method == 'mono application':
-			self.generate_rules_file_for_mono_application(package)
+		if meta.build_method == 'c application' or meta.build_method == 'c library':
+			self.generate_rules_file_for_c(meta, packages)
+		elif meta.build_method == 'python application' or meta.build_method == 'python library':
+			self.generate_rules_file_for_python(meta, packages)
+		elif meta.build_method == 'mono application':
+			self.generate_rules_file_for_mono_application(meta, packages)
 		else:
-			print "Unknown build method for generating rules file '" + package.build_method + "'. Exiting ..."
+			print "Unknown build method for generating rules file '" + meta.build_method + "'. Exiting ..."
 			exit()
 
 		# Create the compat file
@@ -81,16 +93,16 @@ class Builder(object):
 
 		# Create the control file
 		print "Generating control file ..."
-		if package.build_method == 'c application' or package.build_method == 'c library':
-			self.generate_control_file_for_c(package)
-		elif package.build_method == 'python application':
-			self.generate_control_file_for_python_application(package)
-		elif package.build_method == 'python library':
-			self.generate_control_file_for_python_library(package)
-		elif package.build_method == 'mono application':
-			self.generate_control_file_for_mono_application(package)
+		if meta.build_method == 'c application' or meta.build_method == 'c library':
+			self.generate_control_file_for_c(meta, packages)
+		elif meta.build_method == 'python application':
+			self.generate_control_file_for_python_application(meta, packages)
+		elif meta.build_method == 'python library':
+			self.generate_control_file_for_python_library(meta, packages)
+		elif meta.build_method == 'mono application':
+			self.generate_control_file_for_mono_application(meta, packages)
 		else:
-			print "Unknown build method for generating control file '" + package.build_method + "'. Exiting ..."
+			print "Unknown build method for generating control file '" + meta.build_method + "'. Exiting ..."
 			exit()
 
 
@@ -118,7 +130,7 @@ License:
 
 The Debian packaging is (C) #{year}, #{packager_name} <#{packager_email}> and
 is licensed under the #{license}, see above.
-""", package.to_hash()))
+""", meta.to_hash()))
 
 		f.close()
 
@@ -128,12 +140,12 @@ is licensed under the #{license}, see above.
 
 		# Create the changelog
 		changelog_body = ""
-		if package.changelog == None:
+		if meta.changelog == None:
 			print "The changelog is missing. Exiting ..."
 			exit()
 
 		prev_version = '0'
-		reverse_entries = package.changelog[:]
+		reverse_entries = meta.changelog[:]
 		reverse_entries.reverse()
 		for item in reverse_entries:
 			if prev_version == item['version']:
@@ -149,7 +161,7 @@ is licensed under the #{license}, see above.
 
  -- #{packager_name} <#{packager_email}>  #{item_time}
 
-""", package.to_hash({'mangle' : str(mangle), 
+""", meta.to_hash({'mangle' : str(mangle), 
 					'item_version' : item['version'], 
 					'item_time' : item['time'], 
 					'item_text' : item['text']}))
@@ -161,42 +173,43 @@ is licensed under the #{license}, see above.
 		f.close()
 
 		# Generate the .post install file
-		if package.alternate_name != None:
-			# Create the post install script
-			f = open(package.name + '.postinst', 'w')
+		for package in packages:
+			if package.alternate_name != None:
+				# Create the post install script
+				f = open(package.name + '.postinst', 'w')
 
-			f.write(substitute_strings(
+				f.write(substitute_strings(
 """#!/bin/sh
 
 set -e
 
 if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ]; then
-    update-alternatives --install /usr/bin/#{alternate_name} #{alternate_name} /usr/bin/#{name} 50 \\
-      --slave /usr/share/man/man1/#{alternate_name}.1.gz #{alternate_name}.1.gz \\
-      /usr/share/man/man1/#{name}.1.gz
+	update-alternatives --install /usr/bin/#{alternate_name} #{alternate_name} /usr/bin/#{name} 50 \\
+	  --slave /usr/share/man/man1/#{alternate_name}.1.gz #{alternate_name}.1.gz \\
+	  /usr/share/man/man1/#{name}.1.gz
 fi
 
 #DEBHELPER#
 """, package.to_hash()))
 
-			f.close()
+				f.close()
 
-			# Create the post uninstall script
-			f = open(package.name + '.prerm', 'w')
+				# Create the post uninstall script
+				f = open(package.name + '.prerm', 'w')
 
-			f.write(substitute_strings(
+				f.write(substitute_strings(
 """#!/bin/sh
  
 set -e
 
 if [ "$1" != "upgrade" ]; then
-    update-alternatives --remove #{alternate_name} /usr/bin/#{name}
+	update-alternatives --remove #{alternate_name} /usr/bin/#{name}
 fi
 
 #DEBHELPER#
 """, package.to_hash()))
 
-			f.close()
+				f.close()
 
 		# Run debuild
 		print "Running debuild ..."
@@ -213,20 +226,20 @@ fi
 							"dpkg-buildpackage: set LDFLAGS to default value: -Wl,-Bsymbolic-functions\r\n",
 							"dpkg-buildpackage: set FFLAGS to default value: -g -O2\r\n",
 							"dpkg-buildpackage: set CXXFLAGS to default value: -g -O2\r\n",
-							"dpkg-buildpackage: source package " + package.name + "\r\n",
-							"dpkg-buildpackage: source version " + package.version + "-" + str(mangle) + "\r\n",
-							"dpkg-buildpackage: source changed by " + package.packager_name + " <" + package.packager_email + ">" + "\r\n",
+							"dpkg-buildpackage: source package " + meta.name + "\r\n",
+							"dpkg-buildpackage: source version " + meta.version + "-" + str(mangle) + "\r\n",
+							"dpkg-buildpackage: source changed by " + meta.packager_name + " <" + meta.packager_email + ">" + "\r\n",
 							"fakeroot debian/rules clean",
 							"dh_testdir",
 							"dh_testroot",
 							"rm -f build-stamp",
 							"rm -f config.sub config.guess",
 							"dh_clean",
-							"dpkg-source -b " + package.name + "-" + package.version,
+							"dpkg-source -b " + meta.name + "-" + meta.version,
 							"dpkg-source: info: using source format `1.0'",
-							"dpkg-source: info: building " + package.name + " using existing " + package.name + "_" + package.version + ".orig.tar.gz",
-							"dpkg-source: info: building " + package.name + " in " + package.name + "_" + package.version + "-" + str(mangle) + ".diff.gz",
-							"dpkg-source: info: building " + package.name + " in " + package.name + "_" + package.version + "-" + str(mangle) + ".dsc",
+							"dpkg-source: info: building " + meta.name + " using existing " + meta.name + "_" + meta.version + ".orig.tar.gz",
+							"dpkg-source: info: building " + meta.name + " in " + meta.name + "_" + meta.version + "-" + str(mangle) + ".diff.gz",
+							"dpkg-source: info: building " + meta.name + " in " + meta.name + "_" + meta.version + "-" + str(mangle) + ".dsc",
 							"dpkg-genchanges: including full source code in upload",
 							"dpkg-buildpackage: source only upload (original source is included)",
 							"Now running lintian...",
@@ -237,22 +250,22 @@ fi
 							"Finished running lintian.",
 
 							"You need a passphrase to unlock the secret key for\r\n" +
-							"user: \"" + package.packager_name + " <" + package.packager_email + ">" + "\"\r\n" +
+							"user: \"" + meta.packager_name + " <" + meta.packager_email + ">" + "\"\r\n" +
 							"1024-bit DSA key, ID [\w]*, created \d*-\d*-\d*\r\n" +
 							"\r\n" +
 							"Enter passphrase: [\w|\s\W]*",
 
 							"gpg: Invalid passphrase; please try again ...",
 
-							"dpkg-source: error: syntax error in " + package.name + "-" + package.version + "/debian/control at line \d*: ",
+							"dpkg-source: error: syntax error in " + meta.name + "-" + meta.version + "/debian/control at line \d*: ",
 
 							"dpkg-buildpackage: failure: fakeroot debian/rules clean gave error exit status 2", 
 
 							"Successfully signed dsc and changes files\r\n",
 
-							"W\: " + package.name + " source\: [\w|\d|\s|\W|\.|\-]*\r\n",
+							"W\: " + meta.name + " source\: [\w|\d|\s|\W|\.|\-]*\r\n",
 
-							"E\: " + package.name + " source\: [\w|\d|\s|\W|\.|\-]*\r\n",
+							"E\: " + meta.name + " source\: [\w|\d|\s|\W|\.|\-]*\r\n",
 
 							pexpect.EOF]
 
@@ -296,7 +309,7 @@ fi
 		print "Running pbuilder ..."
 		os.chdir("..")
 
-		command = 'bash -c "sudo pbuilder build ' + package.name + '_' + package.version + '-' + str(mangle) + '.dsc"'
+		command = 'bash -c "sudo pbuilder build ' + meta.name + '_' + meta.version + '-' + str(mangle) + '.dsc"'
 		#print commands.getoutput(command)
 		#"""
 		child = pexpect.spawn(command, timeout=1200)
@@ -343,33 +356,34 @@ fi
 
 		# Determine the architecture
 		architecture = 'any'
-		if package.build_method == 'c application' or package.build_method == 'c library':
+		if meta.build_method == 'c application' or meta.build_method == 'c library':
 			architecture = 'i386'
-		elif package.build_method == 'python application':
+		elif meta.build_method == 'python application':
 			architecture = 'all'
-		elif package.build_method == 'python library':
+		elif meta.build_method == 'python library':
 			architecture = 'all'
-		elif package.build_method == 'mono application':
+		elif meta.build_method == 'mono application':
 			architecture = 'i386'
 		else:
-			print "Unknown build method for setting architecture '" + package.build_method + "'. Exiting ..."
+			print "Unknown build method for setting architecture '" + meta.build_method + "'. Exiting ..."
 			exit()
 
-		# Copy the deb from the cache
-		print "Getting deb file ..."
+		# Copy the deb files from the cache
+		print "Getting the deb files ..."
 		os.chdir('..')
 		if not os.path.isdir("packages"): os.mkdir("packages")
-		command = "cp /var/cache/pbuilder/result/" + \
-				package.name + "_" + package.version + '-' + str(mangle) + "_" + architecture + ".deb " + \
-				"packages/" + \
-				package.name + "_" + package.version + '-' + str(mangle) + "_" + architecture + ".deb"
-		print commands.getoutput(command)
+		for package in packages:
+			command = "cp /var/cache/pbuilder/result/" + \
+					package.name + "_" + meta.version + '-' + str(mangle) + "_" + architecture + ".deb " + \
+					"packages/" + \
+					package.name + "_" + meta.version + '-' + str(mangle) + "_" + architecture + ".deb"
+			print commands.getoutput(command)
 
 		print "Done"
 
-	def generate_rules_file_for_c(self, package):
+	def generate_rules_file_for_c(self, meta, packages):
 		# Make additions to fields
-		fields = package.to_hash()
+		fields = meta.to_hash()
 
 		# Add patches
 		fields["patches"] = ""
@@ -492,9 +506,9 @@ binary: binary-indep binary-arch
 """, fields))
 		f.close()
 
-	def generate_rules_file_for_mono_application(self, package):
+	def generate_rules_file_for_mono_application(self, meta, packages):
 
-		fields = package.to_hash()
+		fields = meta.to_hash()
 
 		# Add patches
 		fields["patches"] = ""
@@ -618,9 +632,9 @@ binary: binary-indep binary-arch
 
 		f.close()
 
-	def generate_rules_file_for_python(self, package):
+	def generate_rules_file_for_python(self, meta, packages):
 		# Make additions to fields
-		fields = package.to_hash()
+		fields = meta.to_hash()
 
 		# Determine if there is a changelog
 		if os.path.isfile('../ChangeLog'):
@@ -654,15 +668,11 @@ clean::
 
 		f.close()
 
-	def generate_control_file_for_c(self, package):
+	def generate_control_file_for_c(self, meta, packages):
 		# Make additions to fields
-		fields = package.to_hash({
-						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"] + package.build_requirements,
-						'install_requirements' : ["${shlibs:Depends}", "${misc:Depends}"] + package.install_requirements
+		fields = meta.to_hash({
+						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"] + meta.build_requirements,
 		})
-
-		# Make changes to fields
-		fields['long_description'] = ' ' + fields['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n")
 
 		f = open('control', 'w')
 		f.write(substitute_strings(
@@ -673,8 +683,24 @@ Maintainer: #{packager_name} <#{packager_email}>
 Build-Depends: #{build_requirements}
 Standards-Version: 3.8.0
 Homepage: #{homepage}
+""", fields))
 
+		for package in packages:
+			# Make additions to fields
+			fields = package.to_hash({
+							'install_requirements' : ["${shlibs:Depends}", "${misc:Depends}"] + package.install_requirements, 
+							'short_description' : package.meta.short_description, 
+							'long_description' : package.meta.long_description
+			})
+
+			# Make changes to fields
+			fields['long_description'] = ' ' + fields['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n")
+
+			f.write(substitute_strings(
+"""
 Package: #{name}
+Section: #{section}
+Priority: #{priority}
 Architecture: any
 Depends: #{install_requirements}
 Description: #{short_description}
@@ -683,15 +709,11 @@ Description: #{short_description}
 
 		f.close()
 
-	def generate_control_file_for_mono_application(self, package):
+	def generate_control_file_for_mono_application(self, meta, packages):
 		# Make additions to fields
-		fields = package.to_hash({
-						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"] + package.build_requirements,
-						'install_requirements' : ["${cli:Depends}", "${misc:Depends}", "${shlibs:Depends}"] + package.install_requirements
+		fields = meta.to_hash({
+						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"] + meta.build_requirements
 		})
-
-		# Make changes to fields
-		fields['long_description'] = ' ' + fields['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n")
 
 		f = open('control', 'w')
 		f.write(substitute_strings(
@@ -702,7 +724,21 @@ Maintainer: #{packager_name} <#{packager_email}>
 Build-Depends: #{build_requirements}
 Standards-Version: 3.8.0
 Homepage: #{homepage}
+""", fields))
 
+		for package in packages:
+			# Make additions to fields
+			fields = package.to_hash({
+							'install_requirements' : ["${cli:Depends}", "${misc:Depends}", "${shlibs:Depends}"] + package.install_requirements, 
+							'short_description' : package.meta.short_description, 
+							'long_description' : package.meta.long_description
+			})
+
+			# Make changes to fields
+			fields['long_description'] = ' ' + fields['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n")
+
+			f.write(substitute_strings(
+"""
 Package: #{name}
 Architecture: any
 Depends: #{install_requirements}
@@ -712,29 +748,41 @@ Description: #{short_description}
 
 		f.close()
 
-	def generate_control_file_for_python_application(self, package):
+	def generate_control_file_for_python_application(self, meta, packages):
 		# Make additions to fields
-		fields = package.to_hash({
-						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"] + package.build_requirements,
-						'install_requirements' : ["${python:Depends}", "${misc:Depends}"] + package.install_requirements
+		fields = meta.to_hash({
+						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"] + meta.build_requirements
 		})
-
-		# Make changes to fields
-		fields['long_description'] = ' ' + fields['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n")
 
 		f = open('control', 'w')
 		f.write(substitute_strings(
 """Source: #{name}
 Section: #{section}
+Priority: #{priority}
 XS-Python-Version: all
-Priority: #{priority}
 Maintainer: #{packager_name} <#{packager_email}>
 Build-Depends: debhelper (>= 5.0.62), python, cdbs (>= 0.4.49), #{build_requirements}
 Build-Depends-Indep: python-central (>= 0.5.6)
 Standards-Version: 3.8.0
 Homepage: #{homepage}
+""", fields))
 
+		for package in packages:
+			# Make additions to fields
+			fields = package.to_hash({
+							'install_requirements' : ["${python:Depends}", "${misc:Depends}"] + package.install_requirements, 
+							'short_description' : package.meta.short_description, 
+							'long_description' : package.meta.long_description
+			})
+
+			# Make changes to fields
+			fields['long_description'] = ' ' + fields['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n")
+
+			f.write(substitute_strings(
+"""
 Package: #{name}
+Section: #{section}
+Priority: #{priority}
 Architecture: all
 Depends: #{install_requirements}
 XB-Python-Version: ${python:Versions}
@@ -744,29 +792,41 @@ Description: #{short_description}
 
 		f.close()
 
-	def generate_control_file_for_python_library(self, package):
+	def generate_control_file_for_python_library(self, meta, packages):
 		# Make additions to fields
-		fields = package.to_hash({
-						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"] + package.build_requirements,
-						'install_requirements' : ["${python:Depends}", "${misc:Depends}"] + package.install_requirements
+		fields = meta.to_hash({
+						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"] + meta.build_requirements
 		})
-
-		# Make changes to fields
-		fields['long_description'] = ' ' + fields['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n")
 
 		f = open('control', 'w')
 		f.write(substitute_strings(
 """Source: #{name}
 Section: #{section}
-XS-Python-Version: all
 Priority: #{priority}
+XS-Python-Version: all
 Maintainer: #{packager_name} <#{packager_email}>
 Build-Depends: debhelper (>= 5.0.62), python, cdbs (>= 0.4.49), #{build_requirements}
 Build-Depends-Indep: python-central (>= 0.5.6)
 Standards-Version: 3.8.0
 Homepage: #{homepage}
+""", fields))
 
+		for package in packages:
+			# Make additions to fields
+			fields = package.to_hash({
+							'install_requirements' : ["${python:Depends}", "${misc:Depends}"] + package.install_requirements, 
+							'short_description' : package.meta.short_description, 
+							'long_description' : package.meta.long_description
+			})
+
+			# Make changes to fields
+			fields['long_description'] = ' ' + fields['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n")
+
+			f.write(substitute_strings(
+"""
 Package: #{name}
+Section: #{section}
+Priority: #{priority}
 Architecture: all
 Depends: #{install_requirements}
 XB-Python-Version: ${python:Versions}

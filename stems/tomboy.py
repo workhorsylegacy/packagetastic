@@ -1,9 +1,10 @@
 #!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 from lib_packagetastic import *
 
-class TomboyPackage(BasePackage):
+class Meta(BaseMeta):
 	def __init__(self):
-		BasePackage.__init__(self)
+		BaseMeta.__init__(self)
 		self._name = 'tomboy'
 		self._section = 'gnome'
 		self._priority = 'optional'
@@ -43,8 +44,6 @@ class TomboyPackage(BasePackage):
 									'libmono-addins-gui0.2-cil (>= 0.2-4)', 
 									'libgnomepanel2.24-cil']
 
-		self._install_requirements = []
-
 		self._short_description = "desktop note taking program using Wiki style links"
 
 		self._long_description = "desktop note taking program using Wiki style links\n" + \
@@ -54,7 +53,13 @@ class TomboyPackage(BasePackage):
 
 		self._changelog = [{"version" : "0.15.0", "time" : "Tue, 11 Aug 2009 20:31:55 -0700", "text" : "Initial release" } ]
 
-
+class Tomboy(BasePackage):
+	def __init__(self):
+		BasePackage.__init__(self)
+		self._name = 'tomboy'
+		self._section = 'gnome'
+		self._priority = 'optional'
+		self._install_requirements = []
 
 
 

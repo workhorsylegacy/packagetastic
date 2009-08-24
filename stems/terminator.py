@@ -1,11 +1,11 @@
 #!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 from lib_packagetastic import *
 
-class TerminatorPackage(BasePackage):
+class Meta(BaseMeta):
 	def __init__(self):
-		BasePackage.__init__(self)
+		BaseMeta.__init__(self)
 		self._name = 'terminator'
-		self._alternate_name = 'x-terminal-emulator'
 		self._section = 'misc'
 		self._priority = 'optional'
 		self._authors = ['Chris Jones <cmsj@tenshu.net>']
@@ -17,8 +17,6 @@ class TerminatorPackage(BasePackage):
 
 		self._build_requirements = ['python-devel', 'gettext', 'desktop-file-utils']
 
-		self._install_requirements = ['python-gobject', 'python-gtk2', 'python-gconf', 'python-vte']
-
 		self._short_description = "multiple GNOME terminals in one window"
 
 		self._long_description = "Terminator is a little project to produce an efficient way of\n" + \
@@ -28,7 +26,15 @@ class TerminatorPackage(BasePackage):
 									"key bindings to switch between them. See the manpage for\n" + \
 									"details."
 
-		self._changelog = [{"version" : "0.12", "time" : "Fri, 07 Aug 2009 18:32:26 -0700 ", "text" : "Initial release" } ]
+		self._changelog = [{"version" : "0.12", "time" : "Fri, 07 Aug 2009 18:32:26 -0700", "text" : "Initial release" } ]
 
-
+class Shrip(BasePackage):
+	def __init__(self):
+		BasePackage.__init__(self)
+		self._name = 'terminator'
+		self._alternate_name = 'x-terminal-emulator'
+		self._section = 'misc'
+		self._priority = 'optional'
+		self._install_requirements = ['python-gobject', 'python-gtk2', 
+										'python-gconf', 'python-vte']
 

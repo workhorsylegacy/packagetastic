@@ -1,9 +1,10 @@
 #!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 from lib_packagetastic import *
 
-class SpaceponyClientPackage(BasePackage):
+class Meta(BaseMeta):
 	def __init__(self):
-		BasePackage.__init__(self)
+		BaseMeta.__init__(self)
 		self._name = 'spacepony-client'
 		self._section = 'misc'
 		self._priority = 'optional'
@@ -16,16 +17,20 @@ class SpaceponyClientPackage(BasePackage):
 
 		self._build_requirements = ['python-devel', 'gettext', 'desktop-file-utils']
 
-		self._install_requirements = ['python-gobject', 'python-gconf', 'python-vte', 
-										'python-pyinotify', 'pyactiveresource']
-
 		self._short_description = "Desktop settings syncing client"
 
 		self._long_description = "Space Pony makes it easy to sync your Linux desktop settings \n" + \
 									"to the web and other machines. "
 
-		self._changelog = [{"version" : "0.1.0", "time" : "Fri, 07 Aug 2009 18:32:26 -0700 ", "text" : "Initial release" } ]
+		self._changelog = [{"version" : "0.1.0", "time" : "Fri, 07 Aug 2009 18:32:26 -0700", "text" : "Initial release" } ]
 
-
+class Shrip(BasePackage):
+	def __init__(self):
+		BasePackage.__init__(self)
+		self._name = 'spacepony-client'
+		self._section = 'misc'
+		self._priority = 'optional'
+		self._install_requirements = ['python-gobject', 'python-gconf', 'python-vte', 
+										'python-pyinotify', 'pyactiveresource']
 
 

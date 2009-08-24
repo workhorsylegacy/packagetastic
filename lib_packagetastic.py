@@ -1,9 +1,11 @@
 #!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 
 import os, time, re
 import commands
 import pexpect
 import base64
+import gc
 
 
 licenses = { 'GPL2+' : \
@@ -91,20 +93,18 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 }
 
-def to_package_class_name(package_name):
-	name = package_name.capitalize() + 'Package()'
-	retval = ''
+def distroify_requirements(meta, requirements):
+	# Convert the requirements to the style for the distro
+	retval = []
+	for req in requirements:
+		if meta.distro_style == 'fedora' and req.endswith('-dev'):
+			req += 'el'
+		elif meta.distro_style == 'ubuntu' and req.endswith('-devel'):
+			req = req[:-2]
 
-	prev_was_dash = False
-	for i in range(len(name)):
-		if prev_was_dash:
-			retval += name[i].capitalize()
-		else:
-			retval += name[i]
+		retval.append(req)
 
-		prev_was_dash = (name[i] == '-')
-
-	return retval.replace('-', '')
+	return retval
 
 def substitute_strings(string, sub_hash):
 	result = string[:]
@@ -124,13 +124,11 @@ def substitute_strings(string, sub_hash):
 			result = result[:start] + replacement + result[end:]
 	return result
 
-class BasePackage(object):
+class BaseMeta(object):
 	def __init__(self):
 		self._name = None
-		self._alternate_name = None
-		self._version = None
-		self._section = None
 		self._priority = None
+		self._section = None
 		self._authors = []
 		self._copyright = []
 		self._packager_name = None
@@ -140,7 +138,6 @@ class BasePackage(object):
 		self._source = None
 		self._build_method = None
 		self._build_requirements = []
-		self._install_requirements = []
 		self._short_description = None
 		self._long_description = None
 		self._distro_style = None
@@ -150,21 +147,13 @@ class BasePackage(object):
 	def set_name(self, value): self._name = value
 	name = property(get_name, set_name)
 
-	def get_alternate_name(self): return self._alternate_name
-	def set_alternate_name(self, value): self._alternate_name = value
-	alternate_name = property(get_alternate_name, set_alternate_name)
-
-	def get_version(self): return self._version
-	def set_version(self, value): self._version = value
-	version = property(get_version, set_version)
+	def get_priority(self): return self._priority
+	def set_priority(self, value): self._priority = value
+	priority = property(get_priority, set_priority)
 
 	def get_section(self): return self._section
 	def set_section(self, value): self._section = value
 	section = property(get_section, set_section)
-
-	def get_priority(self): return self._priority
-	def set_priority(self, value): self._priority = value
-	priority = property(get_priority, set_priority)
 
 	def get_authors(self): return self._authors
 	def set_authors(self, value): self._authors = value
@@ -198,13 +187,9 @@ class BasePackage(object):
 	def set_build_method(self, value): self._build_method = value
 	build_method = property(get_build_method, set_build_method)
 
-	def get_build_requirements(self): return self.distroify_requirements(self._build_requirements)
+	def get_build_requirements(self): return distroify_requirements(self, self._build_requirements)
 	def set_build_requirements(self, value): self._build_requirements = value
 	build_requirements = property(get_build_requirements, set_build_requirements)
-
-	def get_install_requirements(self): return self.distroify_requirements(self._install_requirements)
-	def set_install_requirements(self, value): self._install_requirements = value
-	install_requirements = property(get_install_requirements, set_install_requirements)
 
 	def get_short_description(self): return self._short_description
 	def set_short_description(self, value): self._short_description = value
@@ -233,10 +218,9 @@ class BasePackage(object):
 
 	def to_hash(self, additional_fields=None):
 		retval={ 'name' : self.name, 
-				'alternate_name' : self.alternate_name, 
-				'version' : self.version, 
-				'section' : self.section, 
 				'priority' : self.priority, 
+				'section' : self.section, 
+				'version' : self.version, 
 				'authors' : self.authors, 
 				'copyright' : self.copyright, 
 				'packager_name' : self.packager_name, 
@@ -246,7 +230,6 @@ class BasePackage(object):
 				'source' : self.source, 
 				'build_method' : self.build_method, 
 				'build_requirements' : self.build_requirements, 
-				'install_requirements' : self.install_requirements, 
 				'short_description' : self.short_description, 
 				'long_description' : self.long_description, 
 				'after_install' : self.after_install(), 
@@ -270,7 +253,6 @@ class BasePackage(object):
 		retval['authors'] = str.join("\n    ", retval['authors'])
 		retval['copyright'] = str.join("\n    ", retval['copyright'])
 		retval['build_requirements'] = str.join(join_style, retval['build_requirements'])
-		retval['install_requirements'] = str.join(join_style, retval['install_requirements'])
 		retval['year'] = time.strftime("%Y", time.localtime())
 		retval['timestring'] = time.strftime("%a, %d %b %Y %H:%M:%S %z", time.localtime())
 		retval['human_timestring'] = time.strftime("%a %b %d %Y", time.localtime())
@@ -279,38 +261,73 @@ class BasePackage(object):
 
 		return retval
 
-	def distroify_requirements(self, requirements):
-		# Convert the requirements to the style for the distro
-		retval = []
-		for req in requirements:
-			if self.distro_style == 'fedora' and req.endswith('-dev'):
-				req += 'el'
-			elif self.distro_style == 'ubuntu' and req.endswith('-devel'):
-				req = req[:-2]
+class BasePackage(object):
+	def __init__(self):
+		self._name = None
+		self._alternate_name = None
+		self._priority = None
+		self._section = None
+		self._install_requirements = []
+		self._additional_description = None
+		self.meta = None
 
-			retval.append(req)
+	def get_name(self): return self._name
+	def set_name(self, value): self._name = value
+	name = property(get_name, set_name)
+
+	def get_alternate_name(self): return self._alternate_name
+	def set_alternate_name(self, value): self._alternate_name = value
+	alternate_name = property(get_alternate_name, set_alternate_name)
+
+	def get_priority(self): return self._priority
+	def set_priority(self, value): self._priority = value
+	priority = property(get_priority, set_priority)
+
+	def get_section(self): return self._section
+	def set_section(self, value): self._section = value
+	section = property(get_section, set_section)
+
+	def get_install_requirements(self): return distroify_requirements(self.meta, self._install_requirements)
+	def set_install_requirements(self, value): self._install_requirements = value
+	install_requirements = property(get_install_requirements, set_install_requirements)
+
+	def get_additional_description(self): return self._additional_description
+	def set_additional_description(self, value): self._additional_description = value
+	additional_description = property(get_additional_description, set_additional_description)
+
+	def get_meta(self): return self._meta
+	def set_meta(self, value): self._meta = value
+	meta = property(get_meta, set_meta)
+
+	def to_hash(self, additional_fields=None):
+		retval={ 'name' : self.name, 
+				'alternate_name' : self.alternate_name, 
+				'priority' : self.priority, 
+				'section' : self.section, 
+				'install_requirements' : self.install_requirements, 
+				'additional_description' : self.additional_description, 
+				}
+
+		# Add custom data
+		if additional_fields != None:
+			retval.update(additional_fields)
+
+		# Get the distros current style for joining lists of items
+		join_style = ''
+		if self._meta.distro_style == 'fedora':
+			join_style = ' '
+		elif self._meta.distro_style == 'ubuntu':
+			join_style = ', '
+
+		# Make changes that make data easier to use
+		retval['install_requirements'] = str.join(join_style, retval['install_requirements'])
+		retval['year'] = time.strftime("%Y", time.localtime())
+		retval['timestring'] = time.strftime("%a, %d %b %Y %H:%M:%S %z", time.localtime())
+		retval['human_timestring'] = time.strftime("%a %b %d %Y", time.localtime())
 
 		return retval
 
-
 def build(distro_name, package_name):
-	# Make sure we have a distro file that matches the name
-	if not os.path.isfile('distros/' + distro_name + '.py'):
-		print "Packagetastic does not know how to build for the distro '" + distro_name + "'. Exiting ..."
-		exit()
-
-	# Make sure we have a stem file that matches the name
-	if not os.path.isfile('stems/' + package_name + '.py'):
-		print "Packagetastic does not have a stem file for the package '" + package_name + "'. Exiting ..."
-		exit()
-
-	# Load the distro and stem files
-	execfile('distros/' + distro_name + '.py')
-	execfile('stems/' + package_name + '.py')
-
-	# Get the package to build
-	package = eval(to_package_class_name(package_name))
-
 	# Make sure the packager_name file exists
 	if not os.path.isfile('packager_name'):
 		print "Add the packager name to the 'packager_name' file."
@@ -332,11 +349,11 @@ def build(distro_name, package_name):
 		exit()
 
 	f = open('packager_name')
-	package.packager_name = f.read()[0:-1]
+	packager_name = f.read()[0:-1]
 	f.close()
 
 	f = open('packager_email')
-	package.packager_email = f.read()[0:-1]
+	packager_email = f.read()[0:-1]
 	f.close()
 
 	f = open('root_password')
@@ -347,10 +364,49 @@ def build(distro_name, package_name):
 	gpg_password = f.read()[0:-1]
 	f.close()
 
+	# Make sure we have a distro file that matches the name
+	if not os.path.isfile('distros/' + distro_name + '.py'):
+		print "Packagetastic does not know how to build for the distro '" + distro_name + "'. Exiting ..."
+		exit()
+
+	# Make sure we have a stem file that matches the name
+	if not os.path.isfile('stems/' + package_name + '.py'):
+		print "Packagetastic does not have a stem file for the package '" + package_name + "'. Exiting ..."
+		exit()
+
+	# Load the distro and stem files
+	execfile('distros/' + distro_name + '.py')
+	execfile('stems/' + package_name + '.py')
+
+	# Get the package meta data
+	meta = None
+	for obj in gc.get_objects():
+		if type(obj) == type and issubclass(obj, BaseMeta) and obj().name == package_name:
+			meta = obj()
+			break
+
+	# Get the packages to build
+	packages = []
+	for obj in gc.get_objects():
+		if type(obj) == type and obj != BasePackage and issubclass(obj, BasePackage):
+			package = obj()
+			package.meta = meta
+			packages.append(package)
+
+	# Make sure meta and packages were loaded
+	if not meta:
+		print "No BaseMeta class was found in the stem file. Exiting ..."
+		exit()
+	if len(packages) == 0:
+		print "No BasePackage classes were found in the stem file. Exiting ..."
+		exit()
+
 	# Build the package for that distro
-	package.distro_style = distro_name
+	meta.packager_name = packager_name
+	meta.packager_email = packager_email
+	meta.distro_style = distro_name
 	builder = eval('Builder()')
-	builder.build(package, root_password, gpg_password)
+	builder.build(meta, packages, root_password, gpg_password)
 
 
 

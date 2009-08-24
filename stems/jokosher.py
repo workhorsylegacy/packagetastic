@@ -1,11 +1,12 @@
 #!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 from lib_packagetastic import *
 
-class JokosherPackage(BasePackage):
+class Meta(BaseMeta):
 	def __init__(self):
-		BasePackage.__init__(self)
+		BaseMeta.__init__(self)
 		self._name = 'jokosher'
-		self._section = 'misc'
+		self._section = 'sound'
 		self._priority = 'optional'
 		self._authors = ['Jono Bacon <jono@jonobacon.org>', 
 							'Jason Field <jfield@sonaptic.com>', 
@@ -31,16 +32,6 @@ class JokosherPackage(BasePackage):
 
 		self._build_requirements = ['python-support']
 
-		self._install_requirements = ['python-cairo', 
-										'python-dbus', 
-										'python-glade2', 
-										'python-gtk2', 
-										'python-gst0.10', 
-										'gstreamer0.10-gnonlin (>= 0.10.8)', 
-										'gstreamer0.10-plugins-good (>= 0.10.9)', 
-										'gstreamer0.10-plugins-base (>= 0.10.12)', 
-										'python-setuptools']
-
 		self._short_description = "simple and easy to use audio multi-tracker"
 
 		self._long_description = "Jokosher is a simple and poweful multi-track studio. Jokosher provides a\n" + \
@@ -51,5 +42,19 @@ class JokosherPackage(BasePackage):
 
 		self._changelog = [{"version" : "0.11.1", "time" : "Fri, 21 Aug 2009 19:49:12 -0700", "text" : "Initial release" } ]
 
-
+class Jokosher(BasePackage):
+	def __init__(self):
+		BasePackage.__init__(self)
+		self._name = 'jokosher'
+		self._section = 'sound'
+		self._priority = 'optional'
+		self._install_requirements = ['python-cairo', 
+										'python-dbus', 
+										'python-glade2', 
+										'python-gtk2', 
+										'python-gst0.10', 
+										'gstreamer0.10-gnonlin (>= 0.10.8)', 
+										'gstreamer0.10-plugins-good (>= 0.10.9)', 
+										'gstreamer0.10-plugins-base (>= 0.10.12)', 
+										'python-setuptools']
 

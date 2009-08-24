@@ -1,9 +1,10 @@
 #!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 from lib_packagetastic import *
 
-class HelloPackage(BasePackage):
+class Meta(BaseMeta):
 	def __init__(self):
-		BasePackage.__init__(self)
+		BaseMeta.__init__(self)
 		self._name = 'hello'
 		self._section = 'devel'
 		self._priority = 'optional'
@@ -16,8 +17,6 @@ class HelloPackage(BasePackage):
 
 		self._build_requirements = ["gettext"]
 
-		self._install_requirements = ["info"]
-
 		self._short_description = 'The classic greeting, and a good example'
 
 		self._long_description = "The GNU hello program produces a familiar, friendly greeting.  It\n" + \
@@ -26,5 +25,11 @@ class HelloPackage(BasePackage):
 
 		self._changelog = [{"version" : "2.1.1", "time" : "Fri, 07 Aug 2009 18:32:26 -0700", "text" : "Initial release" } ]
 
-
+class Hello(BasePackage):
+	def __init__(self):
+		BasePackage.__init__(self)
+		self._name = 'hello'
+		self._section = 'devel'
+		self._priority = 'optional'
+		self._install_requirements = ["info"]
 

@@ -1,9 +1,10 @@
 #!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 from lib_packagetastic import *
 
-class PexpectPackage(BasePackage):
+class Meta(BaseMeta):
 	def __init__(self):
-		BasePackage.__init__(self)
+		BaseMeta.__init__(self)
 		self._name = 'pexpect'
 		self._section = 'python'
 		self._priority = 'optional'
@@ -20,8 +21,6 @@ class PexpectPackage(BasePackage):
 		self._build_method = 'python library'
 
 		self._build_requirements = []
-
-		self._install_requirements = []
 
 		self._short_description = "Pexpect is a pure Python Expect. It allows easy control of other applications."
 
@@ -44,5 +43,13 @@ class PexpectPackage(BasePackage):
 		"# Correct some permissions\n" + \
 		"find examples -type f -exec chmod a-x \{\} \;\n" + \
 		"chmod 755 $RPM_BUILD_ROOT%{python_sitelib}/FSM.py"
+
+class Pexpect(BasePackage):
+	def __init__(self):
+		BasePackage.__init__(self)
+		self._name = 'pexpect'
+		self._section = 'python'
+		self._priority = 'optional'
+		self._install_requirements = []
 
 

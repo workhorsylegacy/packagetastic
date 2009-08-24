@@ -1,9 +1,10 @@
 #!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 from lib_packagetastic import *
 
-class PyactiveresourcePackage(BasePackage):
+class Meta(BaseMeta):
 	def __init__(self):
-		BasePackage.__init__(self)
+		BaseMeta.__init__(self)
 		self._name = 'pyactiveresource'
 		self._section = 'python'
 		self._priority = 'optional'
@@ -16,8 +17,6 @@ class PyactiveresourcePackage(BasePackage):
 
 		self._build_requirements = []
 
-		self._install_requirements = []
-
 		self._short_description = "ActiveResource for Python."
 
 		self._long_description = "Active Resource attempts to provide a coherent wrapper object-relational \n" + \
@@ -25,8 +24,14 @@ class PyactiveresourcePackage(BasePackage):
 								" in that one of its prime aims is to reduce the amount of code needed to map to\n" + \
 								" these resources."
 
-		self._changelog = [{"version" : "1.0.0", "time" : "Fri, 07 Aug 2009 18:32:26 -0700 ", "text" : "Initial release" } ]
+		self._changelog = [{"version" : "1.0.0", "time" : "Fri, 07 Aug 2009 18:32:26 -0700", "text" : "Initial release" } ]
 
-
+class Pyactiveresource(BasePackage):
+	def __init__(self):
+		BasePackage.__init__(self)
+		self._name = 'pyactiveresource'
+		self._section = 'python'
+		self._priority = 'optional'
+		self._install_requirements = []
 
 

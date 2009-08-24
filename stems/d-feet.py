@@ -1,12 +1,13 @@
 #!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 from lib_packagetastic import *
 
-class DFeetPackage(BasePackage):
+class Meta(BaseMeta):
 	def __init__(self):
-		BasePackage.__init__(self)
+		BaseMeta.__init__(self)
 		self._name = 'd-feet'
-		self._section = 'misc'
-		self._priority = 'optional'
+		self._section = 'devel'
+		self._priority = 'extra'
 		self._authors = ['John (J5) Palmieri <johnp@redhat.com>']
 		self._copyright = ['2003, 2004, 2005, 2006 Red Hat Inc. <http://www.redhat.com/>', 
 							'2003 David Zeuthen', 
@@ -19,10 +20,6 @@ class DFeetPackage(BasePackage):
 
 		self._build_requirements = ['python-support']
 
-		self._install_requirements = ['python-dbus (>= 0.82.3)', 
-										'python-gtk2', 
-										'python-glade2']
-
 		self._short_description = "A D-Bus object browser, viewer and debugger"
 
 		self._long_description = "d-feet is a D-Bus debugger that allow you to:\n" + \
@@ -33,5 +30,13 @@ class DFeetPackage(BasePackage):
 
 		self._changelog = [{"version" : "0.1.8", "time" : "Fri, 21 Aug 2009 20:12:51 -0700", "text" : "Initial release" } ]
 
-
+class DFeet(BasePackage):
+	def __init__(self):
+		BasePackage.__init__(self)
+		self._name = 'd-feet'
+		self._section = 'devel'
+		self._priority = 'extra'
+		self._install_requirements = ['python-dbus (>= 0.82.3)', 
+										'python-gtk2', 
+										'python-glade2']
 
