@@ -29,12 +29,12 @@ class Builder(object):
 
 		child.close()
 		if had_error:
-			print "Incorrect password for root. Exiting ..."
+			print "Incorrect password for sudo. Exiting ..."
 			exit()
 
 		# Clear the left overs from pbuilder
 		if os.path.isdir("/var/cache/pbuilder/build/"):
-			print "Clearing the pbuilder scraps ..."
+			print "Removing the pbuilder scraps ..."
 			for entry in os.listdir("/var/cache/pbuilder/build/"):
 				child = pexpect.spawn('bash -c "sudo rm -rf /var/cache/pbuilder/build/' + entry + '"', timeout=5)
 				expected_lines = ["\[sudo\] password for [\w|\s]*: ", 
@@ -121,13 +121,13 @@ class Builder(object):
 			exit()
 
 		# Create the compat file
-		print "Generating compat file ..."
+		print "Generating the compat file ..."
 		f = open('compat', 'w')
 		f.write('7')
 		f.close()
 
 		# Create the control file
-		print "Generating control file ..."
+		print "Generating the control file ..."
 		if meta.build_method == 'c application' or meta.build_method == 'c library':
 			self.generate_control_file_for_c(meta, packages)
 		elif meta.build_method == 'python application':
@@ -142,7 +142,7 @@ class Builder(object):
 
 
 		# Create the copyright file
-		print "Generating copyright file ..."
+		print "Generating the copyright file ..."
 		f = open('copyright', 'w')
 
 		f.write(substitute_strings(
