@@ -32,6 +32,41 @@ class Builder(object):
 			print "Incorrect password for root. Exiting ..."
 			exit()
 
+		# Clear the left overs from pbuilder
+		if os.path.isdir("/var/cache/pbuilder/build/"):
+			print "Clearing the pbuilder scraps ..."
+			for entry in os.listdir("/var/cache/pbuilder/build/"):
+				child = pexpect.spawn('bash -c "sudo rm -rf /var/cache/pbuilder/build/' + entry + '"', timeout=5)
+				expected_lines = ["\[sudo\] password for [\w|\s]*: ", 
+									pexpect.EOF]
+
+				still_reading = True
+				while still_reading:
+					result = child.expect(expected_lines)
+
+					if result == 0:
+						child.sendline(root_password)
+					elif result == len(expected_lines)-1:
+						still_reading = False
+
+				child.close()
+
+			for entry in os.listdir("/var/cache/pbuilder/result/"):
+				child = pexpect.spawn('bash -c "sudo rm -rf /var/cache/pbuilder/result/' + entry + '"', timeout=5)
+				expected_lines = ["\[sudo\] password for [\w|\s]*: ", 
+									pexpect.EOF]
+
+				still_reading = True
+				while still_reading:
+					result = child.expect(expected_lines)
+
+					if result == 0:
+						child.sendline(root_password)
+					elif result == len(expected_lines)-1:
+						still_reading = False
+
+				child.close()
+
 		# clear sudo so we don't use it till needed
 		commands.getoutput("sudo -k")
 
