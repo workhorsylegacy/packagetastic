@@ -268,7 +268,7 @@ class BasePackage(object):
 		self._priority = None
 		self._section = None
 		self._install_requirements = []
-		self._additional_description = None
+		self._additional_description = ""
 		self.meta = None
 
 	def get_name(self): return self._name

@@ -694,7 +694,9 @@ Homepage: #{homepage}
 			})
 
 			# Make changes to fields
-			fields['long_description'] = ' ' + fields['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n")
+			if len(package.additional_description) > 0:
+				fields['long_description'] += "\n\n" + package.additional_description
+			fields['long_description'] = ' ' + fields['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n") 
 
 			f.write(substitute_strings(
 """
@@ -735,11 +737,15 @@ Homepage: #{homepage}
 			})
 
 			# Make changes to fields
-			fields['long_description'] = ' ' + fields['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n")
+			if len(package.additional_description) > 0:
+				fields['long_description'] += "\n\n" + package.additional_description
+			fields['long_description'] = ' ' + fields['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n") 
 
 			f.write(substitute_strings(
 """
 Package: #{name}
+Section: #{section}
+Priority: #{priority}
 Architecture: any
 Depends: #{install_requirements}
 Description: #{short_description}
@@ -776,7 +782,9 @@ Homepage: #{homepage}
 			})
 
 			# Make changes to fields
-			fields['long_description'] = ' ' + fields['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n")
+			if len(package.additional_description) > 0:
+				fields['long_description'] += "\n\n" + package.additional_description
+			fields['long_description'] = ' ' + fields['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n") 
 
 			f.write(substitute_strings(
 """
@@ -820,7 +828,9 @@ Homepage: #{homepage}
 			})
 
 			# Make changes to fields
-			fields['long_description'] = ' ' + fields['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n")
+			if len(package.additional_description) > 0:
+				fields['long_description'] += "\n\n" + package.additional_description
+			fields['long_description'] = ' ' + fields['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n") 
 
 			f.write(substitute_strings(
 """
