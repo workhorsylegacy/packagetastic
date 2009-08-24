@@ -320,6 +320,8 @@ fi
 
 							"patching file [\w|\s|\d|\.|\-|\/]*\r\nHunk \#\d FAILED at [\d]*\.\r\nHunk \#\d FAILED at [\d]*\.\r\n", 
 
+							"patch -p0 < debian\/patches\/[\d|\w|\.|\-|\_]*\r\ncan't find file to patch at input line [\d]*", 
+
 							"The following packages have unmet dependencies:\r\n" + 
 							"[\w|\W|\s|\d|\.|\-|\/|\r|\n]*" + 
 							"The following actions will resolve these dependencies:", 
@@ -341,6 +343,11 @@ fi
 				print child.after
 				had_error = True
 			elif result == 3:
+				print "Failed to build package. Broke when applying patch. Exiting ..."
+				print child.after
+				had_error = True
+				child.sendcontrol('c')
+			elif result == 4:
 				print "Failed to build. Dependencies not in the repositories:"
 				for entry in child.after.split('Depends: ')[1:]:
 					print entry.strip().split(' which is a')[0]
