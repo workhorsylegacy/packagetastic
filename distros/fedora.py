@@ -7,22 +7,7 @@ class Builder(object):
 		commands.getoutput('rm -rf ~/rpmbuild')
 		commands.getoutput('rpmdev-setuptree')
 
-		# Make sure the source code exists
-		if not os.path.isfile("sources/" + package.source.split('/')[-1]):
-			print substitute_strings("Missing source code at: sources/" + package.source.split('/')[-1] + ". Exiting ...", package.to_hash())
-			exit()
-
-		# Copy the source code to the build tree
-		print "Copying the source code ..."
-		commands.getoutput(substitute_strings("cp sources/" + package.source.split('/')[-1] + " ~/rpmbuild/SOURCES/" + package.source.split('/')[-1], package.to_hash()))
-
-		# Uncompress the source code so we can examine it
-		print "Uncompressing source code ..."
-		if not os.path.isdir("builds"): os.mkdir("builds")
-		commands.getoutput(substitute_strings("cp sources/" + package.source.split('/')[-1] + " builds/#{name}_#{version}.orig.tar.gz", package.to_hash()))
-		os.chdir("builds")
-		commands.getoutput(substitute_strings("tar xzf #{name}_#{version}.orig.tar.gz", package.to_hash()))
-		os.chdir(substitute_strings("#{name}-#{version}", package.to_hash()))
+		setup_source_code(meta)
 
 		# FIXME: Figure out how %defattr(-,root,root,-) works
 		# Determine the params for %files

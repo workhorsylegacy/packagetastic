@@ -93,6 +93,32 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 }
 
+def setup_source_code(meta):
+	# Make sure the source code exists
+	if not os.path.isfile("sources/" + meta.source.split('/')[-1]):
+		print substitute_strings("Missing source code at: sources/" + meta.source.split('/')[-1] + ". Exiting ...", meta.to_hash())
+		exit()
+
+	# Convert any .tar.bz2 files to .tar.gz
+	if meta.source.split('/')[-1].endswith('.tar.bz2'):
+		os.chdir('sources')
+		dir_name = meta.source.split('/')[-1].rstrip('.tar.bz2')
+		print "Converting bzip source code to gzip ..."
+		commands.getoutput("tar xjf " + meta.source.split('/')[-1])
+		commands.getoutput(substitute_strings("mv " + dir_name + " #{name}-#{version}", meta.to_hash()))
+		commands.getoutput(substitute_strings("tar -czf #{name}-#{version}.tar.gz #{name}-#{version}", meta.to_hash()))
+		commands.getoutput(substitute_strings("rm -rf #{name}-#{version}", meta.to_hash()))
+		meta.source = meta.source.rstrip(meta.source.split('/')[-1]) + substitute_strings("#{name}-#{version}.tar.gz", meta.to_hash())
+		os.chdir('..')
+
+	# Uncompress the source code
+	print "Uncompressing source code ..."
+	if not os.path.isdir("builds"): os.mkdir("builds")
+	commands.getoutput(substitute_strings("cp sources/" + meta.source.split('/')[-1] + " builds/#{name}_#{version}.orig.tar.gz", meta.to_hash()))
+	os.chdir("builds")
+	commands.getoutput(substitute_strings("tar xzf #{name}_#{version}.orig.tar.gz", meta.to_hash()))
+	os.chdir(substitute_strings("#{name}-#{version}", meta.to_hash()))
+
 def distroify_requirements(meta, requirements):
 	# Convert the requirements to the style for the distro
 	retval = []
