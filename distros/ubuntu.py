@@ -1,5 +1,4 @@
 
-
 class Builder(object):
 	def build(self, meta, packages, root_password, gpg_password):
 		# Make sure the password is legit
@@ -690,7 +689,7 @@ clean::
 	def generate_control_file_for_c(self, meta, packages):
 		# Make additions to fields
 		fields = meta.to_hash({
-						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"] + meta.build_requirements,
+						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"],
 		})
 
 		f = open('control', 'w')
@@ -707,7 +706,7 @@ Homepage: #{homepage}
 		for package in packages:
 			# Make additions to fields
 			fields = package.to_hash({
-							'install_requirements' : ["${shlibs:Depends}", "${misc:Depends}"] + package.install_requirements, 
+							'install_requirements' : meta.join(["${shlibs:Depends}", "${misc:Depends}"]), 
 							'short_description' : package.meta.short_description, 
 							'long_description' : package.meta.long_description
 			})
@@ -733,7 +732,7 @@ Description: #{short_description}
 	def generate_control_file_for_mono_application(self, meta, packages):
 		# Make additions to fields
 		fields = meta.to_hash({
-						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"] + meta.build_requirements
+						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"]
 		})
 
 		f = open('control', 'w')
@@ -750,7 +749,7 @@ Homepage: #{homepage}
 		for package in packages:
 			# Make additions to fields
 			fields = package.to_hash({
-							'install_requirements' : ["${cli:Depends}", "${misc:Depends}", "${shlibs:Depends}"] + package.install_requirements, 
+							'install_requirements' : meta.join(["${cli:Depends}", "${misc:Depends}", "${shlibs:Depends}"]), 
 							'short_description' : package.meta.short_description, 
 							'long_description' : package.meta.long_description
 			})
@@ -776,7 +775,7 @@ Description: #{short_description}
 	def generate_control_file_for_python_application(self, meta, packages):
 		# Make additions to fields
 		fields = meta.to_hash({
-						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"] + meta.build_requirements
+						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"]
 		})
 
 		f = open('control', 'w')
@@ -795,7 +794,7 @@ Homepage: #{homepage}
 		for package in packages:
 			# Make additions to fields
 			fields = package.to_hash({
-							'install_requirements' : ["${python:Depends}", "${misc:Depends}"] + package.install_requirements, 
+							'install_requirements' : meta.join(["${python:Depends}", "${misc:Depends}"]), 
 							'short_description' : package.meta.short_description, 
 							'long_description' : package.meta.long_description
 			})
@@ -822,7 +821,7 @@ Description: #{short_description}
 	def generate_control_file_for_python_library(self, meta, packages):
 		# Make additions to fields
 		fields = meta.to_hash({
-						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"] + meta.build_requirements
+						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"]
 		})
 
 		f = open('control', 'w')
@@ -841,7 +840,7 @@ Homepage: #{homepage}
 		for package in packages:
 			# Make additions to fields
 			fields = package.to_hash({
-							'install_requirements' : ["${python:Depends}", "${misc:Depends}"] + package.install_requirements, 
+							'install_requirements' : meta.join(["${python:Depends}", "${misc:Depends}"]), 
 							'short_description' : package.meta.short_description, 
 							'long_description' : package.meta.long_description
 			})
@@ -864,4 +863,3 @@ Description: #{short_description}
 """, fields))
 
 		f.close()
-

@@ -1,5 +1,4 @@
 
-
 class Builder(object):
 	def build(self, meta, packages, root_password, gpg_password):
 		# Setup the directories
@@ -125,7 +124,7 @@ class Builder(object):
 				'install' : self.generate_install_for_c(meta, params), 
 				'install_extra' : self.generate_install_extras(meta, params), 
 				'changelog' : self.generate_changelog(meta), 
-				'install_requirements' : str.join(', ', packages[0].install_requirements)
+				'install_requirements' : meta.join(packages[0].install_requirements)
 		})
 
 		f = open(os.path.expanduser('~/rpmbuild/SPECS/') + meta.name + '.spec', 'w')
@@ -187,13 +186,13 @@ rm -rf %{buildroot}
 		# Make additions to fields
 		fields = meta.to_hash({
 				'build_arch' : 'noarch', 
-				'build_requirements' : ['python-devel'] + meta.build_requirements, 
+				'build_requirements' : ['python-setuptools-devel'], 
 				'files' : self.generate_file(meta, params), 
 				'pre_and_post' : self.generate_pre_and_post_functions(meta, params), 
 				'install' : self.generate_install_for_python_library(meta, params), 
 				'install_extra' : self.generate_install_extras(meta, params), 
 				'changelog' : self.generate_changelog(meta), 
-				'install_requirements' : str.join(', ', packages[0].install_requirements + ['python'])
+				'install_requirements' : meta.join(packages[0].install_requirements + ['python'])
 		})
 
 		f = open(os.path.expanduser('~/rpmbuild/SPECS/') + meta.name + '.spec', 'w')
@@ -390,5 +389,3 @@ desktop-file-install --dir=%{buildroot}%{_datadir}/applications data/%{name}.des
 			changelog_body = entry + changelog_body
 
 		return changelog_body
-
-

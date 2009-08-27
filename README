@@ -14,8 +14,11 @@ http://lists.launchpad.net/packagetastic-developers
 
 Getting started on Debian:
 
+	# add your user to the sudo group
+	echo 'username ALL=(ALL) ALL' >> /etc/sudoers
+
 	# install requirements:
-	sudo apt-get install build-essential cdbs dh-make pbuilder fakeroot debhelper devscripts gnupg python-pexpect
+	sudo apt-get install build-essential cdbs dh-make pbuilder fakeroot debhelper devscripts gnupg python-pexpect bzr
 
 	# create gpg key:
 	gpg --no-use-agent --gen-key
@@ -28,7 +31,7 @@ Getting started on Debian:
 Getting started on Ubuntu:
 
 	# install requirements:
-	sudo apt-get install build-essential cdbs dh-make pbuilder fakeroot debhelper devscripts gnupg python-pexpect
+	sudo apt-get install build-essential cdbs dh-make pbuilder fakeroot debhelper devscripts gnupg python-pexpect bzr
 
 	# create gpg key:
 	gpg --no-use-agent --gen-key
@@ -53,6 +56,10 @@ Getting started on Fedora systems:
 	sudo yum install rpmdevtools pexpect
 
 Packagetastic one time setup:
+	# Get the code if you have not
+	bzr branch lp:packagetastic
+	cd packagetastic
+
 	# Setup your name, email, and password files
 	# Make sure to use the same email and name as in your gpg key
 	echo "Joe Packager" > packager_name

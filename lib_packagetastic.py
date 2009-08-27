@@ -242,6 +242,26 @@ class BaseMeta(object):
 	def after_uninstall(self): pass
 	def before_uninstall(self): pass
 
+	def join(self, data):
+		# Make sure the data is a list
+		list_instance = None
+		if isinstance(data, list):
+			list_instance = data + []
+		else:
+			list_instance = [data]
+
+		# Strip off ()
+		if self.distro_style == 'fedora':
+			for i in range(len(list_instance)):
+				list_instance[i] = list_instance[i].replace('(', '')
+				list_instance[i] = list_instance[i].replace(')', '')
+				list_instance[i] = list_instance[i].replace('|', ' or ')
+
+		if self.distro_style == 'fedora':
+			return str.join(' ', list_instance)
+		elif self.distro_style == 'ubuntu':
+			return str.join(', ', list_instance)
+
 	def to_hash(self, additional_fields=None):
 		retval={ 'name' : self.name, 
 				'priority' : self.priority, 
@@ -266,19 +286,19 @@ class BaseMeta(object):
 
 		# Add custom data
 		if additional_fields != None:
-			retval.update(additional_fields)
-
-		# Get the distros current style for joining lists of items
-		join_style = ''
-		if self.distro_style == 'fedora':
-			join_style = ' '
-		elif self.distro_style == 'ubuntu':
-			join_style = ', '
+			for key, value in additional_fields.iteritems():
+				if retval.has_key(key):
+					if isinstance(value, list):
+						retval[key] += value
+					else:
+						retval[key].append(value)
+				else:
+					retval[key] = value
 
 		# Make changes that make data easier to use
 		retval['authors'] = str.join("\n    ", retval['authors'])
 		retval['copyright'] = str.join("\n    ", retval['copyright'])
-		retval['build_requirements'] = str.join(join_style, retval['build_requirements'])
+		retval['build_requirements'] = self.join(retval['build_requirements'])
 		retval['year'] = time.strftime("%Y", time.localtime())
 		retval['timestring'] = time.strftime("%a, %d %b %Y %H:%M:%S %z", time.localtime())
 		retval['human_timestring'] = time.strftime("%a %b %d %Y", time.localtime())
@@ -336,17 +356,17 @@ class BasePackage(object):
 
 		# Add custom data
 		if additional_fields != None:
-			retval.update(additional_fields)
-
-		# Get the distros current style for joining lists of items
-		join_style = ''
-		if self._meta.distro_style == 'fedora':
-			join_style = ' '
-		elif self._meta.distro_style == 'ubuntu':
-			join_style = ', '
+			for key, value in additional_fields.iteritems():
+				if retval.has_key(key):
+					if isinstance(value, list):
+						retval[key] += value
+					else:
+						retval[key].append(value)
+				else:
+					retval[key] = value
 
 		# Make changes that make data easier to use
-		retval['install_requirements'] = str.join(join_style, retval['install_requirements'])
+		retval['install_requirements'] = self.meta.join(retval['install_requirements'])
 		retval['year'] = time.strftime("%Y", time.localtime())
 		retval['timestring'] = time.strftime("%a, %d %b %Y %H:%M:%S %z", time.localtime())
 		retval['human_timestring'] = time.strftime("%a %b %d %Y", time.localtime())
@@ -433,7 +453,3 @@ def build(distro_name, package_name):
 	meta.distro_style = distro_name
 	builder = eval('Builder()')
 	builder.build(meta, packages, root_password, gpg_password)
-
-
-
-
