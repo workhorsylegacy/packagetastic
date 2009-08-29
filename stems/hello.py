@@ -6,7 +6,7 @@ class Meta(BaseMeta):
 	def __init__(self):
 		BaseMeta.__init__(self)
 		self._name = 'hello'
-		self._section = 'devel'
+		self._category = 'Development/Tools'
 		self._priority = 'optional'
 		self._authors = ['Free Software Foundation, Inc.']
 		self._copyright = ['1992, 1995, 1996, 1997-1999, 2000-2002 Free Software Foundation, Inc.']
@@ -29,7 +29,7 @@ class Hello(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'hello'
-		self._section = 'devel'
+		self._category = 'Development/Tools'
 		self._priority = 'optional'
 		self._install_requirements = ["info"]
 

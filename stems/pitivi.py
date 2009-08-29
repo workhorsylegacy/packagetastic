@@ -6,7 +6,7 @@ class Meta(BaseMeta):
 	def __init__(self):
 		BaseMeta.__init__(self)
 		self._name = 'pitivi'
-		self._section = 'gnome'
+		self._category = 'Applications/Video'
 		self._priority = 'optional'
 		self._authors = ['Christophe Sauthier <christophe.sauthier@gmail.com>', 
 							'Laszlo Pandy <laszlok2@gmail.com>', 
@@ -45,7 +45,7 @@ class Pitivi(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'pitivi'
-		self._section = 'gnome'
+		self._category = 'Applications/Video'
 		self._priority = 'optional'
 		self._install_requirements = ['python-gtk2 (>= 2.8)', 
 										'python-gst0.10 (>= 0.10.6)', 

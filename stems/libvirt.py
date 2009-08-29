@@ -6,7 +6,7 @@ class LibVirtPackage(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'libvirt'
-		self._section = 'development'
+		self._category = 'Development/Libraries'
 		self._priority = 'optional'
 		self._authors = ['Daniel Veillard <veillard@redhat.com>']
 		self._copyright = ['2000 Daniel Veillard', 

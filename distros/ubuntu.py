@@ -1,5 +1,47 @@
 
 class Builder(object):
+	# http://www.debian.org/doc/debian-policy/ch-archive.html#s-subsections
+	category_to_section = {
+		'Applications/Archiving' : 'Applications/Archiving', 
+		'Applications/Audio' : 'sound', 
+		'Applications/Communications' : 'comm', 
+		'Applications/Databases' : 'database', 
+		'Applications/Editors' : 'editors', 
+		'Applications/Emulators' : 'misc', 
+		'Applications/Engineering' : 'science', 
+		'Applications/File' : 'editors', 
+		'Applications/Games' : 'games', 
+		'Applications/Graphics' : 'graphics', 
+		'Applications/HamRadio' : 'hamradio', 
+		'Applications/Internet' : 'web', 
+		'Applications/Office' : 'editors', 
+		'Applications/Publishing' : 'editors', 
+		'Applications/System' : 'admin', 
+		'Applications/Text' : 'text', 
+		'Applications/Video' : 'video', 
+		'Applications/Virtualization' : 'misc', 
+		'Development/Debuggers' : 'debug', 
+		'Development/Languages' : 'devel', 
+		'Development/Libraries' : 'libdevel', 
+		'Development/System' : 'devel', 
+		'Development/Tools' : 'devel', 
+		'Development/VersionControlSystems' : 'vcs', 
+		'Documentation' : 'doc', 
+		'Localization' : 'localization', 
+		'System/Base' : 'misc', 
+		'System/Daemons' : 'misc', 
+		'System/Databases' : 'database', 
+		'System/Desktops' : 'misc', 
+		'System/Drivers' : 'misc', 
+		'System/FileSystems' : 'misc', 
+		'System/Fonts' : 'misc', 
+		'System/Kernel' : 'kernel', 
+		'System/Libraries' : 'libs', 
+		'System/Shells' : 'shells', 
+		'System/Virtualization' : 'misc', 
+		'System/WebServers' : 'web'
+	}
+
 	def build(self, meta, packages, root_password, gpg_password):
 		# Make sure the password is legit
 		print "Checking if we can use sudo ..."
@@ -694,6 +736,7 @@ clean::
 		# Make additions to fields
 		fields = meta.to_hash({
 						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"],
+						'section' : self.category_to_section[meta.category]
 		})
 
 		f = open('control', 'w')
@@ -712,7 +755,8 @@ Homepage: #{homepage}
 			fields = package.to_hash({
 							'install_requirements' : meta.join(["${shlibs:Depends}", "${misc:Depends}"]), 
 							'short_description' : package.meta.short_description, 
-							'long_description' : package.meta.long_description
+							'long_description' : package.meta.long_description, 
+							'section' : self.category_to_section[meta.category]
 			})
 
 			# Make changes to fields
@@ -736,7 +780,8 @@ Description: #{short_description}
 	def generate_control_file_for_mono_application(self, meta, packages):
 		# Make additions to fields
 		fields = meta.to_hash({
-						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"]
+						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"], 
+						'section' : self.category_to_section[meta.category]
 		})
 
 		f = open('control', 'w')
@@ -755,7 +800,8 @@ Homepage: #{homepage}
 			fields = package.to_hash({
 							'install_requirements' : meta.join(["${cli:Depends}", "${misc:Depends}", "${shlibs:Depends}"]), 
 							'short_description' : package.meta.short_description, 
-							'long_description' : package.meta.long_description
+							'long_description' : package.meta.long_description, 
+							'section' : self.category_to_section[meta.category]
 			})
 
 			# Make changes to fields
@@ -779,7 +825,8 @@ Description: #{short_description}
 	def generate_control_file_for_python_application(self, meta, packages):
 		# Make additions to fields
 		fields = meta.to_hash({
-						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"]
+						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"], 
+						'section' : self.category_to_section[meta.category]
 		})
 
 		f = open('control', 'w')

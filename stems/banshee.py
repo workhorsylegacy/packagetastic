@@ -6,7 +6,7 @@ class Meta(BaseMeta):
 	def __init__(self):
 		BaseMeta.__init__(self)
 		self._name = 'banshee'
-		self._section = 'sound'
+		self._category = 'Applications/Audio'
 		self._priority = 'optional'
 		self._authors = ['Aaron Bockover <abock@gnome.org>', 
 							'Gabriel Burt <gabriel.burt@gmail.com>', 
@@ -92,7 +92,7 @@ class Banshee(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'banshee'
-		self._section = 'sound'
+		self._category = 'Applications/Audio'
 		self._priority = 'optional'
 		self._install_requirements = ['gstreamer0.10-plugins-base', 
 										'gstreamer0.10-plugins-good (>= 0.10.8-4)', 
@@ -110,7 +110,7 @@ class Documentation(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'monodoc-banshee-manual'
-		self._section = 'doc'
+		self._category = 'Documentation'
 		self._priority = 'optional'
 		self._install_requirements = ['monodoc-manual']
 

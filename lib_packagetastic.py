@@ -7,6 +7,47 @@ import pexpect
 import base64
 import gc
 
+packagetastic_categories = [
+	'Applications/Archiving', 
+	'Applications/Audio', 
+	'Applications/Communications', 
+	'Applications/Databases', 
+	'Applications/Editors', 
+	'Applications/Emulators', 
+	'Applications/Engineering', 
+	'Applications/File', 
+	'Applications/Games', 
+	'Applications/Graphics', 
+	'Applications/HamRadio', 
+	'Applications/Internet', 
+	'Applications/Multimedia', 
+	'Applications/Office', 
+	'Applications/Publishing', 
+	'Applications/System', 
+	'Applications/Text', 
+	'Applications/Video', 
+	'Applications/Virtualization', 
+	'Development/Debuggers', 
+	'Development/Languages', 
+	'Development/Libraries', 
+	'Development/System', 
+	'Development/Tools', 
+	'Development/VersionControlSystems', 
+	'Documentation', 
+	'Localization', 
+	'System/Base', 
+	'System/Daemons', 
+	'System/Databases', 
+	'System/Desktops', 
+	'System/Drivers', 
+	'System/FileSystems', 
+	'System/Fonts', 
+	'System/Kernel', 
+	'System/Libraries', 
+	'System/Shells', 
+	'System/Virtualization', 
+	'System/WebServers'
+]
 
 licenses = { 'GPL2+' : \
 """    This package is free software; you can redistribute it and/or modify
@@ -154,7 +195,7 @@ class BaseMeta(object):
 	def __init__(self):
 		self._name = None
 		self._priority = None
-		self._section = None
+		self._category = None
 		self._authors = []
 		self._copyright = []
 		self._packager_name = None
@@ -177,9 +218,9 @@ class BaseMeta(object):
 	def set_priority(self, value): self._priority = value
 	priority = property(get_priority, set_priority)
 
-	def get_section(self): return self._section
-	def set_section(self, value): self._section = value
-	section = property(get_section, set_section)
+	def get_category(self): return self._category
+	def set_category(self, value): self._category = value
+	category = property(get_category, set_category)
 
 	def get_authors(self): return self._authors
 	def set_authors(self, value): self._authors = value
@@ -280,7 +321,7 @@ class BaseMeta(object):
 	def to_hash(self, additional_fields=None):
 		retval={ 'name' : self.name, 
 				'priority' : self.priority, 
-				'section' : self.section, 
+				'category' : self.category, 
 				'version' : self.version, 
 				'release' : str(self.release), 
 				'authors' : self.authors, 
@@ -328,7 +369,7 @@ class BasePackage(object):
 		self._name = None
 		self._alternate_name = None
 		self._priority = None
-		self._section = None
+		self._category = None
 		self._install_requirements = []
 		self._additional_description = ""
 		self.meta = None
@@ -345,9 +386,9 @@ class BasePackage(object):
 	def set_priority(self, value): self._priority = value
 	priority = property(get_priority, set_priority)
 
-	def get_section(self): return self._section
-	def set_section(self, value): self._section = value
-	section = property(get_section, set_section)
+	def get_category(self): return self._category
+	def set_category(self, value): self._category = value
+	category = property(get_category, set_category)
 
 	def get_install_requirements(self): return distroify_requirements(self.meta, self._install_requirements)
 	def set_install_requirements(self, value): self._install_requirements = value
@@ -365,7 +406,7 @@ class BasePackage(object):
 		retval={ 'name' : self.name, 
 				'alternate_name' : self.alternate_name, 
 				'priority' : self.priority, 
-				'section' : self.section, 
+				'category' : self.category, 
 				'install_requirements' : self.install_requirements, 
 				'additional_description' : self.additional_description, 
 				}

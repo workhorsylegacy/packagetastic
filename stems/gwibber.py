@@ -6,7 +6,7 @@ class Meta(BaseMeta):
 	def __init__(self):
 		BaseMeta.__init__(self)
 		self._name = 'gwibber'
-		self._section = 'misc'
+		self._category = 'Applications/Communications'
 		self._priority = 'optional'
 		self._authors = ['Ryan Paul (SegPhault) <segphault@arstechnica.com>']
 		self._copyright = ['2008 Ryan Paul']
@@ -28,7 +28,7 @@ class Gwibber(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'gwibber'
-		self._section = 'misc'
+		self._category = 'Applications/Communications'
 		self._priority = 'optional'
 		self._install_requirements = ['python-dbus', 
 										'python-gtk2', 

@@ -6,7 +6,7 @@ class Meta(BaseMeta):
 	def __init__(self):
 		BaseMeta.__init__(self)
 		self._name = 'jokosher'
-		self._section = 'sound'
+		self._category = 'Applications/Audio'
 		self._priority = 'optional'
 		self._authors = ['Jono Bacon <jono@jonobacon.org>', 
 							'Jason Field <jfield@sonaptic.com>', 
@@ -46,7 +46,7 @@ class Jokosher(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'jokosher'
-		self._section = 'sound'
+		self._category = 'Applications/Audio'
 		self._priority = 'optional'
 		self._install_requirements = ['python-cairo', 
 										'python-dbus', 

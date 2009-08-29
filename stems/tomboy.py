@@ -6,7 +6,7 @@ class Meta(BaseMeta):
 	def __init__(self):
 		BaseMeta.__init__(self)
 		self._name = 'tomboy'
-		self._section = 'gnome'
+		self._category = 'Applications/Office'
 		self._priority = 'optional'
 		self._authors = ['Alex Graveley <alex@beatniksoftware.com>', 
 							'Boyd Timothy <btimothy@gmail.com>', 
@@ -57,7 +57,7 @@ class Tomboy(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'tomboy'
-		self._section = 'gnome'
+		self._category = 'Applications/Office'
 		self._priority = 'optional'
 		self._install_requirements = []
 

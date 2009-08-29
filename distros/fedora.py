@@ -4,58 +4,46 @@ class Builder(object):
 	# In Fedora, the lists of groups can be found with:
 	# less /usr/share/doc/rpm-*/GROUPS
 	# http://fedoraproject.org/wiki/PackageMaintainers/CreatingPackageHowTo#Spec_file_pieces_explained
-	sections = {
-		'admin' : 'Applications/System', 
-		'cli-mono' : 'Development/Libraries', 
-		'comm' : 'Applications/Communications', 
-		'database' : 'Applications/Databases', 
-		'devel' : 'Development/System', 
-		'debug' : 'Development/Debuggers', 
-		'doc' : 'Documentation', 
-		'editors' : 'Applications/Editors', 
-		'electronics' : 'Applications/Engineering', 
-		'embedded' : 'Development/Tools', 
-		'fonts' : 'User Interface/X', 
-		'games' : 'Amusements/Games', 
-		'gnome' : 'User Interface/Desktops', 
-		'graphics' : 'Amusements/Graphics', 
-		'gnu-r' : 'Development/Libraries', 
-		'gnustep' : 'User Interface/Desktops', 
-		'hamradio' : 'Applications/Communications', 
-		'haskell' : 'Development/Libraries', 
-		'httpd' : 'System Environment/Daemons', 
-		'interpreters' : 'Development/Libraries', 
-		'java' : 'Development/Libraries', 
-		'kde' : 'User Interface/Desktops', 
-		'kernel' : 'System Environment/Kernel', 
-		'libs' : 'System Environment/Libraries', 
-		'libdevel' : 'Development/Libraries', 
-		'lisp' : 'Development/Libraries', 
-		'localization' : 'System Environment/Base', 
-		'mail' : 'Applications/Internet', 
-		'math' : 'Applications/Engineering', 
-		'misc' : 'Applications/System', 
-		'net' : 'Applications/Internet', 
-		'news' : 'Applications/Publishing', 
-		'ocaml' : 'Development/Libraries', 
-		'oldlibs' : 'System Environment/Libraries', 
-		'otherosfs' : 'System Environment/Base', 
-		'perl' : 'Development/Libraries', 
-		'php' : 'Development/Libraries', 
-		'python' : 'Development/Libraries', 
-		'ruby' : 'Development/Libraries', 
-		'science' : 'Applications/Engineering', 
-		'shells' : 'System Environment/Shells', 
-		'sound' : 'Applications/Multimedia', 
-		'tex' : 'System Environment/Base', 
-		'text' : 'Applications/Text', 
-		'utils' : 'Development/Tools', 
-		'vcs' : 'Development/Tools', 
-		'video' : 'Applications/Multimedia', 
-		'web' : 'Applications/Internet', 
-		'x11' : 'User Interface/X', 
-		'xfce' : 'User Interface/Desktops', 
-		'zope' : 'System Environment/Libraries'
+	category_to_group = {
+		'Applications/Audio' : 'Applications/Multimedia', 
+		'Applications/Archiving' : 'Applications/Archiving', 
+		'Applications/Communications' : 'Applications/Communications', 
+		'Applications/Databases' : 'Applications/Databases', 
+		'Applications/Editors' : 'Applications/Editors', 
+		'Applications/Emulators' : 'Applications/Emulators', 
+		'Applications/Engineering' : 'Applications/Engineering', 
+		'Applications/File' : 'Applications/File', 
+		'Applications/Games' : 'Amusements/Games', 
+		'Applications/Graphics' : 'Applications/Multimedia', 
+		'Applications/HamRadio' : 'Applications/Engineering', 
+		'Applications/Internet' : 'Applications/Internet', 
+		'Applications/Multimedia' : 'Applications/Multimedia', 
+		'Applications/Office' : 'Applications/Productivity', 
+		'Applications/Publishing' : 'Applications/Publishing', 
+		'Applications/System' : 'Applications/System', 
+		'Applications/Text' : 'Applications/Text', 
+		'Applications/Video' : 'Applications/Multimedia', 
+		'Applications/Virtualization' : 'Applications/System', 
+		'Development/Debuggers' : 'Development/Debuggers', 
+		'Development/Languages' : 'Development/Languages', 
+		'Development/Libraries' : 'Development/Libraries', 
+		'Development/System' : 'Development/System', 
+		'Development/Tools' : 'Development/Tools', 
+		'Development/VersionControlSystems' : 'Development/Tools', 
+		'Documentation' : 'Documentation', 
+		'Localization' : 'Applications/Text', 
+		'System/Base' : 'System Environment/Base', 
+		'System/Daemons' : 'System Environment/Daemons', 
+		'System/Databases' : 'System Environment/Daemons', 
+		'System/Desktops' : 'User Interface/Desktops', 
+		'System/Drivers' : 'User Interface/X Hardware Support', 
+		'System/FileSystems' : 'System Environment/Base', 
+		'System/Fonts' : 'User Interface/X', 
+		'System/Kernel' : 'System Environment/Kernel', 
+		'System/Libraries' : 'System Environment/Libraries', 
+		'System/Shells' : 'System Environment/Shells', 
+		'System/Virtualization' : 'System Environment/Daemons', 
+		'System/WebServers' : 'System Environment/Daemons'
 	}
 
 	def build(self, meta, packages, root_password, gpg_password):
@@ -183,7 +171,7 @@ class Builder(object):
 				'install_extra' : self.generate_install_extras(meta, params), 
 				'changelog' : self.generate_changelog(meta), 
 				'install_requirements' : meta.join(packages[0].install_requirements), 
-				'group' : self.sections[meta.section]
+				'group' : self.category_to_group[meta.category]
 		})
 
 		f = open(os.path.expanduser('~/rpmbuild/SPECS/') + meta.name + '.spec', 'w')
@@ -252,7 +240,7 @@ rm -rf %{buildroot}
 				'install_extra' : self.generate_install_extras(meta, params), 
 				'changelog' : self.generate_changelog(meta), 
 				'install_requirements' : meta.join(packages[0].install_requirements + ['python']), 
-				'group' : self.sections[meta.section]
+				'group' : self.category_to_group[meta.category]
 		})
 
 		f = open(os.path.expanduser('~/rpmbuild/SPECS/') + meta.name + '.spec', 'w')

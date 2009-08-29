@@ -6,7 +6,7 @@ class Meta(BaseMeta):
 	def __init__(self):
 		BaseMeta.__init__(self)
 		self._name = 'terminator'
-		self._section = 'misc'
+		self._category = 'Applications/System'
 		self._priority = 'optional'
 		self._authors = ['Chris Jones <cmsj@tenshu.net>']
 		self._copyright = ['2006-2008 Chris Jones']
@@ -33,7 +33,7 @@ class Shrip(BasePackage):
 		BasePackage.__init__(self)
 		self._name = 'terminator'
 		self._alternate_name = 'x-terminal-emulator'
-		self._section = 'misc'
+		self._category = 'Applications/System'
 		self._priority = 'optional'
 		self._install_requirements = ['python-gobject', 'python-gtk2', 
 										'python-gconf', 'python-vte']
