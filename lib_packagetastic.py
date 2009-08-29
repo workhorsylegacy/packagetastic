@@ -237,6 +237,21 @@ class BaseMeta(object):
 		return self._changelog[0]['version']
 	version = property(get_version)
 
+	def get_release(self):
+		changelog_release = 1
+		prev_version = '0'
+		reverse_entries = self._changelog[:]
+		reverse_entries.reverse()
+		for item in reverse_entries:
+			if prev_version == item['version']:
+				changelog_release += 1
+			else:
+				changelog_release = 1
+			prev_version = item['version']
+
+		return changelog_release
+	release = property(get_release)
+
 	def after_install(self): pass
 	def before_install(self): pass
 	def after_uninstall(self): pass
@@ -267,6 +282,7 @@ class BaseMeta(object):
 				'priority' : self.priority, 
 				'section' : self.section, 
 				'version' : self.version, 
+				'release' : self.release, 
 				'authors' : self.authors, 
 				'copyright' : self.copyright, 
 				'packager_name' : self.packager_name, 

@@ -111,7 +111,7 @@ class Builder(object):
 		os.chdir(packagetastic_dir)
 		if not os.path.isdir("packages"): os.mkdir("packages")
 		arch = fields['build_arch']
-		rpm = meta.name + "-" + meta.version + "-1.fc11." + arch + ".rpm"
+		rpm = meta.name + "-" + meta.version + "-" + str(meta.release) + ".fc11." + arch + ".rpm"
 		commands.getoutput("cp ~/rpmbuild/RPMS/" + arch + "/" + rpm + " packages/" + rpm)
 		print "Done"
 
@@ -131,7 +131,7 @@ class Builder(object):
 		f.write(substitute_strings(
 """Name:           #{name}
 Version:        #{version}
-Release:        1%{?dist}
+Release:        #{release}%{?dist}
 Summary:        #{short_description}
 Group:          Development/Tools
 License:        #{license}
@@ -202,7 +202,7 @@ rm -rf %{buildroot}
 
 Name:           #{name}
 Version:        #{version}
-Release:        1%{?dist}
+Release:        #{release}%{?dist}
 Summary:        #{short_description}
 Group:          Development/Tools
 License:        #{license}

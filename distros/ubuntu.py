@@ -146,8 +146,8 @@ is licensed under the #{license}, see above.
 		f.close()
 
 
-		# Get the mangled gibberish that is on the end of a package file name
-		mangle = 1
+		# Get the release of this package
+		changelog_release = 1
 
 		# Create the changelog
 		changelog_body = ""
@@ -160,22 +160,26 @@ is licensed under the #{license}, see above.
 		reverse_entries.reverse()
 		for item in reverse_entries:
 			if prev_version == item['version']:
-				mangle += 1
+				changelog_release += 1
 			else:
-				mangle = 1
+				changelog_release = 1
 			prev_version = item['version']
 
+			fields = meta.to_hash({
+					'changelog_release' : str(changelog_release), 
+					'item_version' : item['version'], 
+					'item_time' : item['time'], 
+					'item_text' : item['text']
+			})
+
 			entry = substitute_strings(
-"""#{name} (#{item_version}-#{mangle}) unstable; urgency=low
+"""#{name} (#{item_version}-#{changelog_release}) unstable; urgency=low
 
   * #{item_text}
 
  -- #{packager_name} <#{packager_email}>  #{item_time}
 
-""", meta.to_hash({'mangle' : str(mangle), 
-					'item_version' : item['version'], 
-					'item_time' : item['time'], 
-					'item_text' : item['text']}))
+""", fields)
 
 			changelog_body = entry + changelog_body
 
@@ -238,7 +242,7 @@ fi
 							"dpkg-buildpackage: set FFLAGS to default value: -g -O2\r\n",
 							"dpkg-buildpackage: set CXXFLAGS to default value: -g -O2\r\n",
 							"dpkg-buildpackage: source package " + meta.name + "\r\n",
-							"dpkg-buildpackage: source version " + meta.version + "-" + str(mangle) + "\r\n",
+							"dpkg-buildpackage: source version " + meta.version + "-" + str(meta.release) + "\r\n",
 							"dpkg-buildpackage: source changed by " + meta.packager_name + " <" + meta.packager_email + ">" + "\r\n",
 							"fakeroot debian/rules clean",
 							"dh_testdir",
@@ -249,8 +253,8 @@ fi
 							"dpkg-source -b " + meta.name + "-" + meta.version,
 							"dpkg-source: info: using source format `1.0'",
 							"dpkg-source: info: building " + meta.name + " using existing " + meta.name + "_" + meta.version + ".orig.tar.gz",
-							"dpkg-source: info: building " + meta.name + " in " + meta.name + "_" + meta.version + "-" + str(mangle) + ".diff.gz",
-							"dpkg-source: info: building " + meta.name + " in " + meta.name + "_" + meta.version + "-" + str(mangle) + ".dsc",
+							"dpkg-source: info: building " + meta.name + " in " + meta.name + "_" + meta.version + "-" + str(meta.release) + ".diff.gz",
+							"dpkg-source: info: building " + meta.name + " in " + meta.name + "_" + meta.version + "-" + str(meta.release) + ".dsc",
 							"dpkg-genchanges: including full source code in upload",
 							"dpkg-buildpackage: source only upload (original source is included)",
 							"Now running lintian...",
@@ -320,7 +324,7 @@ fi
 		print "Running pbuilder ..."
 		os.chdir("..")
 
-		command = 'bash -c "sudo pbuilder build ' + meta.name + '_' + meta.version + '-' + str(mangle) + '.dsc"'
+		command = 'bash -c "sudo pbuilder build ' + meta.name + '_' + meta.version + '-' + str(meta.release) + '.dsc"'
 		#print commands.getoutput(command)
 		#"""
 		child = pexpect.spawn(command, timeout=1200)
@@ -392,9 +396,9 @@ fi
 		if not os.path.isdir("packages"): os.mkdir("packages")
 		for package in packages:
 			command = "cp /var/cache/pbuilder/result/" + \
-					package.name + "_" + meta.version + '-' + str(mangle) + "_" + architecture + ".deb " + \
+					package.name + "_" + meta.version + '-' + str(meta.release) + "_" + architecture + ".deb " + \
 					"packages/" + \
-					package.name + "_" + meta.version + '-' + str(mangle) + "_" + architecture + ".deb"
+					package.name + "_" + meta.version + '-' + str(meta.release) + "_" + architecture + ".deb"
 			print commands.getoutput(command)
 
 		print "Done"
