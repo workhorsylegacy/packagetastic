@@ -282,7 +282,7 @@ class BaseMeta(object):
 				'priority' : self.priority, 
 				'section' : self.section, 
 				'version' : self.version, 
-				'release' : self.release, 
+				'release' : str(self.release), 
 				'authors' : self.authors, 
 				'copyright' : self.copyright, 
 				'packager_name' : self.packager_name, 
@@ -469,3 +469,5 @@ def build(distro_name, package_name):
 	meta.distro_style = distro_name
 	builder = eval('Builder()')
 	builder.build(meta, packages, root_password, gpg_password)
+
+

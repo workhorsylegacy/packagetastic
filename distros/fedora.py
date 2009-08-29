@@ -1,5 +1,63 @@
 
+
 class Builder(object):
+	# In Fedora, the lists of groups can be found with:
+	# less /usr/share/doc/rpm-*/GROUPS
+	# http://fedoraproject.org/wiki/PackageMaintainers/CreatingPackageHowTo#Spec_file_pieces_explained
+	sections = {
+		'admin' : 'Applications/System', 
+		'cli-mono' : 'Development/Libraries', 
+		'comm' : 'Applications/Communications', 
+		'database' : 'Applications/Databases', 
+		'devel' : 'Development/System', 
+		'debug' : 'Development/Debuggers', 
+		'doc' : 'Documentation', 
+		'editors' : 'Applications/Editors', 
+		'electronics' : 'Applications/Engineering', 
+		'embedded' : 'Development/Tools', 
+		'fonts' : 'User Interface/X', 
+		'games' : 'Amusements/Games', 
+		'gnome' : 'User Interface/Desktops', 
+		'graphics' : 'Amusements/Graphics', 
+		'gnu-r' : 'Development/Libraries', 
+		'gnustep' : 'User Interface/Desktops', 
+		'hamradio' : 'Applications/Communications', 
+		'haskell' : 'Development/Libraries', 
+		'httpd' : 'System Environment/Daemons', 
+		'interpreters' : 'Development/Libraries', 
+		'java' : 'Development/Libraries', 
+		'kde' : 'User Interface/Desktops', 
+		'kernel' : 'System Environment/Kernel', 
+		'libs' : 'System Environment/Libraries', 
+		'libdevel' : 'Development/Libraries', 
+		'lisp' : 'Development/Libraries', 
+		'localization' : 'System Environment/Base', 
+		'mail' : 'Applications/Internet', 
+		'math' : 'Applications/Engineering', 
+		'misc' : 'Applications/System', 
+		'net' : 'Applications/Internet', 
+		'news' : 'Applications/Publishing', 
+		'ocaml' : 'Development/Libraries', 
+		'oldlibs' : 'System Environment/Libraries', 
+		'otherosfs' : 'System Environment/Base', 
+		'perl' : 'Development/Libraries', 
+		'php' : 'Development/Libraries', 
+		'python' : 'Development/Libraries', 
+		'ruby' : 'Development/Libraries', 
+		'science' : 'Applications/Engineering', 
+		'shells' : 'System Environment/Shells', 
+		'sound' : 'Applications/Multimedia', 
+		'tex' : 'System Environment/Base', 
+		'text' : 'Applications/Text', 
+		'utils' : 'Development/Tools', 
+		'vcs' : 'Development/Tools', 
+		'video' : 'Applications/Multimedia', 
+		'web' : 'Applications/Internet', 
+		'x11' : 'User Interface/X', 
+		'xfce' : 'User Interface/Desktops', 
+		'zope' : 'System Environment/Libraries'
+	}
+
 	def build(self, meta, packages, root_password, gpg_password):
 		# Setup the directories
 		print "Setting up the rpmdev directories ..."
@@ -124,7 +182,8 @@ class Builder(object):
 				'install' : self.generate_install_for_c(meta, params), 
 				'install_extra' : self.generate_install_extras(meta, params), 
 				'changelog' : self.generate_changelog(meta), 
-				'install_requirements' : meta.join(packages[0].install_requirements)
+				'install_requirements' : meta.join(packages[0].install_requirements), 
+				'group' : self.sections[meta.section]
 		})
 
 		f = open(os.path.expanduser('~/rpmbuild/SPECS/') + meta.name + '.spec', 'w')
@@ -133,7 +192,7 @@ class Builder(object):
 Version:        #{version}
 Release:        #{release}%{?dist}
 Summary:        #{short_description}
-Group:          Development/Tools
+Group:          #{group}
 License:        #{license}
 URL:            #{homepage}
 Source:         #{source}
@@ -192,7 +251,8 @@ rm -rf %{buildroot}
 				'install' : self.generate_install_for_python_library(meta, params), 
 				'install_extra' : self.generate_install_extras(meta, params), 
 				'changelog' : self.generate_changelog(meta), 
-				'install_requirements' : meta.join(packages[0].install_requirements + ['python'])
+				'install_requirements' : meta.join(packages[0].install_requirements + ['python']), 
+				'group' : self.sections[meta.section]
 		})
 
 		f = open(os.path.expanduser('~/rpmbuild/SPECS/') + meta.name + '.spec', 'w')
@@ -204,7 +264,7 @@ Name:           #{name}
 Version:        #{version}
 Release:        #{release}%{?dist}
 Summary:        #{short_description}
-Group:          Development/Tools
+Group:          #{group}
 License:        #{license}
 URL:            #{homepage}
 Source:         #{source}
@@ -389,3 +449,6 @@ desktop-file-install --dir=%{buildroot}%{_datadir}/applications data/%{name}.des
 			changelog_body = entry + changelog_body
 
 		return changelog_body
+
+
+
