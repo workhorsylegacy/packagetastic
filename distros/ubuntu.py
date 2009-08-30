@@ -847,7 +847,8 @@ Homepage: #{homepage}
 			fields = package.to_hash({
 							'install_requirements' : meta.join(["${python:Depends}", "${misc:Depends}"]), 
 							'short_description' : package.meta.short_description, 
-							'long_description' : package.meta.long_description
+							'long_description' : package.meta.long_description, 
+							'section' : self.category_to_section[meta.category]
 			})
 
 			# Make changes to fields
@@ -872,7 +873,8 @@ Description: #{short_description}
 	def generate_control_file_for_python_library(self, meta, packages):
 		# Make additions to fields
 		fields = meta.to_hash({
-						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"]
+						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"], 
+						'section' : self.category_to_section[meta.category]
 		})
 
 		f = open('control', 'w')
@@ -893,7 +895,8 @@ Homepage: #{homepage}
 			fields = package.to_hash({
 							'install_requirements' : meta.join(["${python:Depends}", "${misc:Depends}"]), 
 							'short_description' : package.meta.short_description, 
-							'long_description' : package.meta.long_description
+							'long_description' : package.meta.long_description, 
+							'section' : self.category_to_section[package.meta.category]
 			})
 
 			# Make changes to fields
