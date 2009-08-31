@@ -18,7 +18,7 @@ Getting started on Debian:
 	echo 'username ALL=(ALL) ALL' >> /etc/sudoers
 
 	# install requirements:
-	sudo apt-get install build-essential cdbs dh-make pbuilder fakeroot debhelper devscripts gnupg python-pexpect bzr
+	sudo apt-get install build-essential cdbs dh-make pbuilder fakeroot debhelper devscripts gnupg python-pexpect python-mako bzr
 
 	# create gpg key:
 	gpg --no-use-agent --gen-key
@@ -31,7 +31,7 @@ Getting started on Debian:
 Getting started on Ubuntu:
 
 	# install requirements:
-	sudo apt-get install build-essential cdbs dh-make pbuilder fakeroot debhelper devscripts gnupg python-pexpect bzr
+	sudo apt-get install build-essential cdbs dh-make pbuilder fakeroot debhelper devscripts gnupg python-pexpect python-mako bzr
 
 	# create gpg key:
 	gpg --no-use-agent --gen-key
@@ -53,7 +53,7 @@ Getting started on Fedora systems:
 
 	# install requirements:
 	sudo yum groupinstall "Development Tools"
-	sudo yum install rpmdevtools pexpect
+	sudo yum install rpmdevtools pexpect python-mako
 
 Packagetastic one time setup:
 	# Get the code if you have not

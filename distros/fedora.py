@@ -1,5 +1,6 @@
 
 
+
 class Builder(object):
 	# In Fedora, the lists of groups can be found with:
 	# less /usr/share/doc/rpm-*/GROUPS
@@ -60,7 +61,7 @@ class Builder(object):
 
 		# FIXME: Figure out how %defattr(-,root,root,-) works
 		# Determine the params for %files
-		params = {}
+		params = meta.to_hash()
 		params['docs'] = []
 		for doc in ['README', 'COPYING', 'ChangeLog', 'LICENSE']:
 			if os.path.isfile(doc):
@@ -103,20 +104,28 @@ class Builder(object):
 
 		params['has_icons'] = os.path.isdir('data/icons')
 
+		params['group'] = self.category_to_group[meta.category]
+
+		if meta.build_method == 'c application' or meta.build_method == 'c library':
+			params['install_requirements'] = packages[0].install_requirements
+		elif meta.build_method == 'python application' or meta.build_method == 'python library':
+			params['install_requirements'] = packages[0].install_requirements + ['python']
+		else:
+			print "Unknown build method '" + meta.build_method + "'. Exiting ..."
+			exit()
+
+		params['join_method'] = meta.join
+
+
 		# Create the spec file
 		os.chdir('../..')
 		print "Building the spec file ..."
 		# Write the custom parts of the spec file
-		fields = None
-		if meta.build_method == 'c application' or meta.build_method == 'c library':
-			fields = self.generate_spec_file_for_c(meta, packages, params)
-		elif meta.build_method == 'python library':
-			fields = self.generate_spec_file_for_python_library(meta, packages, params)
-		elif meta.build_method == 'python application':
-			fields = self.generate_spec_file_for_python_library(meta, packages, params)
-		else:
-			print "Unknown build method '" + meta.build_method + "'. Exiting ..."
-			exit()
+		with open('distros/fedora_templates/template.spec.py') as f:
+			from mako.template import Template
+			template = Template(f.read())
+			with open(os.path.expanduser('~/rpmbuild/SPECS/') + meta.name + '.spec', 'w') as spec_file:
+				spec_file.write(template.render(**params).replace("@@", "%"))
 
 		# Create the rpm file
 		packagetastic_dir = commands.getoutput('pwd')
@@ -156,287 +165,10 @@ class Builder(object):
 		print "Copying the rpm package to the packages directory ..."
 		os.chdir(packagetastic_dir)
 		if not os.path.isdir("packages"): os.mkdir("packages")
-		arch = fields['build_arch']
-		rpm = meta.name + "-" + meta.version + "-" + str(meta.release) + ".fc11." + arch + ".rpm"
-		commands.getoutput("cp ~/rpmbuild/RPMS/" + arch + "/" + rpm + " packages/" + rpm)
+		rpm = meta.name + "-" + meta.version + "-" + str(meta.release) + ".fc11." + meta.build_arch + ".rpm"
+		commands.getoutput("cp ~/rpmbuild/RPMS/" + meta.build_arch + "/" + rpm + " packages/" + rpm)
 		print "Done"
 
-	def generate_spec_file_for_c(self, meta, packages, params):
-		# Make additions to fields
-		fields = meta.to_hash({
-				'build_arch' : 'i386', 
-				'files' : self.generate_file(meta, params), 
-				'pre_and_post' : self.generate_pre_and_post_functions(meta, params), 
-				'install' : self.generate_install_for_c(meta, params), 
-				'install_extra' : self.generate_install_extras(meta, params), 
-				'changelog' : self.generate_changelog(meta), 
-				'install_requirements' : meta.join(packages[0].install_requirements), 
-				'group' : self.category_to_group[meta.category]
-		})
-
-		f = open(os.path.expanduser('~/rpmbuild/SPECS/') + meta.name + '.spec', 'w')
-		f.write(substitute_strings(
-"""Name:           #{name}
-Version:        #{version}
-Release:        #{release}%{?dist}
-Summary:        #{short_description}
-Group:          #{group}
-License:        #{license}
-URL:            #{homepage}
-Source:         #{source}
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-
-
-BuildRequires: #{build_requirements}
-Requires: #{install_requirements}
-BuildArch: #{build_arch}
-
-
-%description
-#{long_description}
-
-%prep
-%setup -q
-
-
-%build
-%configure
-make %{?_smp_mflags}
-
-
-#{install}
-#{install_extra}
-
-
-%check
-cd tests
-make check-TESTS
-
-
-%clean
-rm -rf %{buildroot}
-
-
-#{pre_and_post}
-
-
-#{files}
-
-%changelog
-#{changelog}
-""", fields))
-		f.close()
-
-		return fields
-
-	def generate_spec_file_for_python_library(self, meta, packages, params):
-		# Make additions to fields
-		fields = meta.to_hash({
-				'build_arch' : 'noarch', 
-				'build_requirements' : ['python-setuptools-devel'], 
-				'files' : self.generate_file(meta, params), 
-				'pre_and_post' : self.generate_pre_and_post_functions(meta, params), 
-				'install' : self.generate_install_for_python_library(meta, params), 
-				'install_extra' : self.generate_install_extras(meta, params), 
-				'changelog' : self.generate_changelog(meta), 
-				'install_requirements' : meta.join(packages[0].install_requirements + ['python']), 
-				'group' : self.category_to_group[meta.category]
-		})
-
-		f = open(os.path.expanduser('~/rpmbuild/SPECS/') + meta.name + '.spec', 'w')
-		f.write(substitute_strings(
-"""%{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
-
-
-Name:           #{name}
-Version:        #{version}
-Release:        #{release}%{?dist}
-Summary:        #{short_description}
-Group:          #{group}
-License:        #{license}
-URL:            #{homepage}
-Source:         #{source}
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-
-
-BuildRequires: #{build_requirements}
-Requires: #{install_requirements}
-BuildArch: #{build_arch}
-
-
-%description
-#{long_description}
-
-%prep
-%setup -q
-
-
-%build
-%{__python} setup.py build
-
-
-#{install}
-#{install_extra}
-
-#{after_install}
-
-%clean
-rm -rf %{buildroot}
-
-
-#{pre_and_post}
-
-
-#{files}
-
-%changelog
-#{changelog}
-""", fields))
-		f.close()
-
-		return fields
-
-	def generate_pre_and_post_functions(self, package, params):
-		pre, post, preun, postun = '', '', '', ''
-
-		if params['has_info']:
-			post += \
-"""/sbin/install-info %{_infodir}/%{name}.info %{_infodir}/dir || :
-"""
-			preun += \
-"""if [ $1 = 0 ] ; then
-  /sbin/install-info --delete %{_infodir}/%{name}.info %{_infodir}/dir || :
-fi
-"""
-
-		if params['has_icons'] == True:
-			post += \
-"""gtk-update-icon-cache -qf %{_datadir}/icons/hicolor &>/dev/null || :
-"""
-
-			postun += \
-"""gtk-update-icon-cache -qf %{_datadir}/icons/hicolor &>/dev/null || :
-"""
-
-		retval = ''
-		for name, body in {'pre':pre, 'post':post, 'preun':preun, 'postun':postun}.iteritems():
-			if len(body) > 0:
-				retval += substitute_strings(
-"""
-%#{name}
-#{body}
-""", {'name' : name, 'body' : body})
-
-		return retval
-
-
-	def generate_file(self, meta, params):
-		fields = []
-		lang = ''
-
-		if params['has_lang']:
-			lang = '-f %{name}.lang'
-
-		if len(params['docs']) > 0:
-			fields.append('%doc ' + str.join(' ', params['docs']))
-
-		if params['has_man1'] == True:
-			fields.append('%{_mandir}/man1/%{name}.1*')
-
-		if params['has_man5'] == True:
-			fields.append('%{_mandir}/man5/%{name}_config.5*')
-
-		if params['has_bindir'] == True:
-			fields.append('%{_bindir}/%{name}')
-
-		if params['has_info'] == True:
-			fields.append('%{_infodir}/%{name}.info*')
-
-		if params['import_sitelib'] == True:
-			fields.append('%{python_sitelib}/*')
-
-		if params['has_desktop_file'] == True:
-			fields.append('%{_datadir}/applications/%{name}.desktop')
-
-		if params['has_icons'] == True:
-			fields.append('%{_datadir}/icons/hicolor/*/*/%{name}*.png')
-			fields.append('%{_datadir}/icons/hicolor/*/*/%{name}*.svg')
-			fields.append('%{_datadir}/pixmaps/%{name}.png')
-
-		return substitute_strings(
-"""%files #{lang}
-%defattr(-,root,root)
-#{fields}
-""", {
-		'lang' : lang, 
-		'fields' : str.join('\n', fields)
-	})
-
-	def generate_install_for_python_library(self, package, params):
-		return \
-"""%install
-rm -rf %{buildroot}
-%{__python} setup.py install -O1 --skip-build --root %{buildroot}
-"""
-
-	def generate_install_for_c(self, meta, params):
-		return \
-"""%install
-rm -rf %{buildroot}
-make install DESTDIR=%{buildroot}
-rm -f %{buildroot}%{_infodir}/dir
-"""
-
-	def generate_install_extras(self, meta, params):
-		retval = ''
-
-		if params['has_lang'] == True:
-			retval += \
-"""
-%find_lang %{name}
-"""
-
-		if params['has_icons'] == True:
-			retval += \
-"""
-rm -f %{buildroot}/%{_datadir}/icons/hicolor/icon-theme.cache
-rm -f %{buildroot}/%{_datadir}/applications/%{name}.desktop
-desktop-file-install --dir=%{buildroot}%{_datadir}/applications data/%{name}.desktop
-"""
-
-		return retval
-
-	def generate_changelog(self, meta):
-		# FIXME: These should be at the top.
-		from time import strftime
-		from email.utils import parsedate
-
-		# Create the changelog
-		changelog_body = ""
-		if meta.changelog == None:
-			print "The changelog is missing. Exiting ..."
-			exit()
-
-		reverse_entries = meta.changelog[:]
-		reverse_entries.reverse()
-		for item in reverse_entries:
-			item['time'] = time.strftime("%a %b %d %Y", parsedate(item['time']))
-
-			fields = meta.to_hash({
-					'item_version' : item['version'], 
-					'item_time' : item['time'], 
-					'item_text' : item['text']
-			})
-
-			entry = substitute_strings(
-"""* #{item_time} - #{packager_email} - #{item_version}
-- #{item_text}
-
-""", fields)
-
-			changelog_body = entry + changelog_body
-
-		return changelog_body
 
 
 

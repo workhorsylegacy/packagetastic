@@ -418,29 +418,15 @@ fi
 			exit()
 		#"""
 
-		# Determine the architecture
-		architecture = 'any'
-		if meta.build_method == 'c application' or meta.build_method == 'c library':
-			architecture = 'i386'
-		elif meta.build_method == 'python application':
-			architecture = 'all'
-		elif meta.build_method == 'python library':
-			architecture = 'all'
-		elif meta.build_method == 'mono application':
-			architecture = 'i386'
-		else:
-			print "Unknown build method for setting architecture '" + meta.build_method + "'. Exiting ..."
-			exit()
-
 		# Copy the deb files from the cache
 		print "Getting the deb files ..."
 		os.chdir('..')
 		if not os.path.isdir("packages"): os.mkdir("packages")
 		for package in packages:
 			command = "cp /var/cache/pbuilder/result/" + \
-					package.name + "_" + meta.version + '-' + str(meta.release) + "_" + architecture + ".deb " + \
+					package.name + "_" + meta.version + '-' + str(meta.release) + "_" + meta.build_arch + ".deb " + \
 					"packages/" + \
-					package.name + "_" + meta.version + '-' + str(meta.release) + "_" + architecture + ".deb"
+					package.name + "_" + meta.version + '-' + str(meta.release) + "_" + meta.build_arch + ".deb"
 			print commands.getoutput(command)
 
 		print "Done"

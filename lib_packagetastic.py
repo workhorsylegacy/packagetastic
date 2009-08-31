@@ -274,6 +274,15 @@ class BaseMeta(object):
 	def set_changelog(self, value): self._changelog = value
 	changelog = property(get_changelog, set_changelog)
 
+	def get_build_arch(self):
+		if self._build_method == 'c application' or self._build_method == 'c library':
+			return 'i386'
+		elif self._build_method == 'python application' or self._build_method == 'python library':
+			return 'noarch'
+		elif self._build_method == 'mono application' or self._build_method == 'mono library':
+			return 'i386'
+	build_arch = property(get_build_arch)
+
 	def get_version(self):
 		return self._changelog[0]['version']
 	version = property(get_version)
@@ -322,6 +331,7 @@ class BaseMeta(object):
 		retval={ 'name' : self.name, 
 				'priority' : self.priority, 
 				'category' : self.category, 
+				'build_arch' : self.build_arch, 
 				'version' : self.version, 
 				'release' : str(self.release), 
 				'authors' : self.authors, 
@@ -338,7 +348,8 @@ class BaseMeta(object):
 				'after_install' : self.after_install(), 
 				'before_install' : self.before_install(), 
 				'after_uninstall' : self.after_uninstall(), 
-				'before_uninstall' : self.before_uninstall()
+				'before_uninstall' : self.before_uninstall(), 
+				'changelog' : self.changelog
 				}
 
 		# Add custom data
@@ -355,7 +366,6 @@ class BaseMeta(object):
 		# Make changes that make data easier to use
 		retval['authors'] = str.join("\n    ", retval['authors'])
 		retval['copyright'] = str.join("\n    ", retval['copyright'])
-		retval['build_requirements'] = self.join(retval['build_requirements'])
 		retval['year'] = time.strftime("%Y", time.localtime())
 		retval['timestring'] = time.strftime("%a, %d %b %Y %H:%M:%S %z", time.localtime())
 		retval['human_timestring'] = time.strftime("%a %b %d %Y", time.localtime())
