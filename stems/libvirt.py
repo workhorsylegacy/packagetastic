@@ -8,20 +8,20 @@ class LibVirtPackage(BasePackage):
 		self._name = 'libvirt'
 		self._category = 'Development/Libraries'
 		self._priority = 'optional'
-		self._authors = ['Daniel Veillard <veillard@redhat.com>']
-		self._copyright = ['2000 Daniel Veillard', 
-							'1991-2009 Free Software Foundation, Inc.', 
-							'2008 IBM Corp.', 
-							'2005-2009 Red Hat, Inc.', 
-							'2006-2008 Daniel P. Berrange', 
-							'2008 Virtual Iron Software, Inc.', 
-							'2008 David F. Lively', 
-							'2005 Anthony Liguori', 
-							'2006, 2007 Binary Karma', 
-							'2006 Shuveb Hussain', 
-							'2007 Anoop Joe Cyriac', 
-							'2000 Bjorn Reese', 
-							'2006, 2007 Binary Karma']
+		self._authors = [u'Daniel Veillard <veillard@redhat.com>']
+		self._copyright = [u'2000 Daniel Veillard', 
+							u'1991-2009 Free Software Foundation, Inc.', 
+							u'2008 IBM Corp.', 
+							u'2005-2009 Red Hat, Inc.', 
+							u'2006-2008 Daniel P. Berrange', 
+							u'2008 Virtual Iron Software, Inc.', 
+							u'2008 David F. Lively', 
+							u'2005 Anthony Liguori', 
+							u'2006, 2007 Binary Karma', 
+							u'2006 Shuveb Hussain', 
+							u'2007 Anoop Joe Cyriac', 
+							u'2000 Bjorn Reese', 
+							u'2006, 2007 Binary Karma']
 		self._homepage = 'http://libvirt.org'
 		self._license = 'GPL'
 		self._source = 'http://libvirt.org/sources/libvirt-0.6.0.tar.gz'
@@ -51,15 +51,14 @@ class LibVirtPackage(BasePackage):
 									"iptables", 
 									"adduser"]
 
-		self._short_description = 'library for interfacing with different virtualization systems'
+		self._short_description = u'library for interfacing with different virtualization systems'
 
-		# FIXME: Having a one space indent on this is a Debian specific thing and should be handled by the framework instead.
-		self._long_description = " Libvirt is a C toolkit to interact with the virtualization capabilities \n" + \
-									" of recent versions of Linux (and other OSes). The library aims at providing \n" + \
-									" a long term stable C API for different virtualization mechanisms. It currently \n" + \
-									" supports QEMU, KVM, and XEN."
+		self._long_description = u"Libvirt is a C toolkit to interact with the virtualization capabilities \n" + \
+									u"of recent versions of Linux (and other OSes). The library aims at providing \n" + \
+									u"a long term stable C API for different virtualization mechanisms. It currently \n" + \
+									u"supports QEMU, KVM, and XEN."
 
-		self._changelog = [{"version" : "0.6.0", "time" : "Fri, 21 Aug 2009 19:49:12 -0700", "text" : "Initial release" } ]
+		self._changelog = [{"version" : "0.6.0", "time" : "Fri, 21 Aug 2009 19:49:12 -0700", "text" : u"Initial release" } ]
 
 	def install(self):
 		return ''

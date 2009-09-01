@@ -399,7 +399,7 @@ class BasePackage(object):
 		self._priority = None
 		self._category = None
 		self._install_requirements = []
-		self._additional_description = ""
+		self._additional_description = u""
 		self.meta = None
 
 	def get_name(self): return self._name
@@ -457,6 +457,44 @@ class BasePackage(object):
 		retval['human_timestring'] = time.strftime("%a %b %d %Y", time.localtime())
 
 		return retval
+
+def validate_package(meta, packages):
+	# Make sure meta and packages were loaded
+	if not meta:
+		print "No BaseMeta class was found in the stem file. Exiting ..."
+		exit()
+	if len(packages) == 0:
+		print "No BasePackage classes were found in the stem file. Exiting ..."
+		exit()
+
+	# Make sure unicode is used for the correct fields
+	for author in meta.authors:
+		if not isinstance(author, unicode):
+			print "Stem file is Broken. The authors field \"" + author + "\" is not unicode. Exiting ..."
+			exit()
+
+	for copyright in meta.copyright:
+		if not isinstance(copyright, unicode):
+			print "Stem file is Broken. The copyright field \"" + copyright + "\" is not unicode. Exiting ..."
+			exit()
+
+	if not isinstance(meta.short_description, unicode):
+		print "Stem file is Broken. The short_description field \"" + meta.short_description + "\" is not unicode. Exiting ..."
+		exit()
+
+	if not isinstance(meta.long_description, unicode):
+		print "Stem file is Broken. The long_description field \"" + meta.long_description + "\" is not unicode. Exiting ..."
+		exit()
+
+	for entry in meta.changelog:
+		if not isinstance(entry['text'], unicode):
+			print "Stem file is Broken. The changelog's text field for \"version:" + entry['version'] + ' -- time:' + entry['time'] + "\" is not unicode. Exiting ..."
+			exit()
+
+	for package in packages:
+		if not isinstance(package.additional_description, unicode):
+			print "Stem file is Broken. The additional_description field \"" + package.additional_description + "\" is not unicode. Exiting ..."
+			exit()
 
 def build(distro_name, package_name):
 	# Make sure the packager_name file exists
@@ -524,13 +562,8 @@ def build(distro_name, package_name):
 			package.meta = meta
 			packages.append(package)
 
-	# Make sure meta and packages were loaded
-	if not meta:
-		print "No BaseMeta class was found in the stem file. Exiting ..."
-		exit()
-	if len(packages) == 0:
-		print "No BasePackage classes were found in the stem file. Exiting ..."
-		exit()
+	# Validate the meta and packages
+	validate_package(meta, packages)
 
 	# Build the package for that distro
 	meta.packager_name = packager_name

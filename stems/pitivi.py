@@ -8,21 +8,21 @@ class Meta(BaseMeta):
 		self._name = 'pitivi'
 		self._category = 'Applications/Video'
 		self._priority = 'optional'
-		self._authors = ['Christophe Sauthier <christophe.sauthier@gmail.com>', 
-							'Laszlo Pandy <laszlok2@gmail.com>', 
-							'Ernst Persson  <ernstp@gmail.com>', 
-							'Richard Boulton <richard@tartarus.org>', 
-							'Thibaut Girka <thibaut.girka@free.fr>', 
-							'Jeff Fortin <nekohayo@gmail.com>', 
-							'Johan Dahlin <jdahlin@async.com.br>', 
-							'Brandon Lewis <brandon_lewis@berkeley.edu>', 
-							'Luca Della Santina <dellasantina@farm.unipi.it>', 
-							'Thijs Vermeir <thijsvermeir@gmail.com>']
-		self._copyright = ['Edward HERVEY <bilboed@bilboed.com>', 
-							'Christophe Sauthier <christophe.sauthier@gmail.com>', 
-							'Laszlo Pandy <laszlok2@gmail.com>', 
-							'Ernst Persson <ernstp@gmail.com>', 
-							'Richard Boulton <richard@tartarus.org>']
+		self._authors = [u'Christophe Sauthier <christophe.sauthier@gmail.com>', 
+							u'Laszlo Pandy <laszlok2@gmail.com>', 
+							u'Ernst Persson  <ernstp@gmail.com>', 
+							u'Richard Boulton <richard@tartarus.org>', 
+							u'Thibaut Girka <thibaut.girka@free.fr>', 
+							u'Jeff Fortin <nekohayo@gmail.com>', 
+							u'Johan Dahlin <jdahlin@async.com.br>', 
+							u'Brandon Lewis <brandon_lewis@berkeley.edu>', 
+							u'Luca Della Santina <dellasantina@farm.unipi.it>', 
+							u'Thijs Vermeir <thijsvermeir@gmail.com>']
+		self._copyright = [u'Edward HERVEY <bilboed@bilboed.com>', 
+							u'Christophe Sauthier <christophe.sauthier@gmail.com>', 
+							u'Laszlo Pandy <laszlok2@gmail.com>', 
+							u'Ernst Persson <ernstp@gmail.com>', 
+							u'Richard Boulton <richard@tartarus.org>']
 		self._homepage = 'http://www.pitivi.org'
 		self._license = 'LGPL2.1'
 		self._source = 'http://ftp.gnome.org/pub/GNOME/sources/pitivi/0.11/pitivi-0.11.3.tar.gz'
@@ -31,15 +31,15 @@ class Meta(BaseMeta):
 		self._build_requirements = ['libxml-parser-perl', 
 										'intltool (>= 0.35)']
 
-		self._short_description = "non-linear audio/video editor using GStreamer"
+		self._short_description = u"non-linear audio/video editor using GStreamer"
 
-		self._long_description = "PiTiVi allows users to easily edit audio/video projects based on the\n" + \
-									"GStreamer framework.  PiTIVi provides several ways of creating and\n" + \
-									"modifying a timeline.  Ranging from a simple synopsis view (a-la\n" + \
-									"iMovie) to the full-blown editing view (aka Complex View) which puts\n" + \
-									"you in complete control of your editing."
+		self._long_description = u"PiTiVi allows users to easily edit audio/video projects based on the\n" + \
+									u"GStreamer framework.  PiTIVi provides several ways of creating and\n" + \
+									u"modifying a timeline.  Ranging from a simple synopsis view (a-la\n" + \
+									u"iMovie) to the full-blown editing view (aka Complex View) which puts\n" + \
+									u"you in complete control of your editing."
 
-		self._changelog = [{"version" : "0.11.3", "time" : "Fri, 21 Aug 2009 18:20:25 -0700", "text" : "Initial release" } ]
+		self._changelog = [{"version" : "0.11.3", "time" : "Fri, 21 Aug 2009 18:20:25 -0700", "text" : u"Initial release" } ]
 
 class Pitivi(BasePackage):
 	def __init__(self):

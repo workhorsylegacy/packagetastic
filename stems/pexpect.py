@@ -8,13 +8,13 @@ class Meta(BaseMeta):
 		self._name = 'pexpect'
 		self._category = 'Development/Libraries'
 		self._priority = 'optional'
-		self._authors = ['Noah Spurrier <noah@noah.org>', 'Richard Holden', 'Marco Molteni', 'Kimberley Burchett',
-						'Robert Stone', 'Hartmut Goebel', 'Chad Schroeder', 'Erick Tryzelaar', 'Dave Kirby', 
-						'Ids vander Molen', 'George Todd', 'Noel Taylor', 'Nicolas D. Cesar', 'Alexander Gattin', 
-						'Geoffrey Marshall', 'Francisco Lourenco', 'Glen Mabey', 'Karthik Gurusamy', 
-						'Fernando Perez', 'Corey Minyard', 'Jon Cohen', 'Guillaume Chazarain', 'Andrew Ryan', 
-						'Nick Craig-Wood', 'Andrew Stone', 'Jorgen Grahn']
-		self._copyright = ['2008 Noah Spurrier']
+		self._authors = [u'Noah Spurrier <noah@noah.org>', u'Richard Holden', u'Marco Molteni', u'Kimberley Burchett',
+						u'Robert Stone', u'Hartmut Goebel', u'Chad Schroeder', u'Erick Tryzelaar', u'Dave Kirby', 
+						u'Ids vander Molen', u'George Todd', u'Noel Taylor', u'Nicolas D. Cesar', u'Alexander Gattin', 
+						u'Geoffrey Marshall', u'Francisco Lourenco', u'Glen Mabey', u'Karthik Gurusamy', 
+						u'Fernando Perez', u'Corey Minyard', u'Jon Cohen', u'Guillaume Chazarain', u'Andrew Ryan', 
+						u'Nick Craig-Wood', u'Andrew Stone', u'Jorgen Grahn']
+		self._copyright = [u'2008 Noah Spurrier']
 		self._homepage = 'http://pexpect.sourceforge.net'
 		self._license = 'MIT'
 		self._source = 'http://downloads.sourceforge.net/pexpect/pexpect-2.3.tar.gz'
@@ -22,20 +22,20 @@ class Meta(BaseMeta):
 
 		self._build_requirements = []
 
-		self._short_description = "Pexpect is a pure Python Expect. It allows easy control of other applications."
+		self._short_description = u"Pexpect is a pure Python Expect. It allows easy control of other applications."
 
-		self._long_description = "Pexpect is a Python module for spawning child applications and controlling\n" + \
-								"them automatically. Pexpect can be used for automating interactive applications\n" + \
-								"such as ssh, ftp, passwd, telnet, etc. It can be used to a automate setup\n" + \
-								"scripts for duplicating software package installations on different servers. It\n" + \
-								"can be used for automated software testing. Pexpect is in the spirit of Don\n" + \
-								"Libes' Expect, but Pexpect is pure Python. Other Expect-like modules for Python\n" + \
-								"require TCL and Expect or require C extensions to be compiled. Pexpect does not\n" + \
-								"use C, Expect, or TCL extensions. It should work on any platform that supports\n" + \
-								"the standard Python pty module. The Pexpect interface focuses on ease of use so\n" + \
-								"that simple tasks are easy."
+		self._long_description = u"Pexpect is a Python module for spawning child applications and controlling\n" + \
+								u"them automatically. Pexpect can be used for automating interactive applications\n" + \
+								u"such as ssh, ftp, passwd, telnet, etc. It can be used to a automate setup\n" + \
+								u"scripts for duplicating software package installations on different servers. It\n" + \
+								u"can be used for automated software testing. Pexpect is in the spirit of Don\n" + \
+								u"Libes' Expect, but Pexpect is pure Python. Other Expect-like modules for Python\n" + \
+								u"require TCL and Expect or require C extensions to be compiled. Pexpect does not\n" + \
+								u"use C, Expect, or TCL extensions. It should work on any platform that supports\n" + \
+								u"the standard Python pty module. The Pexpect interface focuses on ease of use so\n" + \
+								u"that simple tasks are easy."
 
-		self._changelog = [{"version" : "2.3", "time" : "Fri, 07 Aug 2009 18:32:26 -0700", "text" : "Initial release" } ]
+		self._changelog = [{"version" : "2.3", "time" : "Fri, 07 Aug 2009 18:32:26 -0700", "text" : u"Initial release" } ]
 
 
 	def after_install(self):

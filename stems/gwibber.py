@@ -8,8 +8,8 @@ class Meta(BaseMeta):
 		self._name = 'gwibber'
 		self._category = 'Applications/Communications'
 		self._priority = 'optional'
-		self._authors = ['Ryan Paul (SegPhault) <segphault@arstechnica.com>']
-		self._copyright = ['2008 Ryan Paul']
+		self._authors = [u'Ryan Paul (SegPhault) <segphault@arstechnica.com>']
+		self._copyright = [u'2008 Ryan Paul']
 		self._homepage = 'https://launchpad.net/gwibber'
 		self._license = 'GPL2+'
 		self._source = 'http://launchpad.net/gwibber/+download/gwibber-0.8.tar.gz'
@@ -18,11 +18,11 @@ class Meta(BaseMeta):
 		self._build_requirements = ['python-all-dev', 
 									'python-distutils-extra']
 
-		self._short_description = "Open source microblogging client for GNOME"
+		self._short_description = u"Open source microblogging client for GNOME"
 
-		self._long_description = "It supports Twitter, Jaiku, Identi.ca, Facebook, and Digg."
+		self._long_description = u"It supports Twitter, Jaiku, Identi.ca, Facebook, and Digg."
 
-		self._changelog = [{"version" : "0.8", "time" : "Mon, 24 Aug 2009 15:28:47 -0700", "text" : "Initial release" } ]
+		self._changelog = [{"version" : "0.8", "time" : "Mon, 24 Aug 2009 15:28:47 -0700", "text" : u"Initial release" } ]
 
 class Gwibber(BasePackage):
 	def __init__(self):

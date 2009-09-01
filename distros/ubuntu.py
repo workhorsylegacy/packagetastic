@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+
 
 class Builder(object):
 	# http://www.debian.org/doc/debian-policy/ch-archive.html#s-subsections
@@ -143,11 +146,12 @@ class Builder(object):
 
 		# Generate the rules file
 		print "Generating the rules file ..."
-		with open('../../../distros/ubuntu_templates/template.rules.py') as rules_template:
+		with open('rules', 'w') as rules_file:
 			from mako.template import Template
-			template = Template(rules_template.read())
-			with open('rules', 'w') as rules_file:
-				rules_file.write(template.render(**params).replace("@@", "$"))
+			from mako.lookup import TemplateLookup
+			lookup = TemplateLookup(directories=['../../../distros/ubuntu_templates/'], output_encoding='utf-8')
+			template = lookup.get_template("template.rules.py")
+			rules_file.write(template.render(**params).replace("@@", "$"))
 
 		# Create the compat file
 		print "Generating the compat file ..."
@@ -156,43 +160,48 @@ class Builder(object):
 
 		# Create the control file
 		print "Generating the control file ..."
-		with open('../../../distros/ubuntu_templates/template.control.py') as control_template:
+		with open('control', 'w') as control_file:
 			from mako.template import Template
-			template = Template(control_template.read())
-			with open('control', 'w') as control_file:
-				control_file.write(template.render(**params).replace("@@", "$"))
+			from mako.lookup import TemplateLookup
+			lookup = TemplateLookup(directories=['../../../distros/ubuntu_templates/'], output_encoding='utf-8')
+			template = lookup.get_template("template.control.py")
+			control_file.write(template.render(**params).replace("@@", "$"))
 
 		# Create the copyright file
 		print "Generating the copyright file ..."
-		with open('../../../distros/ubuntu_templates/template.copyright.py') as copyright_template:
+		with open('copyright', 'w') as copyright_file:
 			from mako.template import Template
-			template = Template(copyright_template.read())
-			with open('copyright', 'w') as copyright_file:
-				copyright_file.write(template.render(**params).replace("@@", "$"))
+			from mako.lookup import TemplateLookup
+			lookup = TemplateLookup(directories=['../../../distros/ubuntu_templates/'], output_encoding='utf-8')
+			template = lookup.get_template("template.copyright.py")
+			copyright_file.write(template.render(**params).replace("@@", "$"))
 
 		# Create the changelog
 		print "Generating the changelog file ..."
-		with open('../../../distros/ubuntu_templates/template.changelog.py') as changelog_template:
+		with open('changelog', 'w') as changelog_file:
 			from mako.template import Template
-			template = Template(changelog_template.read())
-			with open('changelog', 'w') as changelog_file:
-				changelog_file.write(template.render(**params).replace("@@", "$"))
+			from mako.lookup import TemplateLookup
+			lookup = TemplateLookup(directories=['../../../distros/ubuntu_templates/'], output_encoding='utf-8')
+			template = lookup.get_template("template.changelog.py")
+			changelog_file.write(template.render(**params).replace("@@", "$"))
 
 		# Generate the pre and post install scripts
 		print "Generating the pre and post install scripts ..."
 		for package in packages:
 			if package.alternate_name != None:
-				with open('../../../distros/ubuntu_templates/template.post.py') as post_template:
+				with open(package.name + '.post', 'w') as post_file:
 					from mako.template import Template
-					template = Template(post_template.read())
-					with open(package.name + '.post', 'w') as post_file:
-						post_file.write(template.render(**params).replace("@@", "$"))
+					from mako.lookup import TemplateLookup
+					lookup = TemplateLookup(directories=['../../../distros/ubuntu_templates/'], output_encoding='utf-8')
+					template = lookup.get_template("template.post.py")
+					post_file.write(template.render(**params).replace("@@", "$"))
 
-				with open('../../../distros/ubuntu_templates/template.prerm.py') as prerm_template:
+				with open(package.name + '.prerm', 'w') as prerm_file:
 					from mako.template import Template
-					template = Template(prerm_template.read())
-					with open(package.name + '.prerm', 'w') as prerm_file:
-						prerm_file.write(template.render(**params).replace("@@", "$"))
+					from mako.lookup import TemplateLookup
+					lookup = TemplateLookup(directories=['../../../distros/ubuntu_templates/'], output_encoding='utf-8')
+					template = lookup.get_template("prerm.post.py")
+					prerm_file.write(template.render(**params).replace("@@", "$"))
 
 		# Run debuild
 		print "Running debuild ..."
@@ -293,8 +302,8 @@ class Builder(object):
 		os.chdir("..")
 
 		command = 'bash -c "sudo pbuilder build ' + meta.name + '_' + meta.version + '-' + str(meta.release) + '.dsc"'
-		print commands.getoutput(command)
-		"""
+		#print commands.getoutput(command)
+		#"""
 		child = pexpect.spawn(command, timeout=1200)
 
 		expected_lines = ["\[sudo\] password for [\w|\s]*: ",
@@ -342,7 +351,7 @@ class Builder(object):
 		child.close()
 		if had_error:
 			exit()
-		"""
+		#"""
 
 		# Copy the deb files from the cache
 		print "Getting the deb files ..."

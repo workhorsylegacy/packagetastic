@@ -8,16 +8,16 @@ class Meta(BaseMeta):
 		self._name = 'tomboy'
 		self._category = 'Applications/Office'
 		self._priority = 'optional'
-		self._authors = ['Alex Graveley <alex@beatniksoftware.com>', 
-							'Boyd Timothy <btimothy@gmail.com>', 
-							'Chris Scobell <chris@thescobells.com>', 
-							'David Trowbridge <trowbrds@gmail.com>', 
-							'Ryan Lortie <desrt@desrt.ca>', 
-							'Sandy Armstrong <sanfordarmstrong@gmail.com>', 
-							'Sebastian Rittau <srittau@jroger.in-berlin.de>', 
-							'Kevin Kubasik <kevin@kubasik.net>', 
-							'Stefan Schweizer <steve.schweizer@gmail.com>']
-		self._copyright = ['2004-2007 Alex Graveley']
+		self._authors = [u'Alex Graveley <alex@beatniksoftware.com>', 
+							u'Boyd Timothy <btimothy@gmail.com>', 
+							u'Chris Scobell <chris@thescobells.com>', 
+							u'David Trowbridge <trowbrds@gmail.com>', 
+							u'Ryan Lortie <desrt@desrt.ca>', 
+							u'Sandy Armstrong <sanfordarmstrong@gmail.com>', 
+							u'Sebastian Rittau <srittau@jroger.in-berlin.de>', 
+							u'Kevin Kubasik <kevin@kubasik.net>', 
+							u'Stefan Schweizer <steve.schweizer@gmail.com>']
+		self._copyright = [u'2004-2007 Alex Graveley']
 		self._homepage = 'http://projects.gnome.org/tomboy/'
 		self._license = 'LGPL2.1'
 		self._source = 'http://download.gnome.org/sources/tomboy/0.15/tomboy-0.15.0.tar.gz'
@@ -44,14 +44,14 @@ class Meta(BaseMeta):
 									'libmono-addins-gui0.2-cil (>= 0.2-4)', 
 									'libgnomepanel2.24-cil']
 
-		self._short_description = "desktop note taking program using Wiki style links"
+		self._short_description = u"desktop note taking program using Wiki style links"
 
-		self._long_description = "desktop note taking program using Wiki style links\n" + \
-									"Tomboy is a desktop note-taking application which is simple and easy to\n" + \
-									"use. It lets you organise your notes intelligently by allowing you to\n" + \
-									"easily link ideas together with Wiki style interconnects."
+		self._long_description = u"desktop note taking program using Wiki style links\n" + \
+									u"Tomboy is a desktop note-taking application which is simple and easy to\n" + \
+									u"use. It lets you organise your notes intelligently by allowing you to\n" + \
+									u"easily link ideas together with Wiki style interconnects."
 
-		self._changelog = [{"version" : "0.15.0", "time" : "Tue, 11 Aug 2009 20:31:55 -0700", "text" : "Initial release" } ]
+		self._changelog = [{"version" : "0.15.0", "time" : "Tue, 11 Aug 2009 20:31:55 -0700", "text" : u"Initial release" } ]
 
 class Tomboy(BasePackage):
 	def __init__(self):

@@ -8,8 +8,8 @@ class Meta(BaseMeta):
 		self._name = 'terminator'
 		self._category = 'Applications/System'
 		self._priority = 'optional'
-		self._authors = ['Chris Jones <cmsj@tenshu.net>']
-		self._copyright = ['2006-2008 Chris Jones']
+		self._authors = [u'Chris Jones <cmsj@tenshu.net>']
+		self._copyright = [u'2006-2008 Chris Jones']
 		self._homepage = 'http://www.tenshu.net/terminator/'
 		self._license = 'GPL2+'
 		self._source = 'http://launchpad.net/terminator/trunk/0.12/+download/terminator_0.12.tar.gz'
@@ -17,16 +17,16 @@ class Meta(BaseMeta):
 
 		self._build_requirements = ['python-devel', 'gettext', 'desktop-file-utils']
 
-		self._short_description = "multiple GNOME terminals in one window"
+		self._short_description = u"multiple GNOME terminals in one window"
 
-		self._long_description = "Terminator is a little project to produce an efficient way of\n" + \
-									"filling a large area of screen space with terminals.\n" + \
-									"\n" + \
-									"The user can have multiple terminals in one window and use\n" + \
-									"key bindings to switch between them. See the manpage for\n" + \
-									"details."
+		self._long_description = u"Terminator is a little project to produce an efficient way of\n" + \
+									u"filling a large area of screen space with terminals.\n" + \
+									u"\n" + \
+									u"The user can have multiple terminals in one window and use\n" + \
+									u"key bindings to switch between them. See the manpage for\n" + \
+									u"details."
 
-		self._changelog = [{"version" : "0.12", "time" : "Fri, 07 Aug 2009 18:32:26 -0700", "text" : "Initial release" } ]
+		self._changelog = [{"version" : "0.12", "time" : "Fri, 07 Aug 2009 18:32:26 -0700", "text" : u"Initial release" } ]
 
 class Shrip(BasePackage):
 	def __init__(self):

@@ -8,31 +8,31 @@ class Meta(BaseMeta):
 		self._name = 'banshee'
 		self._category = 'Applications/Audio'
 		self._priority = 'optional'
-		self._authors = ['Aaron Bockover <abock@gnome.org>', 
-							'Gabriel Burt <gabriel.burt@gmail.com>', 
-							'Scott Peterson <lunchtimemama@gmail.com>']
-		self._copyright = ['2004-2007 Alex Graveley', 
-							'2005-2006 Novell', 
-							'2005-2006 Jordi Mas i Hernàndez', 
-							'2005 Øivind Hoel and the GNOME Foundation', 
-							'2006 Ilkka Tuohela', 
-							'2005-2006 Adam Weinberger and the GNOME Foundation', 
-							'2006 The GNOME Foundation', 
-							'2006 Alessandro Gervaso', 
-							'2006 Novell and Gabriel Burt', 
-							'2005 James Willcox <snorp@snorp.net>', 
-							'2004 David Hammerton <david@crazney.net>', 
-							'2005 Jon Lech Johansen <jon@nanocrew.net>', 
-							'2001 by Matthew S. Ford', 
-							'2005 Todd Berman <tberman@off.net>', 
-							'2005 Ed Catmur <ed@catmur.co.uk>', 
-							'2005 Novell, Inc. (Miguel de Icaza, Aaron Bockover)', 
-							'2006 Sebastian Dröge <slomo@ubuntu.com>', 
-							'2006 Ruben Vermeersch <ruben@savanne.be>', 
-							'2006 Novell and Patrick van Staveren', 
-							'2006 Alp Toker <alp@atoker.com>', 
-							'2006 Sebastian Dröge <slomo@circular-chaos.org>', 
-							'2005 by Brian Nickel']
+		self._authors = [u'Aaron Bockover <abock@gnome.org>', 
+							u'Gabriel Burt <gabriel.burt@gmail.com>', 
+							u'Scott Peterson <lunchtimemama@gmail.com>']
+		self._copyright = [u'2004-2007 Alex Graveley', 
+							u'2005-2006 Novell', 
+							u'2005-2006 Jordi Mas i Hernàndez', 
+							u'2005 Øivind Hoel and the GNOME Foundation', 
+							u'2006 Ilkka Tuohela', 
+							u'2005-2006 Adam Weinberger and the GNOME Foundation', 
+							u'2006 The GNOME Foundation', 
+							u'2006 Alessandro Gervaso', 
+							u'2006 Novell and Gabriel Burt', 
+							u'2005 James Willcox <snorp@snorp.net>', 
+							u'2004 David Hammerton <david@crazney.net>', 
+							u'2005 Jon Lech Johansen <jon@nanocrew.net>', 
+							u'2001 by Matthew S. Ford', 
+							u'2005 Todd Berman <tberman@off.net>', 
+							u'2005 Ed Catmur <ed@catmur.co.uk>', 
+							u'2005 Novell, Inc. (Miguel de Icaza, Aaron Bockover)', 
+							u'2006 Sebastian Dröge <slomo@ubuntu.com>', 
+							u'2006 Ruben Vermeersch <ruben@savanne.be>', 
+							u'2006 Novell and Patrick van Staveren', 
+							u'2006 Alp Toker <alp@atoker.com>', 
+							u'2006 Sebastian Dröge <slomo@circular-chaos.org>', 
+							u'2005 by Brian Nickel']
 		self._homepage = 'http://banshee-project.org'
 		self._license = 'LGPL2.1'
 		self._source = 'http://download.banshee-project.org/banshee/banshee-1-1.4.3.tar.bz2'
@@ -78,15 +78,15 @@ class Meta(BaseMeta):
 									'libgstreamer0.10-dev (>= 0.10.3)', 
 									'libgstreamer-plugins-base0.10-dev (>= 0.10.12)']
 
-		self._short_description = "Media Management and Playback application"
+		self._short_description = u"Media Management and Playback application"
 
-		self._long_description = "Banshee is an media management and playback application for the GNOME\n" + \
-									"desktop, allowing users to import audio from CDs, search their library,\n" + \
-									"create playlists of selections of their library, sync music to/from iPods\n" + \
-									"and other media devices, play and manage video files and burn selections\n" + \
-									"to a CD."
+		self._long_description = u"Banshee is an media management and playback application for the GNOME\n" + \
+									u"desktop, allowing users to import audio from CDs, search their library,\n" + \
+									u"create playlists of selections of their library, sync music to/from iPods\n" + \
+									u"and other media devices, play and manage video files and burn selections\n" + \
+									u"to a CD."
 
-		self._changelog = [{"version" : "1.4.3", "time" : "Sun, 23 Aug 2009 19:31:37 -0700", "text" : "Initial release"}]
+		self._changelog = [{"version" : "1.4.3", "time" : "Sun, 23 Aug 2009 19:31:37 -0700", "text" : u"Initial release"}]
 
 class Banshee(BasePackage):
 	def __init__(self):
@@ -114,7 +114,7 @@ class Documentation(BasePackage):
 		self._priority = 'optional'
 		self._install_requirements = ['monodoc-manual']
 
-		self._additional_description = "This package contains the developer documentation for Banshee."
+		self._additional_description = u"This package contains the developer documentation for Banshee."
 
 
 
