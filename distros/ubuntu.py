@@ -117,156 +117,82 @@ class Builder(object):
 		if not os.path.isdir("debian"): os.mkdir("debian")
 		os.chdir("debian")
 
-		# Copy any patches
-		if os.path.isdir("../../../patches/" + meta.name) == True:
-			patch_files = os.listdir("../../../patches/" + meta.name)
-			patch_files.sort()
-			if not os.path.isdir("patches"): os.mkdir("patches")
-			for patch_file in patch_files:
-				if not patch_file.endswith("patch"): continue
-				commands.getoutput("cp ../../../patches/" + meta.name + "/" + patch_file + " patches/" + patch_file)
+		# Copy any patches to the debian dir
+		if not os.path.isdir("patches") and len(meta.patches) > 0:
+			os.mkdir("patches")
+		for patch in meta.patches:
+			commands.getoutput("cp ../../../patches/" + meta.name + "/" + patch + " patches/" + patch)
 
-		# Generate the rules file
-		print "Generating the rules file ..."
+		# Get the parameters
+		params = meta.to_hash()
+		params['packages'] = packages
+		params['section'] = self.category_to_section[meta.category]
+		params['build_requirements'] += ["debhelper (>= 7)", "autotools-dev"]
+		params['category_to_section'] = self.category_to_section
+
+		params['additional_install_requirements'] = []
 		if meta.build_method == 'c application' or meta.build_method == 'c library':
-			self.generate_rules_file_for_c(meta, packages)
+			params['additional_install_requirements'] = ["${shlibs:Depends}", "${misc:Depends}"]
 		elif meta.build_method == 'python application' or meta.build_method == 'python library':
-			self.generate_rules_file_for_python(meta, packages)
-		elif meta.build_method == 'mono application':
-			self.generate_rules_file_for_mono_application(meta, packages)
-		else:
-			print "Unknown build method for generating rules file '" + meta.build_method + "'. Exiting ..."
-			exit()
-
-		# Create the compat file
-		print "Generating the compat file ..."
-		f = open('compat', 'w')
-		f.write('7')
-		f.close()
-
-		# Create the control file
-		print "Generating the control file ..."
-		if meta.build_method == 'c application' or meta.build_method == 'c library':
-			self.generate_control_file_for_c(meta, packages)
-		elif meta.build_method == 'python application':
-			self.generate_control_file_for_python_application(meta, packages)
-		elif meta.build_method == 'python library':
-			self.generate_control_file_for_python_library(meta, packages)
-		elif meta.build_method == 'mono application':
-			self.generate_control_file_for_mono_application(meta, packages)
+			params['install_requirements'] = ["${python:Depends}", "${misc:Depends}"]
+		elif meta.build_method == 'mono application' or meta.build_method == 'mono library':
+			params['additional_install_requirements'] = ["${cli:Depends}", "${misc:Depends}", "${shlibs:Depends}"]
 		else:
 			print "Unknown build method for generating control file '" + meta.build_method + "'. Exiting ..."
 			exit()
 
+		# Generate the rules file
+		print "Generating the rules file ..."
+		with open('../../../distros/ubuntu_templates/template.rules.py') as rules_template:
+			from mako.template import Template
+			template = Template(rules_template.read())
+			with open('rules', 'w') as rules_file:
+				rules_file.write(template.render(**params).replace("@@", "$"))
+
+		# Create the compat file
+		print "Generating the compat file ..."
+		with open('compat', 'w') as f:
+			f.write('7')
+
+		# Create the control file
+		print "Generating the control file ..."
+		with open('../../../distros/ubuntu_templates/template.control.py') as control_template:
+			from mako.template import Template
+			template = Template(control_template.read())
+			with open('control', 'w') as control_file:
+				control_file.write(template.render(**params).replace("@@", "$"))
 
 		# Create the copyright file
 		print "Generating the copyright file ..."
-		f = open('copyright', 'w')
-
-		f.write(substitute_strings(
-"""This package was debianized by #{packager_name} <#{packager_email}> on 
-#{timestring}.
-
-It was downloaded from #{homepage}
-
-#{upstream_authors}:
-
-    #{authors}
-
-Copyright:
-
-    Copyright (C) #{copyright}
-
-License:
-
-#{license_text}
-
-The Debian packaging is (C) #{year}, #{packager_name} <#{packager_email}> and
-is licensed under the #{license}, see above.
-""", meta.to_hash()))
-
-		f.close()
-
-
-		# Get the release of this package
-		changelog_release = 1
+		with open('../../../distros/ubuntu_templates/template.copyright.py') as copyright_template:
+			from mako.template import Template
+			template = Template(copyright_template.read())
+			with open('copyright', 'w') as copyright_file:
+				copyright_file.write(template.render(**params).replace("@@", "$"))
 
 		# Create the changelog
-		changelog_body = ""
-		if meta.changelog == None:
-			print "The changelog is missing. Exiting ..."
-			exit()
+		print "Generating the changelog file ..."
+		with open('../../../distros/ubuntu_templates/template.changelog.py') as changelog_template:
+			from mako.template import Template
+			template = Template(changelog_template.read())
+			with open('changelog', 'w') as changelog_file:
+				changelog_file.write(template.render(**params).replace("@@", "$"))
 
-		prev_version = '0'
-		reverse_entries = meta.changelog[:]
-		reverse_entries.reverse()
-		for item in reverse_entries:
-			if prev_version == item['version']:
-				changelog_release += 1
-			else:
-				changelog_release = 1
-			prev_version = item['version']
-
-			fields = meta.to_hash({
-					'changelog_release' : str(changelog_release), 
-					'item_version' : item['version'], 
-					'item_time' : item['time'], 
-					'item_text' : item['text']
-			})
-
-			entry = substitute_strings(
-"""#{name} (#{item_version}-#{changelog_release}) unstable; urgency=low
-
-  * #{item_text}
-
- -- #{packager_name} <#{packager_email}>  #{item_time}
-
-""", fields)
-
-			changelog_body = entry + changelog_body
-
-		f = open('changelog', 'w')
-		f.write(changelog_body)
-		f.close()
-
-		# Generate the .post install file
+		# Generate the pre and post install scripts
+		print "Generating the pre and post install scripts ..."
 		for package in packages:
 			if package.alternate_name != None:
-				# Create the post install script
-				f = open(package.name + '.postinst', 'w')
+				with open('../../../distros/ubuntu_templates/template.post.py') as post_template:
+					from mako.template import Template
+					template = Template(post_template.read())
+					with open(package.name + '.post', 'w') as post_file:
+						post_file.write(template.render(**params).replace("@@", "$"))
 
-				f.write(substitute_strings(
-"""#!/bin/sh
-
-set -e
-
-if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ]; then
-	update-alternatives --install /usr/bin/#{alternate_name} #{alternate_name} /usr/bin/#{name} 50 \\
-	  --slave /usr/share/man/man1/#{alternate_name}.1.gz #{alternate_name}.1.gz \\
-	  /usr/share/man/man1/#{name}.1.gz
-fi
-
-#DEBHELPER#
-""", package.to_hash()))
-
-				f.close()
-
-				# Create the post uninstall script
-				f = open(package.name + '.prerm', 'w')
-
-				f.write(substitute_strings(
-"""#!/bin/sh
- 
-set -e
-
-if [ "$1" != "upgrade" ]; then
-	update-alternatives --remove #{alternate_name} /usr/bin/#{name}
-fi
-
-#DEBHELPER#
-""", package.to_hash()))
-
-				f.close()
+				with open('../../../distros/ubuntu_templates/template.prerm.py') as prerm_template:
+					from mako.template import Template
+					template = Template(prerm_template.read())
+					with open(package.name + '.prerm', 'w') as prerm_file:
+						prerm_file.write(template.render(**params).replace("@@", "$"))
 
 		# Run debuild
 		print "Running debuild ..."
@@ -367,8 +293,8 @@ fi
 		os.chdir("..")
 
 		command = 'bash -c "sudo pbuilder build ' + meta.name + '_' + meta.version + '-' + str(meta.release) + '.dsc"'
-		#print commands.getoutput(command)
-		#"""
+		print commands.getoutput(command)
+		"""
 		child = pexpect.spawn(command, timeout=1200)
 
 		expected_lines = ["\[sudo\] password for [\w|\s]*: ",
@@ -416,7 +342,7 @@ fi
 		child.close()
 		if had_error:
 			exit()
-		#"""
+		"""
 
 		# Copy the deb files from the cache
 		print "Getting the deb files ..."
@@ -431,475 +357,3 @@ fi
 
 		print "Done"
 
-	def generate_rules_file_for_c(self, meta, packages):
-		# Make additions to fields
-		fields = meta.to_hash()
-
-		# Add patches
-		fields["patches"] = ""
-		if os.path.isdir("patches"):
-			patch_files = os.listdir("patches")
-			patch_files.sort()
-			for patch_file in patch_files:
-				fields["patches"] += "\tpatch -p0 < debian/patches/" + patch_file + "\n"
-
-			fields["patches"] += "\n"
-
-		f = open('rules', 'w')
-		f.write(substitute_strings(
-"""#!/usr/bin/make -f
-# -*- makefile -*-
-# Sample debian/rules that uses debhelper.
-# This file was originally written by Joey Hess and Craig Small.
-# As a special exception, when this file is copied by dh-make into a
-# dh-make output file, you may use that output file without restriction.
-# This special exception was added by Craig Small in version 0.37 of dh-make.
-
-# Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
-
-
-# These are used for cross-compiling and for saving the configure script
-# from having to guess our platform (since we know it already)
-DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
-DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
-ifneq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
-CROSS= --build $(DEB_BUILD_GNU_TYPE) --host $(DEB_HOST_GNU_TYPE)
-else
-CROSS= --build $(DEB_BUILD_GNU_TYPE)
-endif
-
-
-
-config.status: configure
-	dh_testdir
-	# Add here commands to configure the package.
-ifneq "$(wildcard /usr/share/misc/config.sub)" ""
-	cp -f /usr/share/misc/config.sub config.sub
-endif
-ifneq "$(wildcard /usr/share/misc/config.guess)" ""
-	cp -f /usr/share/misc/config.guess config.guess
-endif
-	./configure $(CROSS) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info CFLAGS="$(CFLAGS)" LDFLAGS="-Wl,-z,defs"
-
-
-build: build-stamp
-
-build-stamp:  config.status 
-	dh_testdir
-
-#{patches}
-	# Add here commands to compile the package.
-	$(MAKE)
-	#docbook-to-man debian/#{name}.sgml > #{name}.1
-
-	touch $@
-
-clean: 
-	dh_testdir
-	dh_testroot
-	rm -f build-stamp 
-
-	# Add here commands to clean up after the build process.
-	[ ! -f Makefile ] || $(MAKE) distclean
-	rm -f config.sub config.guess
-
-	dh_clean 
-
-install: build
-	dh_testdir
-	dh_testroot
-	dh_prep  
-	dh_installdirs
-
-	# Add here commands to install the package into debian/#{name}.
-	$(MAKE) DESTDIR=$(CURDIR)/debian/#{name} install
-
-
-# Build architecture-independent files here.
-binary-indep: build install
-# We have nothing to do by default.
-
-# Build architecture-dependent files here.
-binary-arch: build install
-	dh_testdir
-	dh_testroot
-	dh_installchangelogs ChangeLog
-	dh_installdocs
-	dh_installexamples
-#	dh_install
-#	dh_installmenu
-#	dh_installdebconf
-#	dh_installlogrotate
-#	dh_installemacsen
-#	dh_installpam
-#	dh_installmime
-#	dh_python
-#	dh_installinit
-#	dh_installcron
-#	dh_installinfo
-	dh_installman
-	dh_link
-	dh_strip
-	dh_compress
-	dh_fixperms
-#	dh_perl
-#	dh_makeshlibs
-	dh_installdeb
-	dh_shlibdeps
-	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
-
-binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary install 
-""", fields))
-		f.close()
-
-	def generate_rules_file_for_mono_application(self, meta, packages):
-
-		fields = meta.to_hash()
-
-		# Add patches
-		fields["patches"] = ""
-		if os.path.isdir("patches"):
-			patch_files = os.listdir("patches")
-			patch_files.sort()
-			for patch_file in patch_files:
-				fields["patches"] += "\tpatch -p0 < debian/patches/" + patch_file + "\n"
-
-			fields["patches"] += "\n"
-
-		f = open('rules', 'w')
-		f.write(substitute_strings(
-"""#!/usr/bin/make -f
-# -*- makefile -*-
-# Sample debian/rules that uses debhelper.
-# This file was originally written by Joey Hess and Craig Small.
-# As a special exception, when this file is copied by dh-make into a
-# dh-make output file, you may use that output file without restriction.
-# This special exception was added by Craig Small in version 0.37 of dh-make.
-
-# Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
-
-
-# These are used for cross-compiling and for saving the configure script
-# from having to guess our platform (since we know it already)
-DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
-DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
-ifneq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
-CROSS= --build $(DEB_BUILD_GNU_TYPE) --host $(DEB_HOST_GNU_TYPE)
-else
-CROSS= --build $(DEB_BUILD_GNU_TYPE)
-endif
-
-
-
-config.status: configure
-	dh_testdir
-	# Add here commands to configure the package.
-ifneq "$(wildcard /usr/share/misc/config.sub)" ""
-	cp -f /usr/share/misc/config.sub config.sub
-endif
-ifneq "$(wildcard /usr/share/misc/config.guess)" ""
-	cp -f /usr/share/misc/config.guess config.guess
-endif
-	./configure $(CROSS) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info CFLAGS="$(CFLAGS)" LDFLAGS="-Wl,-z,defs"
-
-
-build: build-stamp
-
-build-stamp:  config.status 
-	dh_testdir
-
-#{patches}
-	# Add here commands to compile the package.
-	$(MAKE)
-	#docbook-to-man debian/#{name}.sgml > #{name}.1
-
-	touch $@
-
-clean: 
-	dh_testdir
-	dh_testroot
-	rm -f build-stamp 
-
-	# Add here commands to clean up after the build process.
-	[ ! -f Makefile ] || $(MAKE) distclean
-	rm -f config.sub config.guess
-
-	dh_clean 
-
-install: build
-	dh_testdir
-	dh_testroot
-	dh_prep  
-	dh_installdirs
-
-	# Add here commands to install the package into debian/#{name}.
-	$(MAKE) DESTDIR=$(CURDIR)/debian/#{name} install
-
-
-# Build architecture-independent files here.
-binary-indep: build install
-# We have nothing to do by default.
-
-# Build architecture-dependent files here.
-binary-arch: build install
-	dh_testdir
-	dh_testroot
-	dh_installchangelogs ChangeLog
-	dh_installdocs
-	dh_installexamples
-#	dh_install
-#	dh_installmenu
-#	dh_installdebconf
-#	dh_installlogrotate
-#	dh_installemacsen
-#	dh_installpam
-#	dh_installmime
-#	dh_python
-#	dh_installinit
-#	dh_installcron
-#	dh_installinfo
-	dh_installman
-	dh_link
-	dh_strip
-	dh_compress
-	dh_fixperms
-#	dh_perl
-#	dh_makeshlibs
-	dh_installdeb
-	dh_shlibdeps
-	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
-
-binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary install 
-""", fields))
-
-		f.close()
-
-	def generate_rules_file_for_python(self, meta, packages):
-		# Make additions to fields
-		fields = meta.to_hash()
-
-		# Determine if there is a changelog
-		if os.path.isfile('../ChangeLog'):
-			fields['changelog'] = "DEB_INSTALL_CHANGELOGS_ALL := ChangeLog"
-
-		# Determine if it is built with distutils or autotools
-		if os.path.isfile('../setup.py'):
-			fields['build_script'] = 'python-distutils'
-		elif os.path.isfile('../configure.ac'):
-			fields['build_script'] = 'autotools'
-
-		f = open('rules', 'w')
-		f.write(substitute_strings(
-"""#!/usr/bin/make -f
-# -*- makefile -*-
-DEB_PYTHON_SYSTEM = pycentral
-
-include /usr/share/cdbs/1/rules/debhelper.mk
-include /usr/share/cdbs/1/class/#{build_script}.mk
-include /usr/share/cdbs/1/rules/simple-patchsys.mk
-include /usr/share/cdbs/1/rules/utils.mk
-
-#{changelog}
-
-binary-install/#{name}::
-	dh_icons -p#{name}
-
-clean::
-	rm -rf build/
-""", fields))
-
-		f.close()
-
-	def generate_control_file_for_c(self, meta, packages):
-		# Make additions to fields
-		fields = meta.to_hash({
-						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"],
-						'section' : self.category_to_section[meta.category]
-		})
-
-		f = open('control', 'w')
-		f.write(substitute_strings(
-"""Source: #{name}
-Section: #{section}
-Priority: #{priority}
-Maintainer: #{packager_name} <#{packager_email}>
-Build-Depends: #{build_requirements}
-Standards-Version: 3.8.0
-Homepage: #{homepage}
-""", fields))
-
-		for package in packages:
-			# Make additions to fields
-			fields = package.to_hash({
-							'install_requirements' : meta.join(["${shlibs:Depends}", "${misc:Depends}"]), 
-							'short_description' : package.meta.short_description, 
-							'long_description' : package.meta.long_description, 
-							'section' : self.category_to_section[meta.category]
-			})
-
-			# Make changes to fields
-			if len(package.additional_description) > 0:
-				fields['long_description'] += "\n\n" + package.additional_description
-			fields['long_description'] = ' ' + fields['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n") 
-
-			f.write(substitute_strings(
-"""
-Package: #{name}
-Section: #{section}
-Priority: #{priority}
-Architecture: any
-Depends: #{install_requirements}
-Description: #{short_description}
-#{long_description}
-""", fields))
-
-		f.close()
-
-	def generate_control_file_for_mono_application(self, meta, packages):
-		# Make additions to fields
-		fields = meta.to_hash({
-						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"], 
-						'section' : self.category_to_section[meta.category]
-		})
-
-		f = open('control', 'w')
-		f.write(substitute_strings(
-"""Source: #{name}
-Section: #{section}
-Priority: #{priority}
-Maintainer: #{packager_name} <#{packager_email}>
-Build-Depends: #{build_requirements}
-Standards-Version: 3.8.0
-Homepage: #{homepage}
-""", fields))
-
-		for package in packages:
-			# Make additions to fields
-			fields = package.to_hash({
-							'install_requirements' : meta.join(["${cli:Depends}", "${misc:Depends}", "${shlibs:Depends}"]), 
-							'short_description' : package.meta.short_description, 
-							'long_description' : package.meta.long_description, 
-							'section' : self.category_to_section[meta.category]
-			})
-
-			# Make changes to fields
-			if len(package.additional_description) > 0:
-				fields['long_description'] += "\n\n" + package.additional_description
-			fields['long_description'] = ' ' + fields['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n") 
-
-			f.write(substitute_strings(
-"""
-Package: #{name}
-Section: #{section}
-Priority: #{priority}
-Architecture: any
-Depends: #{install_requirements}
-Description: #{short_description}
-#{long_description}
-""", fields))
-
-		f.close()
-
-	def generate_control_file_for_python_application(self, meta, packages):
-		# Make additions to fields
-		fields = meta.to_hash({
-						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"], 
-						'section' : self.category_to_section[meta.category]
-		})
-
-		f = open('control', 'w')
-		f.write(substitute_strings(
-"""Source: #{name}
-Section: #{section}
-Priority: #{priority}
-XS-Python-Version: all
-Maintainer: #{packager_name} <#{packager_email}>
-Build-Depends: debhelper (>= 5.0.62), python, cdbs (>= 0.4.49), #{build_requirements}
-Build-Depends-Indep: python-central (>= 0.5.6)
-Standards-Version: 3.8.0
-Homepage: #{homepage}
-""", fields))
-
-		for package in packages:
-			# Make additions to fields
-			fields = package.to_hash({
-							'install_requirements' : meta.join(["${python:Depends}", "${misc:Depends}"]), 
-							'short_description' : package.meta.short_description, 
-							'long_description' : package.meta.long_description, 
-							'section' : self.category_to_section[meta.category]
-			})
-
-			# Make changes to fields
-			if len(package.additional_description) > 0:
-				fields['long_description'] += "\n\n" + package.additional_description
-			fields['long_description'] = ' ' + fields['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n") 
-
-			f.write(substitute_strings(
-"""
-Package: #{name}
-Section: #{section}
-Priority: #{priority}
-Architecture: all
-Depends: #{install_requirements}
-XB-Python-Version: ${python:Versions}
-Description: #{short_description}
-#{long_description}
-""", fields))
-
-		f.close()
-
-	def generate_control_file_for_python_library(self, meta, packages):
-		# Make additions to fields
-		fields = meta.to_hash({
-						'build_requirements' : ["debhelper (>= 7)", "autotools-dev"], 
-						'section' : self.category_to_section[meta.category]
-		})
-
-		f = open('control', 'w')
-		f.write(substitute_strings(
-"""Source: #{name}
-Section: #{section}
-Priority: #{priority}
-XS-Python-Version: all
-Maintainer: #{packager_name} <#{packager_email}>
-Build-Depends: debhelper (>= 5.0.62), python, cdbs (>= 0.4.49), #{build_requirements}
-Build-Depends-Indep: python-central (>= 0.5.6)
-Standards-Version: 3.8.0
-Homepage: #{homepage}
-""", fields))
-
-		for package in packages:
-			# Make additions to fields
-			fields = package.to_hash({
-							'install_requirements' : meta.join(["${python:Depends}", "${misc:Depends}"]), 
-							'short_description' : package.meta.short_description, 
-							'long_description' : package.meta.long_description, 
-							'section' : self.category_to_section[package.meta.category]
-			})
-
-			# Make changes to fields
-			if len(package.additional_description) > 0:
-				fields['long_description'] += "\n\n" + package.additional_description
-			fields['long_description'] = ' ' + fields['long_description'].replace("\n", "\n ").replace("\n \n", "\n .\n") 
-
-			f.write(substitute_strings(
-"""
-Package: #{name}
-Section: #{section}
-Priority: #{priority}
-Architecture: all
-Depends: #{install_requirements}
-XB-Python-Version: ${python:Versions}
-Description: #{short_description}
-#{long_description}
-""", fields))
-
-		f.close()

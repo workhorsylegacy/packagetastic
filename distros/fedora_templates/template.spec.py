@@ -1,3 +1,10 @@
+<%doc> \
+    This is a template rpm spec file. It uses mako \
+    for templating. Additional formatting is added to \
+    escape symbols that will conflict with mako. After \
+    mako is run, these symbols are replaced with others: \
+    @@ is replaced with % \
+</%doc>\
 Name:           ${name}
 Version:        ${version}
 Release:        ${release}@@{?dist}

@@ -13,6 +13,9 @@ if len(sys.argv) != 3:
 	print "./packagetastic [distro] [package]\n\n"
 	exit()
 
+# Setup packagetastic
+lib_packagetastic.init_packagetastic()
+
 # Get the arguments
 package_name = sys.argv[2]
 distro_name = sys.argv[1]

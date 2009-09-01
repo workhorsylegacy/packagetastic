@@ -120,10 +120,9 @@ class Builder(object):
 		# Create the spec file
 		os.chdir('../..')
 		print "Building the spec file ..."
-		# Write the custom parts of the spec file
-		with open('distros/fedora_templates/template.spec.py') as f:
+		with open('distros/fedora_templates/template.spec.py') as spec_template:
 			from mako.template import Template
-			template = Template(f.read())
+			template = Template(spec_template.read())
 			with open(os.path.expanduser('~/rpmbuild/SPECS/') + meta.name + '.spec', 'w') as spec_file:
 				spec_file.write(template.render(**params).replace("@@", "%"))
 

@@ -134,6 +134,14 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 }
 
+packagetastic_dir = None
+def init_packagetastic():
+	global packagetastic_dir
+	packagetastic_dir = commands.getoutput('pwd')
+	if packagetastic_dir.count('packagetastic') == 0:
+		raise Exception("Could not find packagetastic in the current path.")
+
+
 def setup_source_code(meta):
 	# Make sure the source code exists
 	if not os.path.isfile("sources/" + meta.source.split('/')[-1]):
@@ -302,6 +310,18 @@ class BaseMeta(object):
 		return changelog_release
 	release = property(get_release)
 
+	def get_patches(self):
+		global packagetastic_dir
+		patches = []
+		if os.path.isdir(packagetastic_dir + "/patches/" + self.name):
+			patch_files = os.listdir(packagetastic_dir + "/patches/" + self.name)
+			patch_files.sort()
+			for patch_file in patch_files:
+				if not patch_file.endswith('.patch'): continue
+				patches.append(patch_file)
+		return patches
+	patches = property(get_patches)
+
 	def after_install(self): pass
 	def before_install(self): pass
 	def after_uninstall(self): pass
@@ -328,28 +348,29 @@ class BaseMeta(object):
 			return str.join(', ', list_instance)
 
 	def to_hash(self, additional_fields=None):
-		retval={ 'name' : self.name, 
-				'priority' : self.priority, 
-				'category' : self.category, 
+		retval={ 'authors' : self.authors, 
+				'after_install' : self.after_install(), 
+				'after_uninstall' : self.after_uninstall(), 
+				'before_install' : self.before_install(), 
+				'before_uninstall' : self.before_uninstall(), 
 				'build_arch' : self.build_arch, 
-				'version' : self.version, 
-				'release' : str(self.release), 
-				'authors' : self.authors, 
-				'copyright' : self.copyright, 
-				'packager_name' : self.packager_name, 
-				'packager_email' : self.packager_email, 
-				'homepage' : self.homepage, 
-				'license' : self.license, 
-				'source' : self.source, 
 				'build_method' : self.build_method, 
 				'build_requirements' : self.build_requirements, 
-				'short_description' : self.short_description, 
+				'category' : self.category, 
+				'changelog' : self.changelog, 
+				'copyright' : self.copyright, 
+				'homepage' : self.homepage, 
+				'license' : self.license, 
 				'long_description' : self.long_description, 
-				'after_install' : self.after_install(), 
-				'before_install' : self.before_install(), 
-				'after_uninstall' : self.after_uninstall(), 
-				'before_uninstall' : self.before_uninstall(), 
-				'changelog' : self.changelog
+				'name' : self.name, 
+				'packager_email' : self.packager_email, 
+				'packager_name' : self.packager_name, 
+				'patches' : self.patches, 
+				'priority' : self.priority, 
+				'release' : str(self.release), 
+				'short_description' : self.short_description, 
+				'source' : self.source, 
+				'version' : self.version, 
 				}
 
 		# Add custom data
@@ -364,13 +385,10 @@ class BaseMeta(object):
 					retval[key] = value
 
 		# Make changes that make data easier to use
-		retval['authors'] = str.join("\n    ", retval['authors'])
-		retval['copyright'] = str.join("\n    ", retval['copyright'])
 		retval['year'] = time.strftime("%Y", time.localtime())
 		retval['timestring'] = time.strftime("%a, %d %b %Y %H:%M:%S %z", time.localtime())
 		retval['human_timestring'] = time.strftime("%a %b %d %Y", time.localtime())
 		retval['license_text'] = licenses[self.license]
-		retval['upstream_authors'] = ('Upstream Authors', 'Upstream Author')[ len(self.authors) > 0 ]
 
 		return retval
 
@@ -413,12 +431,12 @@ class BasePackage(object):
 	meta = property(get_meta, set_meta)
 
 	def to_hash(self, additional_fields=None):
-		retval={ 'name' : self.name, 
+		retval={'additional_description' : self.additional_description, 
 				'alternate_name' : self.alternate_name, 
-				'priority' : self.priority, 
 				'category' : self.category, 
 				'install_requirements' : self.install_requirements, 
-				'additional_description' : self.additional_description, 
+				'name' : self.name, 
+				'priority' : self.priority, 
 				}
 
 		# Add custom data
