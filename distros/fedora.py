@@ -1,4 +1,5 @@
-
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 
 
 class Builder(object):
@@ -120,11 +121,12 @@ class Builder(object):
 		# Create the spec file
 		os.chdir('../..')
 		print "Building the spec file ..."
-		with open('distros/fedora_templates/template.spec.py') as spec_template:
+		with open(os.path.expanduser('~/rpmbuild/SPECS/') + meta.name + '.spec', 'w') as spec_file:
 			from mako.template import Template
-			template = Template(spec_template.read())
-			with open(os.path.expanduser('~/rpmbuild/SPECS/') + meta.name + '.spec', 'w') as spec_file:
-				spec_file.write(template.render(**params).replace("@@", "%"))
+			from mako.lookup import TemplateLookup
+			lookup = TemplateLookup(directories=['distros/fedora_templates/'], output_encoding='utf-8')
+			template = lookup.get_template("template.spec.py")
+			spec_file.write(template.render(**params).replace("@@", "%"))
 
 		# Create the rpm file
 		packagetastic_dir = commands.getoutput('pwd')
