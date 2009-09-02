@@ -9,7 +9,7 @@ Name:           ${name}
 Version:        ${version}
 Release:        ${release}@@{?dist}
 Summary:        ${short_description}
-Group:          ${group}
+Group:          ${category_to_group[packages[0].category]}
 License:        ${license}
 URL:            ${homepage}
 Source0:        ${source}
@@ -26,10 +26,12 @@ BuildRoot:      @@{_tmppath}/@@{name}-@@{version}-@@{release}-root-@@(@@{__id_u}
 % for build_requirement in build_requirements:
 BuildRequires: ${build_requirement}
 % endfor
-% for install_requirement in install_requirements:
+% for install_requirement in packages[0].install_requirements:
 Requires: ${install_requirement}
 % endfor
-BuildArch: ${build_arch}
+% for additional_install_requirement in additional_install_requirements:
+Requires: ${additional_install_requirement}
+% endfor
 
 
 @@description
@@ -40,20 +42,20 @@ ${long_description}
 
 
 @@build
-% if build_method == 'c application' or build_method == 'c library':
+% if uses_c:
 @@configure
 make @@{?_smp_mflags}
-% elif build_method == 'python application' or build_method == 'python library':
+% elif uses_python:
 @@{__python} setup.py build
 % endif
 
 
 @@install
 rm -rf @@{buildroot}
-% if build_method == 'c application' or build_method == 'c library':
+% if uses_c:
 make install DESTDIR=@@{buildroot}
 rm -f @@{buildroot}@@{_infodir}/dir
-% elif build_method == 'python application' or build_method == 'python library':
+% elif uses_python:
 @@{__python} setup.py install -O1 --skip-build --root @@{buildroot}
 % endif
 
@@ -108,7 +110,7 @@ gtk-update-icon-cache -qf @@{_datadir}/icons/hicolor &>/dev/null || :
 % if has_info == True:
 @@{_infodir}/@@{name}.info*
 % endif
-% if import_sitelib == True:
+% if import_python_sitelib == True:
 @@{python_sitelib}/*
 % endif
 % if has_desktop_file == True:
