@@ -26,7 +26,6 @@ class Meta(BaseMeta):
 		self._homepage = 'http://www.pitivi.org'
 		self._license = 'LGPL2.1'
 		self._source = 'http://ftp.gnome.org/pub/GNOME/sources/pitivi/0.11/pitivi-0.11.3.tar.gz'
-		self._build_method = 'python application'
 
 		self._build_requirements = ['libxml-parser-perl', 
 										'intltool (>= 0.35)']
@@ -45,6 +44,7 @@ class Pitivi(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'pitivi'
+		self._build_method = 'python application'
 		self._category = 'Applications/Video'
 		self._priority = 'optional'
 		self._install_requirements = ['python-gtk2 (>= 2.8)', 

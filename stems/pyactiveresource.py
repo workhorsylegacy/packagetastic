@@ -13,7 +13,6 @@ class Meta(BaseMeta):
 		self._homepage = 'http://code.google.com/p/pyactiveresource/'
 		self._license = 'MIT'
 		self._source = 'http://code.google.com/p/pyactiveresource/pyactiveresource-1.0.0.tar.gz'
-		self._build_method = 'python library'
 
 		self._build_requirements = []
 
@@ -30,6 +29,7 @@ class Pyactiveresource(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'pyactiveresource'
+		self._build_method = 'python library'
 		self._category = 'Development/Libraries'
 		self._priority = 'optional'
 		self._install_requirements = []

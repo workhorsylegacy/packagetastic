@@ -8,11 +8,11 @@
 Source: ${name}
 Section: ${category_to_section[category]}
 Priority: ${priority}
-% if build_method == 'python application' or build_method == 'python library':
+% if uses_python:
 XS-Python-Version: all
 % endif
 Maintainer: ${packager_name} <${packager_email}>
-% if build_method == 'python application' or build_method == 'python library':
+% if uses_python:
 Build-Depends: debhelper (>= 5.0.62), python, cdbs (>= 0.4.49), ${str.join(', ', build_requirements)}
 Build-Depends-Indep: python-central (>= 0.5.6)
 % else:
@@ -25,9 +25,9 @@ Homepage: ${homepage}
 Package: ${package.name}
 Section: ${category_to_section[package.category]}
 Priority: ${package.priority}
-Architecture: ${build_arch}
+Architecture: ${build_method_to_architecture[package.build_method]}
 Depends: ${str.join(', ', package.install_requirements + additional_install_requirements)}
-% if build_method == 'python application' or build_method == 'python library':
+% if uses_python:
 XB-Python-Version: @@{python:Versions}
 % endif
 Description: ${short_description}

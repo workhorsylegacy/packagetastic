@@ -36,7 +36,6 @@ class Meta(BaseMeta):
 		self._homepage = 'http://banshee-project.org'
 		self._license = 'LGPL2.1'
 		self._source = 'http://download.banshee-project.org/banshee/banshee-1-1.4.3.tar.bz2'
-		self._build_method = 'mono application'
 
 		self._build_requirements = ['cli-common-dev (>= 0.4.4)', 
 									'intltool (>= 0.35)', 
@@ -92,6 +91,7 @@ class Banshee(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'banshee'
+		self._build_method = 'mono application'
 		self._category = 'Applications/Audio'
 		self._priority = 'optional'
 		self._install_requirements = ['gstreamer0.10-plugins-base', 
@@ -110,6 +110,7 @@ class Documentation(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'monodoc-banshee-manual'
+		self._build_method = 'documentation'
 		self._category = 'Documentation'
 		self._priority = 'optional'
 		self._install_requirements = ['monodoc-manual']

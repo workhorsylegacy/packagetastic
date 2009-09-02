@@ -13,7 +13,6 @@ class Meta(BaseMeta):
 		self._homepage = 'http://www.gnu.org/software/hello/'
 		self._license = 'GPL2+'
 		self._source = 'http://ftp.gnu.org/gnu/hello/hello-2.1.1.tar.gz'
-		self._build_method = 'c application'
 
 		self._build_requirements = ["gettext"]
 
@@ -29,6 +28,7 @@ class Hello(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'hello'
+		self._build_method = 'c application'
 		self._category = 'Development/Tools'
 		self._priority = 'optional'
 		self._install_requirements = ["info"]

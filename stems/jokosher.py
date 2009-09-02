@@ -28,7 +28,6 @@ class Meta(BaseMeta):
 		self._homepage = 'http://jokosher.org'
 		self._license = 'GPL2+'
 		self._source = 'http://launchpad.net/jokosher/0.11/0.11.1/+download/jokosher-0.11.1.tar.gz'
-		self._build_method = 'python application'
 
 		self._build_requirements = ['python-support']
 
@@ -46,6 +45,7 @@ class Jokosher(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'jokosher'
+		self._build_method = 'python application'
 		self._category = 'Applications/Audio'
 		self._priority = 'optional'
 		self._install_requirements = ['python-cairo', 

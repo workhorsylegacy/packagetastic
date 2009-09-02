@@ -13,7 +13,6 @@ class Meta(BaseMeta):
 		self._homepage = 'http://launchpad.net/spacepony'
 		self._license = 'AGPL3+'
 		self._source = 'http://launchpad.net/spacepony/trunk/0.1.0/+download/spacepony-client-0.1.0.tar.gz'
-		self._build_method = 'python application'
 
 		self._build_requirements = ['python-devel', 'gettext', 'desktop-file-utils']
 
@@ -28,6 +27,7 @@ class Shrip(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'spacepony-client'
+		self._build_method = 'python application'
 		self._category = 'Applications/Internet'
 		self._priority = 'optional'
 		self._install_requirements = ['python-gobject', 'python-gconf', 'python-vte', 

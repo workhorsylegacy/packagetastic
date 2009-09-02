@@ -13,7 +13,6 @@ class Meta(BaseMeta):
 		self._homepage = 'http://ogmrip.sourceforge.net'
 		self._license = 'GPL2+'
 		self._source = 'http://downloads.sourceforge.net/ogmrip/shrip-0.5.0.tar.gz'
-		self._build_method = 'c library'
 
 		self._build_requirements = ["libogmrip-dev (>= 0.10.0)",
 									"libdvdread-dev",
@@ -58,6 +57,7 @@ class Shrip(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'shrip'
+		self._build_method = 'c library'
 		self._category = 'Applications/Video'
 		self._priority = 'optional'
 		self._install_requirements = ["ogmrip (>= 0.10.0)",

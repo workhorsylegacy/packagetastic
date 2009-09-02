@@ -13,7 +13,6 @@ class Meta(BaseMeta):
 		self._homepage = 'http://www.tenshu.net/terminator/'
 		self._license = 'GPL2+'
 		self._source = 'http://launchpad.net/terminator/trunk/0.12/+download/terminator_0.12.tar.gz'
-		self._build_method = 'python application'
 
 		self._build_requirements = ['python-devel', 'gettext', 'desktop-file-utils']
 
@@ -32,6 +31,7 @@ class Shrip(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'terminator'
+		self._build_method = 'python application'
 		self._alternate_name = 'x-terminal-emulator'
 		self._category = 'Applications/System'
 		self._priority = 'optional'

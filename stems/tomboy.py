@@ -21,7 +21,6 @@ class Meta(BaseMeta):
 		self._homepage = 'http://projects.gnome.org/tomboy/'
 		self._license = 'LGPL2.1'
 		self._source = 'http://download.gnome.org/sources/tomboy/0.15/tomboy-0.15.0.tar.gz'
-		self._build_method = 'mono application'
 
 		self._build_requirements = ['mono-devel (>= 2.0)', 
 									'libgtk2.0-cil (>= 2.10.4-2)', 
@@ -57,6 +56,7 @@ class Tomboy(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'tomboy'
+		self._build_method = 'mono application'
 		self._category = 'Applications/Office'
 		self._priority = 'optional'
 		self._install_requirements = []

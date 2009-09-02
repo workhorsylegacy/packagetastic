@@ -13,7 +13,6 @@ class Meta(BaseMeta):
 		self._homepage = 'https://launchpad.net/gwibber'
 		self._license = 'GPL2+'
 		self._source = 'http://launchpad.net/gwibber/+download/gwibber-0.8.tar.gz'
-		self._build_method = 'python application'
 
 		self._build_requirements = ['python-all-dev', 
 									'python-distutils-extra']
@@ -28,6 +27,7 @@ class Gwibber(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'gwibber'
+		self._build_method = 'python application'
 		self._category = 'Applications/Communications'
 		self._priority = 'optional'
 		self._install_requirements = ['python-dbus', 

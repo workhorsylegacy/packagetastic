@@ -16,7 +16,6 @@ class Meta(BaseMeta):
 		self._homepage = 'https://fedorahosted.org/d-feet/'
 		self._license = 'GPL2+'
 		self._source = 'http://johnp.fedorapeople.org/d-feet-0.1.8.tar.gz'
-		self._build_method = 'python application'
 
 		self._build_requirements = ['python-support']
 
@@ -34,6 +33,7 @@ class DFeet(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'd-feet'
+		self._build_method = 'python application'
 		self._category = 'Development/Tools'
 		self._priority = 'extra'
 		self._install_requirements = ['python-dbus (>= 0.82.3)', 

@@ -45,6 +45,26 @@ class Builder(object):
 		'System/WebServers' : 'web'
 	}
 
+	build_method_to_architecture = {
+		'c application' : 'any', 
+		'c library' : 'any', 
+		'mono application' : 'any', 
+		'mono library' : 'any', 
+		'python application' : 'all', 
+		'python library' : 'all', 
+		'documentation' : 'all'
+	}
+
+	build_method_to_file_thing = {
+		'c application' : 'i386', 
+		'c library' : 'i386', 
+		'mono application' : 'i386', 
+		'mono library' : 'i386', 
+		'python application' : 'all', 
+		'python library' : 'all', 
+		'documentation' : 'all'
+	}
+
 	def build(self, meta, packages, root_password, gpg_password):
 		# Make sure the password is legit
 		print "Checking if we can use sudo ..."
@@ -132,17 +152,23 @@ class Builder(object):
 		params['section'] = self.category_to_section[meta.category]
 		params['build_requirements'] += ["debhelper (>= 7)", "autotools-dev"]
 		params['category_to_section'] = self.category_to_section
+		params['build_method_to_architecture'] = self.build_method_to_architecture
 
-		params['additional_install_requirements'] = []
-		if meta.build_method == 'c application' or meta.build_method == 'c library':
-			params['additional_install_requirements'] = ["${shlibs:Depends}", "${misc:Depends}"]
-		elif meta.build_method == 'python application' or meta.build_method == 'python library':
-			params['install_requirements'] = ["${python:Depends}", "${misc:Depends}"]
-		elif meta.build_method == 'mono application' or meta.build_method == 'mono library':
-			params['additional_install_requirements'] = ["${cli:Depends}", "${misc:Depends}", "${shlibs:Depends}"]
-		else:
-			print "Unknown build method for generating control file '" + meta.build_method + "'. Exiting ..."
-			exit()
+		# Find out which languages it uses
+		for lang in ['c', 'python', 'mono']:
+			params['uses_' + lang] = False
+			for package in packages:
+				if package.build_method == lang + ' application' or package.build_method == lang + ' library':
+					params['uses_' + lang] = True
+
+		# Add additional install requirements based on the languages it uses
+		params['additional_install_requirements'] = ["${misc:Depends}", "${shlibs:Depends}"]
+		if params['uses_c']:
+			params['additional_install_requirements'] += []
+		if params['uses_python']:
+			params['additional_install_requirements'] += ["${python:Depends}"]
+		if params['uses_mono']:
+			params['additional_install_requirements'] += ["${cli:Depends}"]
 
 		# Generate the rules file
 		print "Generating the rules file ..."
@@ -358,10 +384,11 @@ class Builder(object):
 		os.chdir('..')
 		if not os.path.isdir("packages"): os.mkdir("packages")
 		for package in packages:
+			thing = self.build_method_to_file_thing[package.build_method]
 			command = "cp /var/cache/pbuilder/result/" + \
-					package.name + "_" + meta.version + '-' + str(meta.release) + "_" + meta.build_arch + ".deb " + \
+					package.name + "_" + meta.version + '-' + str(meta.release) + "_" + thing + ".deb " + \
 					"packages/" + \
-					package.name + "_" + meta.version + '-' + str(meta.release) + "_" + meta.build_arch + ".deb"
+					package.name + "_" + meta.version + '-' + str(meta.release) + "_" + thing + ".deb"
 			print commands.getoutput(command)
 
 		print "Done"

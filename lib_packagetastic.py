@@ -230,7 +230,6 @@ class BaseMeta(object):
 		self._homepage = None
 		self._license = None
 		self._source = None
-		self._build_method = None
 		self._build_requirements = []
 		self._short_description = None
 		self._long_description = None
@@ -277,10 +276,6 @@ class BaseMeta(object):
 	def set_source(self, value): self._source = value
 	source = property(get_source, set_source)
 
-	def get_build_method(self): return self._build_method
-	def set_build_method(self, value): self._build_method = value
-	build_method = property(get_build_method, set_build_method)
-
 	def get_build_requirements(self): return distroify_requirements(self, self._build_requirements)
 	def set_build_requirements(self, value): self._build_requirements = value
 	build_requirements = property(get_build_requirements, set_build_requirements)
@@ -300,15 +295,6 @@ class BaseMeta(object):
 	def get_changelog(self): return self._changelog
 	def set_changelog(self, value): self._changelog = value
 	changelog = property(get_changelog, set_changelog)
-
-	def get_build_arch(self):
-		if self._build_method == 'c application' or self._build_method == 'c library':
-			return 'i386'
-		elif self._build_method == 'python application' or self._build_method == 'python library':
-			return 'noarch'
-		elif self._build_method == 'mono application' or self._build_method == 'mono library':
-			return 'i386'
-	build_arch = property(get_build_arch)
 
 	def get_version(self):
 		return self._changelog[0].version
@@ -361,8 +347,6 @@ class BaseMeta(object):
 				'after_uninstall' : self.after_uninstall(), 
 				'before_install' : self.before_install(), 
 				'before_uninstall' : self.before_uninstall(), 
-				'build_arch' : self.build_arch, 
-				'build_method' : self.build_method, 
 				'build_requirements' : self.build_requirements, 
 				'category' : self.category, 
 				'changelog' : self.changelog, 
@@ -403,6 +387,7 @@ class BaseMeta(object):
 class BasePackage(object):
 	def __init__(self):
 		self._name = None
+		self._build_method = None
 		self._alternate_name = None
 		self._priority = None
 		self._category = None
@@ -413,6 +398,10 @@ class BasePackage(object):
 	def get_name(self): return self._name
 	def set_name(self, value): self._name = value
 	name = property(get_name, set_name)
+
+	def get_build_method(self): return self._build_method
+	def set_build_method(self, value): self._build_method = value
+	build_method = property(get_build_method, set_build_method)
 
 	def get_alternate_name(self): return self._alternate_name
 	def set_alternate_name(self, value): self._alternate_name = value
@@ -441,6 +430,7 @@ class BasePackage(object):
 	def to_hash(self, additional_fields=None):
 		retval={'additional_description' : self.additional_description, 
 				'alternate_name' : self.alternate_name, 
+				'build_method' : self.build_method, 
 				'category' : self.category, 
 				'install_requirements' : self.install_requirements, 
 				'name' : self.name, 

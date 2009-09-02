@@ -18,7 +18,6 @@ class Meta(BaseMeta):
 		self._homepage = 'http://pexpect.sourceforge.net'
 		self._license = 'MIT'
 		self._source = 'http://downloads.sourceforge.net/pexpect/pexpect-2.3.tar.gz'
-		self._build_method = 'python library'
 
 		self._build_requirements = []
 
@@ -48,6 +47,7 @@ class Pexpect(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'pexpect'
+		self._build_method = 'python library'
 		self._category = 'Development/Libraries'
 		self._priority = 'optional'
 		self._install_requirements = []
