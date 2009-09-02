@@ -136,9 +136,9 @@ from email.utils import parsedate
 %>
 @@changelog
 % for item in changelog[:]:
-<%item['time'] = strftime("%a %b %d %Y", parsedate(item['time']))%> \
-* ${item['time']} - ${packager_email} - ${item['version']}
-- ${item['text']}
+<% vague_time = strftime("%a %b %d %Y", parsedate(item.time)) %> \
+* ${vague_time} - ${packager_email} - ${item.version}
+- ${item.text}
 
 % endfor
 
