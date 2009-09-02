@@ -86,7 +86,7 @@ class Meta(BaseMeta):
 									u"and other media devices, play and manage video files and burn selections\n" + \
 									u"to a CD."
 
-		self._changelog = [{"version" : "1.4.3", "time" : "Sun, 23 Aug 2009 19:31:37 -0700", "text" : u"Initial release"}]
+		self._changelog = [Changelog(version="1.4.3", release=1, time="Sun, 23 Aug 2009 19:31:37 -0700", text=u"Initial release")]
 
 class Banshee(BasePackage):
 	def __init__(self):

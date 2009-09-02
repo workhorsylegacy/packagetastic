@@ -22,7 +22,7 @@ class Meta(BaseMeta):
 		self._long_description = u"Space Pony makes it easy to sync your Linux desktop settings \n" + \
 									u"to the web and other machines. "
 
-		self._changelog = [{"version" : "0.1.0", "time" : "Fri, 07 Aug 2009 18:32:26 -0700", "text" : u"Initial release" } ]
+		self._changelog = [Changelog(version="0.1.0", release=1, time="Fri, 07 Aug 2009 18:32:26 -0700", text=u"Initial release") ]
 
 class Shrip(BasePackage):
 	def __init__(self):

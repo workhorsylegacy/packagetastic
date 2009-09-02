@@ -6,16 +6,10 @@
     @@ is replaced with $ \
 </%doc>\
 % for item in changelog[:]:
-<%
-prev_version = item['version']
-item_version = item['version']
-item_time = item['time']
-item_text = item['text']
-%>\
-${name} (${item_version}-1) unstable; urgency=low
+${name} (${item.version}-${item.release}) unstable; urgency=low
 
-  * ${item_text}
+  * ${item.text}
 
- -- ${packager_name} <${packager_email}>  ${item_time}
+ -- ${packager_name} <${packager_email}>  ${item.time}
 % endfor
 

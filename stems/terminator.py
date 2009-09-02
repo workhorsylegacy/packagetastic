@@ -26,7 +26,7 @@ class Meta(BaseMeta):
 									u"key bindings to switch between them. See the manpage for\n" + \
 									u"details."
 
-		self._changelog = [{"version" : "0.12", "time" : "Fri, 07 Aug 2009 18:32:26 -0700", "text" : u"Initial release" } ]
+		self._changelog = [Changelog(version="0.12", release=1, time="Fri, 07 Aug 2009 18:32:26 -0700", text=u"Initial release") ]
 
 class Shrip(BasePackage):
 	def __init__(self):

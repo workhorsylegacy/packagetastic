@@ -22,7 +22,7 @@ class Meta(BaseMeta):
 
 		self._long_description = u"It supports Twitter, Jaiku, Identi.ca, Facebook, and Digg."
 
-		self._changelog = [{"version" : "0.8", "time" : "Mon, 24 Aug 2009 15:28:47 -0700", "text" : u"Initial release" } ]
+		self._changelog = [Changelog(version="0.8", release=1, time="Mon, 24 Aug 2009 15:28:47 -0700", text=u"Initial release") ]
 
 class Gwibber(BasePackage):
 	def __init__(self):

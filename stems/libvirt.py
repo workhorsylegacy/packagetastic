@@ -58,7 +58,7 @@ class LibVirtPackage(BasePackage):
 									u"a long term stable C API for different virtualization mechanisms. It currently \n" + \
 									u"supports QEMU, KVM, and XEN."
 
-		self._changelog = [{"version" : "0.6.0", "time" : "Fri, 21 Aug 2009 19:49:12 -0700", "text" : u"Initial release" } ]
+		self._changelog = [Changelog(version="0.6.0", release=1, time="Fri, 21 Aug 2009 19:49:12 -0700", text=u"Initial release") ]
 
 	def install(self):
 		return ''

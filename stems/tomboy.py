@@ -51,7 +51,7 @@ class Meta(BaseMeta):
 									u"use. It lets you organise your notes intelligently by allowing you to\n" + \
 									u"easily link ideas together with Wiki style interconnects."
 
-		self._changelog = [{"version" : "0.15.0", "time" : "Tue, 11 Aug 2009 20:31:55 -0700", "text" : u"Initial release" } ]
+		self._changelog = [Changelog(version="0.15.0", release=1, time="Tue, 11 Aug 2009 20:31:55 -0700", text=u"Initial release") ]
 
 class Tomboy(BasePackage):
 	def __init__(self):

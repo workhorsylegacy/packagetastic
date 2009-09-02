@@ -40,7 +40,7 @@ class Meta(BaseMeta):
 									u"Jokosher have re-thought audio production at every level, and created\n" + \
 									u"something devilishly simple to use."
 
-		self._changelog = [{"version" : "0.11.1", "time" : "Fri, 21 Aug 2009 19:49:12 -0700", "text" : u"Initial release" } ]
+		self._changelog = [Changelog(version="0.11.1", release=1, time="Fri, 21 Aug 2009 19:49:12 -0700", text=u"Initial release") ]
 
 class Jokosher(BasePackage):
 	def __init__(self):

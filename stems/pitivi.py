@@ -39,7 +39,7 @@ class Meta(BaseMeta):
 									u"iMovie) to the full-blown editing view (aka Complex View) which puts\n" + \
 									u"you in complete control of your editing."
 
-		self._changelog = [{"version" : "0.11.3", "time" : "Fri, 21 Aug 2009 18:20:25 -0700", "text" : u"Initial release" } ]
+		self._changelog = [Changelog(version="0.11.3", release=1, time="Fri, 21 Aug 2009 18:20:25 -0700", text=u"Initial release") ]
 
 class Pitivi(BasePackage):
 	def __init__(self):

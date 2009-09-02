@@ -51,8 +51,8 @@ class Meta(BaseMeta):
 								u" o supports subtitles extraction\n" + \
 								u" o rips contiguous chapters"
 
-		self._changelog = [{ "version" : "0.5.0", "time" : "Sun, 17 May 2009 05:49:14 +0000", "text" : u"No changes. Rebuilt for fun." }, 
-							{"version" : "0.5.0", "time" : "Sat, 16 May 2009 05:49:14 +0000", "text" : u"Initial release" } ]
+		self._changelog = [ Changelog(version="0.5.0", release=2, time="Sun, 17 May 2009 05:49:14 +0000", text=u"No changes. Rebuilt for fun."), 
+							Changelog(version="0.5.0", release=1, time="Sat, 16 May 2009 05:49:14 +0000", text=u"Initial release") ]
 
 class Shrip(BasePackage):
 	def __init__(self):

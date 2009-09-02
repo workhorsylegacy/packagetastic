@@ -199,6 +199,25 @@ def substitute_strings(string, sub_hash):
 			result = result[:start] + replacement + result[end:]
 	return result
 
+class Changelog(object):
+	def __init__(self, version, release, time, text):
+		self._version = version
+		self._release = release
+		self._time = time
+		self._text = text
+
+	def get_version(self): return self._version
+	version = property(get_version)
+
+	def get_release(self): return self._release
+	release = property(get_release)
+
+	def get_time(self): return self._time
+	time = property(get_time)
+
+	def get_text(self): return self._text
+	text = property(get_text)
+
 class BaseMeta(object):
 	def __init__(self):
 		self._name = None
@@ -292,22 +311,11 @@ class BaseMeta(object):
 	build_arch = property(get_build_arch)
 
 	def get_version(self):
-		return self._changelog[0]['version']
+		return self._changelog[0].version
 	version = property(get_version)
 
 	def get_release(self):
-		changelog_release = 1
-		prev_version = '0'
-		reverse_entries = self._changelog[:]
-		reverse_entries.reverse()
-		for item in reverse_entries:
-			if prev_version == item['version']:
-				changelog_release += 1
-			else:
-				changelog_release = 1
-			prev_version = item['version']
-
-		return changelog_release
+		return self._changelog[0].release
 	release = property(get_release)
 
 	def get_patches(self):
@@ -487,8 +495,8 @@ def validate_package(meta, packages):
 		exit()
 
 	for entry in meta.changelog:
-		if not isinstance(entry['text'], unicode):
-			print "Stem file is Broken. The changelog's text field for \"version:" + entry['version'] + ' -- time:' + entry['time'] + "\" is not unicode. Exiting ..."
+		if not isinstance(entry.text, unicode):
+			print "Stem file is Broken. The changelog's text field for \"version:" + entry.version + ' -- time:' + entry.time + "\" is not unicode. Exiting ..."
 			exit()
 
 	for package in packages:

@@ -23,7 +23,7 @@ class Meta(BaseMeta):
 								u"allows non-programmers to use a classic computer science tool which\n" + \
 								u"would otherwise be unavailable to them."
 
-		self._changelog = [{"version" : "2.1.1", "time" : "Fri, 07 Aug 2009 18:32:26 -0700", "text" : u"Initial release" } ]
+		self._changelog = [Changelog(version="2.1.1", release=1, time="Fri, 07 Aug 2009 18:32:26 -0700", text=u"Initial release") ]
 
 class Hello(BasePackage):
 	def __init__(self):

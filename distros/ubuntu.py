@@ -194,14 +194,14 @@ class Builder(object):
 					from mako.lookup import TemplateLookup
 					lookup = TemplateLookup(directories=['../../../distros/ubuntu_templates/'], output_encoding='utf-8')
 					template = lookup.get_template("template.post.py")
-					post_file.write(template.render(**params).replace("@@", "$"))
+					post_file.write(template.render(**package.to_hash()).replace("@@", "$"))
 
 				with open(package.name + '.prerm', 'w') as prerm_file:
 					from mako.template import Template
 					from mako.lookup import TemplateLookup
 					lookup = TemplateLookup(directories=['../../../distros/ubuntu_templates/'], output_encoding='utf-8')
-					template = lookup.get_template("prerm.post.py")
-					prerm_file.write(template.render(**params).replace("@@", "$"))
+					template = lookup.get_template("template.prerm.py")
+					prerm_file.write(template.render(**package.to_hash()).replace("@@", "$"))
 
 		# Run debuild
 		print "Running debuild ..."

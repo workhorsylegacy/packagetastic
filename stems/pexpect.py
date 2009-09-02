@@ -35,7 +35,7 @@ class Meta(BaseMeta):
 								u"the standard Python pty module. The Pexpect interface focuses on ease of use so\n" + \
 								u"that simple tasks are easy."
 
-		self._changelog = [{"version" : "2.3", "time" : "Fri, 07 Aug 2009 18:32:26 -0700", "text" : u"Initial release" } ]
+		self._changelog = [Changelog(version="2.3", release=1, time="Fri, 07 Aug 2009 18:32:26 -0700", text=u"Initial release") ]
 
 
 	def after_install(self):

@@ -28,7 +28,7 @@ class Meta(BaseMeta):
 									u"* View the full command line of services on the bus\n" + \
 									u"* Execute methods with parameters on the bus and see their return values"
 
-		self._changelog = [{"version" : "0.1.8", "time" : "Fri, 21 Aug 2009 20:12:51 -0700", "text" : u"Initial release" } ]
+		self._changelog = [Changelog(version="0.1.8", release=1, time="Fri, 21 Aug 2009 20:12:51 -0700", text=u"Initial release") ]
 
 class DFeet(BasePackage):
 	def __init__(self):

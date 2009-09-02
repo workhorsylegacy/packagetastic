@@ -24,7 +24,7 @@ class Meta(BaseMeta):
 								u"in that one of its prime aims is to reduce the amount of code needed to map to \n" + \
 								u"these resources."
 
-		self._changelog = [{"version" : "1.0.0", "time" : "Fri, 07 Aug 2009 18:32:26 -0700", "text" : u"Initial release" } ]
+		self._changelog = [Changelog(version="1.0.0", release=1, time="Fri, 07 Aug 2009 18:32:26 -0700", text=u"Initial release") ]
 
 class Pyactiveresource(BasePackage):
 	def __init__(self):
