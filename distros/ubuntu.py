@@ -269,7 +269,7 @@ class Builder(object):
 			if result >= 0 and result <= 25:
 				pass
 			elif result == 26 and had_lintian_error:
-				print "Exiting because of Lintian error ..."
+				print "Lintian has errors. Exiting ..."
 				exit()
 			elif result == 27:
 				child.sendline(gpg_password)
