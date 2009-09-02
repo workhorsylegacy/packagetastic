@@ -105,13 +105,17 @@ class Builder(object):
 									pexpect.EOF]
 
 				still_reading = True
-				while still_reading:
-					result = child.expect(expected_lines)
+				try:
+					while still_reading:
+						result = child.expect(expected_lines)
 
-					if result == 0:
-						child.sendline(root_password)
-					elif result == len(expected_lines)-1:
-						still_reading = False
+						if result == 0:
+							child.sendline(root_password)
+						elif result == len(expected_lines)-1:
+							still_reading = False
+				except Exception as err:
+					print "    Warning: Failed to clean /var/cache/pbuilder/build/"
+					child.sendcontrol('c')
 
 				child.close()
 
@@ -121,13 +125,17 @@ class Builder(object):
 									pexpect.EOF]
 
 				still_reading = True
-				while still_reading:
-					result = child.expect(expected_lines)
+				try:
+					while still_reading:
+						result = child.expect(expected_lines)
 
-					if result == 0:
-						child.sendline(root_password)
-					elif result == len(expected_lines)-1:
-						still_reading = False
+						if result == 0:
+							child.sendline(root_password)
+						elif result == len(expected_lines)-1:
+							still_reading = False
+				except Exception as err:
+					print "    Warning: Failed to clean /var/cache/pbuilder/result/"
+					child.sendcontrol('c')
 
 				child.close()
 
