@@ -149,6 +149,7 @@ def setup_source_code(meta):
 		exit()
 
 	# Convert any .tar.bz2 files to .tar.gz
+	source = meta.source
 	if meta.source.split('/')[-1].endswith('.tar.bz2'):
 		os.chdir('sources')
 		dir_name = meta.source.split('/')[-1].rstrip('.tar.bz2')
@@ -157,13 +158,13 @@ def setup_source_code(meta):
 		commands.getoutput(substitute_strings("mv " + dir_name + " #{name}-#{version}", meta.to_hash()))
 		commands.getoutput(substitute_strings("tar -czf #{name}-#{version}.tar.gz #{name}-#{version}", meta.to_hash()))
 		commands.getoutput(substitute_strings("rm -rf #{name}-#{version}", meta.to_hash()))
-		meta.source = meta.source.rstrip(meta.source.split('/')[-1]) + substitute_strings("#{name}-#{version}.tar.gz", meta.to_hash())
+		source = meta.source.rstrip(meta.source.split('/')[-1]) + substitute_strings("#{name}-#{version}.tar.gz", meta.to_hash())
 		os.chdir('..')
 
 	# Uncompress the source code
 	print "Uncompressing source code ..."
 	if not os.path.isdir("builds"): os.mkdir("builds")
-	commands.getoutput(substitute_strings("cp sources/" + meta.source.split('/')[-1] + " builds/#{name}_#{version}.orig.tar.gz", meta.to_hash()))
+	commands.getoutput(substitute_strings("cp sources/" + source.split('/')[-1] + " builds/#{name}_#{version}.orig.tar.gz", meta.to_hash()))
 	os.chdir("builds")
 	commands.getoutput(substitute_strings("tar xzf #{name}_#{version}.orig.tar.gz", meta.to_hash()))
 	os.chdir(substitute_strings("#{name}-#{version}", meta.to_hash()))
