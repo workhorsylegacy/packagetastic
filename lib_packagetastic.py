@@ -168,19 +168,6 @@ def setup_source_code(meta):
 	commands.getoutput(substitute_strings("tar xzf #{name}_#{version}.orig.tar.gz", meta.to_hash()))
 	os.chdir(substitute_strings("#{name}-#{version}", meta.to_hash()))
 
-def distroify_requirements(meta, requirements):
-	# Convert the requirements to the style for the distro
-	retval = []
-	for req in requirements:
-		if meta.distro_style == 'fedora' and req.endswith('-dev'):
-			req += 'el'
-		elif meta.distro_style == 'ubuntu' and req.endswith('-devel'):
-			req = req[:-2]
-
-		retval.append(req)
-
-	return retval
-
 def substitute_strings(string, sub_hash):
 	result = string[:]
 
@@ -233,7 +220,6 @@ class BaseMeta(object):
 		self._build_requirements = []
 		self._short_description = None
 		self._long_description = None
-		self._distro_style = None
 		self._changelog = None
 
 	def get_name(self): return self._name
@@ -276,7 +262,7 @@ class BaseMeta(object):
 	def set_source(self, value): self._source = value
 	source = property(get_source, set_source)
 
-	def get_build_requirements(self): return distroify_requirements(self, self._build_requirements)
+	def get_build_requirements(self): return self._build_requirements
 	def set_build_requirements(self, value): self._build_requirements = value
 	build_requirements = property(get_build_requirements, set_build_requirements)
 
@@ -287,10 +273,6 @@ class BaseMeta(object):
 	def get_long_description(self): return self._long_description
 	def set_long_description(self, value): self._long_description = value
 	long_description = property(get_long_description, set_long_description)
-
-	def get_distro_style(self): return self._distro_style
-	def set_distro_style(self, value): self._distro_style = value
-	distro_style = property(get_distro_style, set_distro_style)
 
 	def get_changelog(self): return self._changelog
 	def set_changelog(self, value): self._changelog = value
@@ -362,7 +344,6 @@ class BasePackage(object):
 		self._category = None
 		self._install_requirements = []
 		self._additional_description = u""
-		self.meta = None
 
 	def get_name(self): return self._name
 	def set_name(self, value): self._name = value
@@ -384,17 +365,13 @@ class BasePackage(object):
 	def set_category(self, value): self._category = value
 	category = property(get_category, set_category)
 
-	def get_install_requirements(self): return distroify_requirements(self.meta, self._install_requirements)
+	def get_install_requirements(self): return self._install_requirements
 	def set_install_requirements(self, value): self._install_requirements = value
 	install_requirements = property(get_install_requirements, set_install_requirements)
 
 	def get_additional_description(self): return self._additional_description
 	def set_additional_description(self, value): self._additional_description = value
 	additional_description = property(get_additional_description, set_additional_description)
-
-	def get_meta(self): return self._meta
-	def set_meta(self, value): self._meta = value
-	meta = property(get_meta, set_meta)
 
 	def to_hash(self):
 		retval={'additional_description' : self.additional_description, 
@@ -514,7 +491,6 @@ def build(distro_name, package_name):
 	for obj in gc.get_objects():
 		if type(obj) == type and obj != BasePackage and issubclass(obj, BasePackage):
 			package = obj()
-			package.meta = meta
 			packages.append(package)
 
 	# Validate the meta and packages
@@ -523,7 +499,6 @@ def build(distro_name, package_name):
 	# Build the package for that distro
 	meta.packager_name = packager_name
 	meta.packager_email = packager_email
-	meta.distro_style = distro_name
 	builder = eval('Builder()')
 	builder.build(meta, packages, root_password, gpg_password)
 
