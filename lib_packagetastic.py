@@ -223,24 +223,19 @@ class BaseMeta(object):
 		self._changelog = None
 
 	def get_name(self): return self._name
-	def set_name(self, value): self._name = value
-	name = property(get_name, set_name)
+	name = property(get_name)
 
 	def get_priority(self): return self._priority
-	def set_priority(self, value): self._priority = value
-	priority = property(get_priority, set_priority)
+	priority = property(get_priority)
 
 	def get_category(self): return self._category
-	def set_category(self, value): self._category = value
-	category = property(get_category, set_category)
+	category = property(get_category)
 
 	def get_authors(self): return self._authors
-	def set_authors(self, value): self._authors = value
-	authors = property(get_authors, set_authors)
+	authors = property(get_authors)
 
 	def get_copyright(self): return self._copyright
-	def set_copyright(self, value): self._copyright = value
-	copyright = property(get_copyright, set_copyright)
+	copyright = property(get_copyright)
 
 	def get_packager_name(self): return self._packager_name
 	def set_packager_name(self, value): self._packager_name = value
@@ -251,32 +246,25 @@ class BaseMeta(object):
 	packager_email = property(get_packager_email, set_packager_email)
 
 	def get_homepage(self): return self._homepage
-	def set_homepage(self, value): self._homepage = value
-	homepage = property(get_homepage, set_homepage)
+	homepage = property(get_homepage)
 
 	def get_license(self): return self._license
-	def set_license(self, value): self._license = value
-	license = property(get_license, set_license)
+	license = property(get_license)
 
 	def get_source(self): return self._source
-	def set_source(self, value): self._source = value
-	source = property(get_source, set_source)
+	source = property(get_source)
 
 	def get_build_requirements(self): return self._build_requirements
-	def set_build_requirements(self, value): self._build_requirements = value
-	build_requirements = property(get_build_requirements, set_build_requirements)
+	build_requirements = property(get_build_requirements)
 
 	def get_short_description(self): return self._short_description
-	def set_short_description(self, value): self._short_description = value
-	short_description = property(get_short_description, set_short_description)
+	short_description = property(get_short_description)
 
 	def get_long_description(self): return self._long_description
-	def set_long_description(self, value): self._long_description = value
-	long_description = property(get_long_description, set_long_description)
+	long_description = property(get_long_description)
 
 	def get_changelog(self): return self._changelog
-	def set_changelog(self, value): self._changelog = value
-	changelog = property(get_changelog, set_changelog)
+	changelog = property(get_changelog)
 
 	def get_version(self):
 		return self._changelog[0].version
@@ -346,32 +334,25 @@ class BasePackage(object):
 		self._additional_description = u""
 
 	def get_name(self): return self._name
-	def set_name(self, value): self._name = value
-	name = property(get_name, set_name)
+	name = property(get_name)
 
 	def get_build_method(self): return self._build_method
-	def set_build_method(self, value): self._build_method = value
-	build_method = property(get_build_method, set_build_method)
+	build_method = property(get_build_method)
 
 	def get_alternate_name(self): return self._alternate_name
-	def set_alternate_name(self, value): self._alternate_name = value
-	alternate_name = property(get_alternate_name, set_alternate_name)
+	alternate_name = property(get_alternate_name)
 
 	def get_priority(self): return self._priority
-	def set_priority(self, value): self._priority = value
-	priority = property(get_priority, set_priority)
+	priority = property(get_priority)
 
 	def get_category(self): return self._category
-	def set_category(self, value): self._category = value
-	category = property(get_category, set_category)
+	category = property(get_category)
 
 	def get_install_requirements(self): return self._install_requirements
-	def set_install_requirements(self, value): self._install_requirements = value
-	install_requirements = property(get_install_requirements, set_install_requirements)
+	install_requirements = property(get_install_requirements)
 
 	def get_additional_description(self): return self._additional_description
-	def set_additional_description(self, value): self._additional_description = value
-	additional_description = property(get_additional_description, set_additional_description)
+	additional_description = property(get_additional_description)
 
 	def to_hash(self):
 		retval={'additional_description' : self.additional_description, 
