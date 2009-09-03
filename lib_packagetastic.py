@@ -321,26 +321,6 @@ class BaseMeta(object):
 	def after_uninstall(self): pass
 	def before_uninstall(self): pass
 
-	def join(self, data):
-		# Make sure the data is a list
-		list_instance = None
-		if isinstance(data, list):
-			list_instance = data + []
-		else:
-			list_instance = [data]
-
-		# Strip off ()
-		if self.distro_style == 'fedora':
-			for i in range(len(list_instance)):
-				list_instance[i] = list_instance[i].replace('(', '')
-				list_instance[i] = list_instance[i].replace(')', '')
-				list_instance[i] = list_instance[i].replace('|', ' or ')
-
-		if self.distro_style == 'fedora':
-			return str.join(' ', list_instance)
-		elif self.distro_style == 'ubuntu':
-			return str.join(', ', list_instance)
-
 	def to_hash(self, additional_fields=None):
 		retval={ 'authors' : self.authors, 
 				'after_install' : self.after_install(), 
@@ -449,7 +429,6 @@ class BasePackage(object):
 					retval[key] = value
 
 		# Make changes that make data easier to use
-		retval['install_requirements'] = self.meta.join(retval['install_requirements'])
 		retval['year'] = time.strftime("%Y", time.localtime())
 		retval['timestring'] = time.strftime("%a, %d %b %Y %H:%M:%S %z", time.localtime())
 		retval['human_timestring'] = time.strftime("%a %b %d %Y", time.localtime())

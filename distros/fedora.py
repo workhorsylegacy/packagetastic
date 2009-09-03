@@ -134,8 +134,6 @@ class Builder(object):
 		if params['uses_python']:
 			params['additional_install_requirements'] += ['python']
 
-		params['join_method'] = meta.join
-
 
 		# Create the spec file
 		os.chdir('../..')
