@@ -321,7 +321,7 @@ class BaseMeta(object):
 	def after_uninstall(self): pass
 	def before_uninstall(self): pass
 
-	def to_hash(self, additional_fields=None):
+	def to_hash(self):
 		retval={ 'authors' : self.authors, 
 				'after_install' : self.after_install(), 
 				'after_uninstall' : self.after_uninstall(), 
@@ -344,17 +344,6 @@ class BaseMeta(object):
 				'source' : self.source, 
 				'version' : self.version, 
 				}
-
-		# Add custom data
-		if additional_fields != None:
-			for key, value in additional_fields.iteritems():
-				if retval.has_key(key):
-					if isinstance(value, list):
-						retval[key] += value
-					else:
-						retval[key].append(value)
-				else:
-					retval[key] = value
 
 		# Make changes that make data easier to use
 		retval['year'] = time.strftime("%Y", time.localtime())
@@ -407,7 +396,7 @@ class BasePackage(object):
 	def set_meta(self, value): self._meta = value
 	meta = property(get_meta, set_meta)
 
-	def to_hash(self, additional_fields=None):
+	def to_hash(self):
 		retval={'additional_description' : self.additional_description, 
 				'alternate_name' : self.alternate_name, 
 				'build_method' : self.build_method, 
@@ -416,17 +405,6 @@ class BasePackage(object):
 				'name' : self.name, 
 				'priority' : self.priority, 
 				}
-
-		# Add custom data
-		if additional_fields != None:
-			for key, value in additional_fields.iteritems():
-				if retval.has_key(key):
-					if isinstance(value, list):
-						retval[key] += value
-					else:
-						retval[key].append(value)
-				else:
-					retval[key] = value
 
 		# Make changes that make data easier to use
 		retval['year'] = time.strftime("%Y", time.localtime())
