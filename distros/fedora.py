@@ -49,14 +49,17 @@ class Builder(object):
 	}
 
 	build_method_to_file_thing = {
-		'c application' : 'i386', 
-		'c library' : 'i386', 
-		'mono application' : 'i386', 
-		'mono library' : 'i386', 
+		'c application' : 'i586', 
+		'c library' : 'i586', 
+		'mono application' : 'i586', 
+		'mono library' : 'i586', 
 		'python application' : 'all', 
 		'python library' : 'all', 
 		'documentation' : 'all'
 	}
+
+	def filter_requirement(self, value):
+		return value.replace('|', ' or ').replace('(', '').replace(')', '')
 
 	def build(self, meta, packages, root_password, gpg_password):
 		# Setup the directories
@@ -73,6 +76,7 @@ class Builder(object):
 		params = meta.to_hash()
 		params['packages'] = packages
 		params['category_to_group'] = self.category_to_group
+		params['filter_requirement'] = self.filter_requirement
 
 		# Find out which languages are used
 		for lang in ['c', 'python', 'mono']:

@@ -24,13 +24,13 @@ BuildRoot:      @@{_tmppath}/@@{name}-@@{version}-@@{release}-root-@@(@@{__id_u}
 
 ## Build Requirements
 % for build_requirement in build_requirements:
-BuildRequires: ${build_requirement}
+BuildRequires: ${filter_requirement(build_requirement)}
 % endfor
 % for install_requirement in packages[0].install_requirements:
-Requires: ${install_requirement}
+Requires: ${filter_requirement(install_requirement)}
 % endfor
 % for additional_install_requirement in additional_install_requirements:
-Requires: ${additional_install_requirement}
+Requires: ${filter_requirement(additional_install_requirement)}
 % endfor
 
 
@@ -59,6 +59,9 @@ rm -f @@{buildroot}@@{_infodir}/dir
 @@{__python} setup.py install -O1 --skip-build --root @@{buildroot}
 % endif
 
+% if has_lang == True:
+@@find_lang @@{name}
+% endif
 
 @@check
 cd tests
@@ -92,11 +95,13 @@ gtk-update-icon-cache -qf @@{_datadir}/icons/hicolor &>/dev/null || :
 ## Files
 % if has_lang:
 @@files -f @@{name}.lang
+% else:
+@@files
 % endif
 @@defattr(-,root,root)
 \
 % if len(docs) > 0:
-@@doc ${str.join(', ', docs)}
+@@doc ${str.join(' ', docs)}
 % endif
 % if has_man1 == True:
 @@{_mandir}/man1/@@{name}.1*
@@ -127,9 +132,6 @@ rm -f @@{buildroot}/@@{_datadir}/icons/hicolor/icon-theme.cache
 rm -f @@{buildroot}/@@{_datadir}/applications/@@{name}.desktop
 desktop-file-install --dir=@@{buildroot}@@{_datadir}/applications data/@@{name}.desktop
 % endif
-% if has_lang == True:
-@@find_lang @@{name}
-% endif
 
 ## FIXME: These should not be here
 <%
@@ -138,7 +140,7 @@ from email.utils import parsedate
 %>
 @@changelog
 % for item in changelog[:]:
-<% vague_time = strftime("%a %b %d %Y", parsedate(item.time)) %> \
+<% vague_time = strftime("%a %b %d %Y", parsedate(item.time)) %>\
 * ${vague_time} - ${packager_email} - ${item.version}
 - ${item.text}
 
