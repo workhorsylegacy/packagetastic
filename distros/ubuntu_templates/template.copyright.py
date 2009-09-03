@@ -20,7 +20,7 @@ Copyright:
 
 License:
 
-${license_text}
+${"    " + license_text.replace("\n", "    \n")}
 
 The Debian packaging is (C) ${year}, ${packager_name} <${packager_email}> and
 is licensed under the ${license}, see above.
