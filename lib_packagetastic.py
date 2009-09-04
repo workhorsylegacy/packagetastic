@@ -3,6 +3,7 @@
 
 import os, time, re
 import commands
+import platform
 import pexpect
 import base64
 import gc
@@ -50,12 +51,60 @@ packagetastic_categories = [
 ]
 
 packagetastic_dir = None
-def init_packagetastic():
+def init_packagetastic(distro_name, package_name):
+	# Make sure we are on linux
+	if platform.system() != 'Linux':
+		print "Packagetastic only works on Linux, not '" + platform.system() + "'. Exiting ..."
+		exit()
+
+	# Make sure we have a distro file that matches the name
+	if not os.path.isfile('distros/' + distro_name + '.py'):
+		print "Packagetastic does not know how to build for the distro '" + distro_name + "'. Exiting ..."
+		exit()
+
+	# Make sure we have a stem file that matches the name
+	if not os.path.isfile('stems/' + package_name + '.py'):
+		print "Packagetastic does not have a stem file for the package '" + package_name + "'. Exiting ..."
+		exit()
+
+	# Try to get the OS name
+	os_name = None
+	if commands.getoutput('whereis lsb_release').split(':')[1] != '':
+		os_name = commands.getoutput('lsb_release -is')
+	elif os.path.isfile('/etc/distro-release'):
+		os_name = commands.getoutput('cat /etc/distro-release')
+	elif os.path.isfile('/etc/system-release'):
+		os_name = commands.getoutput('cat /etc/system-release').split()[0]
+	elif os.path.isfile('/etc/lsb-release'):
+		os_name = str.split(str.split(commands.getoutput('cat /etc/lsb-release'), "DISTRIB_ID=")[1], "\n")[0]
+	elif os.path.isfile('/etc/debian_version'):
+		os_name = "Debian"
+	elif os.path.isfile('/etc/fedora-release').split()[0]:
+		os_name = "Fedora"
+	elif os.path.isfile('/etc/SuSE-release'):
+		os_name = "SuSE"
+	elif os.path.isfile('/etc/mandriva-release'):
+		os_name = "Mandriva"
+	else:
+		print "Packagetastic could not find your Linux distribution name. Exiting ..."
+		exit()
+
+	# Make sure we got a distro we can build for
+	# NOTE: Other distros are LinuxMint, Mandriva, SuSE
+	if ['Debian', 'Ubuntu', 'Fedora'].count(os_name) == 0:
+		print "Packagetastic does not yet work with the Linux distribution '" + os_name + "'. Exiting ..."
+		exit()
+
+	# Make sure we are on the distro we want to build for
+	if distro_name != os_name.lower():
+		print "Packagetastic cannot build packages for '" + distro_name + "' while on '" + os_name + "'. Exiting ..."
+		exit()
+
+	# Get the path of packagetastic's location
 	global packagetastic_dir
 	packagetastic_dir = commands.getoutput('pwd')
 	if packagetastic_dir.count('packagetastic') == 0:
 		raise Exception("Could not find packagetastic in the current path.")
-
 
 def setup_source_code(meta):
 	# Make sure the source code exists
@@ -366,16 +415,6 @@ def build(distro_name, package_name):
 	f = open('gpg_password')
 	gpg_password = f.read()[0:-1]
 	f.close()
-
-	# Make sure we have a distro file that matches the name
-	if not os.path.isfile('distros/' + distro_name + '.py'):
-		print "Packagetastic does not know how to build for the distro '" + distro_name + "'. Exiting ..."
-		exit()
-
-	# Make sure we have a stem file that matches the name
-	if not os.path.isfile('stems/' + package_name + '.py'):
-		print "Packagetastic does not have a stem file for the package '" + package_name + "'. Exiting ..."
-		exit()
 
 	# Load the distro and stem files
 	execfile('distros/' + distro_name + '.py')
