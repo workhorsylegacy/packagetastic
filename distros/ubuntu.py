@@ -178,6 +178,14 @@ class Builder(object):
 		if params['uses_mono']:
 			params['additional_install_requirements'] += ["${cli:Depends}"]
 
+		# Make sure any python programs have a setup.py
+		if params['uses_python']:
+			for package in packages:
+				if package.build_method =='python application' or package.build_method == 'python library':
+					if not os.path.isfile('../setup.py'):
+						print "Packagetastic can only build python packages with a setup.py file. Exiting ..."
+						exit()
+
 		# Generate the rules file
 		print "Generating the rules file ..."
 		with open('rules', 'w') as rules_file:
@@ -191,6 +199,12 @@ class Builder(object):
 		print "Generating the compat file ..."
 		with open('compat', 'w') as f:
 			f.write('7')
+
+		# Create the pycompat file
+		if params['uses_python']:
+			print "Generating the pycompat file ..."
+			with open('pycompat', 'w') as f:
+				f.write('2')
 
 		# Create the control file
 		print "Generating the control file ..."
@@ -293,6 +307,8 @@ class Builder(object):
 
 							"E\: " + meta.name + " source\: [\w|\d|\s|\W|\.|\-]*\r\n",
 
+							"ImportError: No module named [\w|\d|\.|\-|\_]*\r\n", 
+
 							pexpect.EOF]
 
 		still_reading = True
@@ -325,6 +341,9 @@ class Builder(object):
 			elif result == 33:
 				print "    Lintian error: " + child.after[3:-2]
 				had_lintian_error = True
+			elif result == 34:
+				print "Compile error. " + child.after + " Exiting ..."
+				exit()
 			elif result == len(expected_lines)-1:
 				still_reading = False
 

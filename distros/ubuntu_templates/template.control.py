@@ -13,8 +13,8 @@ XS-Python-Version: all
 % endif
 Maintainer: ${packager_name} <${packager_email}>
 % if uses_python:
-Build-Depends: debhelper (>= 5.0.62), python, cdbs (>= 0.4.49), ${str.join(', ', build_requirements)}
-Build-Depends-Indep: python-central (>= 0.5.6)
+Build-Depends: debhelper (>= 5.0.62), python, ${str.join(', ', build_requirements)}
+Build-Depends-Indep: python-support (>= 0.3)
 % else:
 Build-Depends: ${str.join(', ', build_requirements)}
 % endif

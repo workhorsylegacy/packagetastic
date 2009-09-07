@@ -29,7 +29,7 @@ class Meta(BaseMeta):
 		self._license = 'GPL2+'
 		self._source = 'http://launchpad.net/jokosher/0.11/0.11.1/+download/jokosher-0.11.1.tar.gz'
 
-		self._build_requirements = ['python-support']
+		self._build_requirements = []
 
 		self._short_description = u"simple and easy to use audio multi-tracker"
 

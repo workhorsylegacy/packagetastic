@@ -17,7 +17,7 @@ class Meta(BaseMeta):
 		self._license = 'GPL2+'
 		self._source = 'http://johnp.fedorapeople.org/d-feet-0.1.8.tar.gz'
 
-		self._build_requirements = ['python-support']
+		self._build_requirements = []
 
 		self._short_description = u"A D-Bus object browser, viewer and debugger"
 
