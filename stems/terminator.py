@@ -14,7 +14,7 @@ class Meta(BaseMeta):
 		self._license = 'GPL2+'
 		self._source = 'http://launchpad.net/terminator/trunk/0.12/+download/terminator_0.12.tar.gz'
 
-		self._build_requirements = ['python-devel', 'gettext', 'desktop-file-utils']
+		self._build_requirements = ['python-dev', 'gettext', 'desktop-file-utils']
 
 		self._short_description = u"multiple GNOME terminals in one window"
 

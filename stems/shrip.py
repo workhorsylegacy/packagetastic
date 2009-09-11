@@ -29,11 +29,11 @@ class Meta(BaseMeta):
 									"libtheora-dev",
 									"faac",
 									"libvorbis-dev",
-									"libdbus-glib-1-dev",
+									"libdbus-glib-dev",
 									"libx264-dev",
 									"ogmtools",
 									"libxml-parser-perl",
-									"libnotify-dev-gtk2.10"]
+									"libnotify-dev"]
 
 		self._short_description = u'Application for ripping and encoding DVD into AVI/OGM files'
 

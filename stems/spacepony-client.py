@@ -14,7 +14,7 @@ class Meta(BaseMeta):
 		self._license = 'AGPL3+'
 		self._source = 'http://launchpad.net/spacepony/trunk/0.1.0/+download/spacepony-client-0.1.0.tar.gz'
 
-		self._build_requirements = ['python-devel', 'gettext', 'desktop-file-utils']
+		self._build_requirements = ['python-dev', 'gettext', 'desktop-file-utils']
 
 		self._short_description = u"Desktop settings syncing client"
 

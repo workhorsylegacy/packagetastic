@@ -52,9 +52,9 @@ class Jokosher(BasePackage):
 										'python-dbus', 
 										'python-glade2', 
 										'python-gtk2', 
-										'python-gst0.10', 
-										'gstreamer0.10-gnonlin (>= 0.10.8)', 
-										'gstreamer0.10-plugins-good (>= 0.10.9)', 
-										'gstreamer0.10-plugins-base (>= 0.10.12)', 
+										'python-gstreamer', 
+										'gstreamer-gnonlin (>= 0.10.8)', 
+										'gstreamer-plugins-good (>= 0.10.9)', 
+										'gstreamer-plugins-base (>= 0.10.12)', 
 										'python-setuptools']
 

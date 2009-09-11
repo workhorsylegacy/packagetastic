@@ -7,6 +7,9 @@ import platform
 import pexpect
 import base64
 import gc
+from helper import *
+
+exec_file("package_names.py", globals(), locals())
 
 packagetastic_categories = [
 	'Applications/Archiving', 
@@ -341,7 +344,7 @@ class BasePackage(object):
 
 		return retval
 
-def validate_package(meta, packages):
+def validate_package(distro_name, meta, packages):
 	# Make sure meta and packages were loaded
 	if not meta:
 		print "No BaseMeta class was found in the stem file. Exiting ..."
@@ -378,6 +381,31 @@ def validate_package(meta, packages):
 		if not isinstance(package.additional_description, unicode):
 			print "Stem file is Broken. The additional_description field \"" + package.additional_description + "\" is not unicode. Exiting ..."
 			exit()
+
+	# Make sure we know about the build dependencies
+	package_names = globals()['package_names']
+	for build_requirement in meta.build_requirements:
+		build_requirement = build_requirement.split()[0]
+		if not package_names.has_key(build_requirement):
+			print "Stem file is Broken. The build requirement \"" + build_requirement + "\" was not found. Please add it to package_names.py. Exiting ..."
+			exit()
+		elif package_names[build_requirement].has_key(distro_name) and \
+			len(package_names[build_requirement][distro_name]) == 0:
+			print "Stem file is Broken. The build requirement \"" + build_requirement + "\" is missing for this distro. Please add it to package_names.py. Exiting ..."
+			exit()
+
+	# Make sure we know about the install dependencies
+	for package in packages:
+		for install_requirement in package.install_requirements:
+			install_requirement = install_requirement.split()[0]
+			if not package_names.has_key(install_requirement):
+				print "Stem file is Broken. The install requirement \"" + install_requirement + "\" was not found. Please add it to package_names.py. Exiting ..."
+				exit()
+			elif package_names[install_requirement].has_key(distro_name) and \
+				len(package_names[install_requirement][distro_name]) == 0:
+				print "Stem file is Broken. The install requirement \"" + install_requirement + "\" is missing for this distro. Please add it to package_names.py. Exiting ..."
+				exit()
+	exit()
 
 def build(distro_name, package_name):
 	# Make sure the packager_name file exists
@@ -435,7 +463,7 @@ def build(distro_name, package_name):
 			packages.append(package)
 
 	# Validate the meta and packages
-	validate_package(meta, packages)
+	validate_package(distro_name, meta, packages)
 
 	# Build the package for that distro
 	meta.packager_name = packager_name

@@ -48,8 +48,8 @@ class Pitivi(BasePackage):
 		self._category = 'Applications/Video'
 		self._priority = 'optional'
 		self._install_requirements = ['python-gtk2 (>= 2.8)', 
-										'python-gst0.10 (>= 0.10.6)', 
-										'gstreamer0.10-gnonlin (>= 0.10.10)', 
+										'python-gstreamer (>= 0.10.6)', 
+										'gstreamer-gnonlin (>= 0.10.10)', 
 										'python-cairo (>= 1.0.0)', 
 										'python-glade2', 
 										'python-gnome2', 
@@ -57,7 +57,7 @@ class Pitivi(BasePackage):
 										'python-pkg-resources', 
 										'python-zope-interface', 
 										'python-setuptools', 
-										'gstreamer0.10-plugins-base', 
+										'gstreamer-plugins-base', 
 										'gstreamer0.10-plugins-good', 
 										'libgstreamer0.10-0 (>= 0.10.13.1)', 
 										'gstreamer0.10-x', 
