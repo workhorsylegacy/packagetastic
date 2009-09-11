@@ -64,8 +64,8 @@ Packagetastic one time setup:
 	# Make sure to use the same email and name as in your gpg key
 	echo "Joe Packager" > packager_name
 	echo "joe.packager@linux.com" > packager_email
-	echo "password" > root_password
-	echo "this is a secret" > gpg_password
+	echo "password" > packager_sudo
+	echo "this is a secret" > packager_gpg
 
 Building packages:
 	# Make sure you have a stem file for the package you want

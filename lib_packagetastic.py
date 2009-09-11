@@ -405,7 +405,6 @@ def validate_package(distro_name, meta, packages):
 				len(package_names[install_requirement][distro_name]) == 0:
 				print "Stem file is Broken. The install requirement \"" + install_requirement + "\" is missing for this distro. Please add it to package_names.py. Exiting ..."
 				exit()
-	exit()
 
 def build(distro_name, package_name):
 	# Make sure the packager_name file exists
@@ -418,14 +417,14 @@ def build(distro_name, package_name):
 		print "Add the packager email address to the 'packager_email' file."
 		exit()
 
-	# Make sure the root_password file exists
-	if not os.path.isfile('root_password'):
-		print "Add the root password to the 'root_password' file."
+	# Make sure the packager_sudo file exists
+	if not os.path.isfile('packager_sudo'):
+		print "Add the sudo password to the 'packager_sudo' file."
 		exit()
 
-	# Make sure the gpg_password file exists
-	if not os.path.isfile('gpg_password'):
-		print "Add the gpg password to the 'gpg_password' file."
+	# Make sure the packager_gpg file exists
+	if not os.path.isfile('packager_gpg'):
+		print "Add the gpg password to the 'packager_gpg' file."
 		exit()
 
 	f = open('packager_name')
@@ -436,12 +435,12 @@ def build(distro_name, package_name):
 	packager_email = f.read()[0:-1]
 	f.close()
 
-	f = open('root_password')
-	root_password = f.read()[0:-1]
+	f = open('packager_sudo')
+	packager_sudo = f.read()[0:-1]
 	f.close()
 
-	f = open('gpg_password')
-	gpg_password = f.read()[0:-1]
+	f = open('packager_gpg')
+	packager_gpg = f.read()[0:-1]
 	f.close()
 
 	# Load the distro and stem files
@@ -469,6 +468,6 @@ def build(distro_name, package_name):
 	meta.packager_name = packager_name
 	meta.packager_email = packager_email
 	builder = eval('Builder()')
-	builder.build(meta, packages, root_password, gpg_password)
+	builder.build(meta, packages, packager_sudo, packager_gpg)
 
 

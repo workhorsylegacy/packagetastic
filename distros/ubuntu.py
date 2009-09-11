@@ -65,7 +65,7 @@ class Builder(object):
 		'documentation' : 'all'
 	}
 
-	def build(self, meta, packages, root_password, gpg_password):
+	def build(self, meta, packages, packager_sudo, packager_gpg):
 		# Make sure the password is legit
 		print "Checking if we can use sudo ..."
 		child = pexpect.spawn('bash -c "sudo -k; sudo su"', timeout=5)
@@ -84,7 +84,7 @@ class Builder(object):
 			if result == 0:
 				child.sendline("")
 			elif result == 1:
-				child.sendline(root_password)
+				child.sendline(packager_sudo)
 			elif result == 2:
 				child.sendline("exit")
 				had_error = False
@@ -110,7 +110,7 @@ class Builder(object):
 						result = child.expect(expected_lines)
 
 						if result == 0:
-							child.sendline(root_password)
+							child.sendline(packager_sudo)
 						elif result == len(expected_lines)-1:
 							still_reading = False
 				except Exception as err:
@@ -130,7 +130,7 @@ class Builder(object):
 						result = child.expect(expected_lines)
 
 						if result == 0:
-							child.sendline(root_password)
+							child.sendline(packager_sudo)
 						elif result == len(expected_lines)-1:
 							still_reading = False
 				except Exception as err:
@@ -322,7 +322,7 @@ class Builder(object):
 				print "Lintian has errors. Exiting ..."
 				exit()
 			elif result == 27:
-				child.sendline(gpg_password)
+				child.sendline(packager_gpg)
 			elif result == 28:
 				print "Invalid gpg password. Exiting ..."
 				exit()
@@ -379,7 +379,7 @@ class Builder(object):
 			result = child.expect(expected_lines)
 
 			if result == 0:
-				child.sendline(root_password)
+				child.sendline(packager_sudo)
 			elif result == 1:
 				print "Failed to build package. Make sure it can be compiled manually before trying to package. Exiting ..."
 				had_error = True

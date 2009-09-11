@@ -61,7 +61,7 @@ class Builder(object):
 	def filter_requirement(self, value):
 		return value.replace('|', ' or ').replace('(', '').replace(')', '')
 
-	def build(self, meta, packages, root_password, gpg_password):
+	def build(self, meta, packages, packager_sudo, packager_gpg):
 		# Setup the directories
 		print "Setting up the rpmdev directories ..."
 		commands.getoutput('rm -rf ~/rpmbuild')
