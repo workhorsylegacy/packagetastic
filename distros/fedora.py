@@ -132,7 +132,7 @@ class Builder(object):
 		# Add additional install requirements based on the languages it uses
 		params['additional_install_requirements'] = []
 		if params['uses_python']:
-			params['additional_install_requirements'] += ['python']
+			params['additional_install_requirements'] += ['python', 'python-devel']
 
 
 		# Create the spec file
@@ -162,6 +162,9 @@ class Builder(object):
 							meta.name + "-" + meta.version + ".tar.gz:" + 
 							" No such file or directory", 
 
+							"error: invalid Python installation: unable to open" + 
+							" /usr/lib/python2.6/config/Makefile", 
+
 							pexpect.EOF]
 
 		still_reading = True
@@ -174,6 +177,9 @@ class Builder(object):
 				print child.after
 			elif result == 1:
 				print child.after
+			elif result == 2:
+				print "Please install python-devel. Exiting ..."
+				exit()
 			elif result == len(expected_lines)-1:
 				still_reading = False
 

@@ -5,6 +5,10 @@
     mako is run, these symbols are replaced with others: \
     @@ is replaced with % \
 </%doc>\
+% if uses_python:
+@@{!?python_sitelib: @@define python_sitelib @@(@@{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
+
+% endif
 Name:           ${name}
 Version:        ${version}
 Release:        ${release}@@{?dist}
@@ -63,9 +67,9 @@ rm -f @@{buildroot}@@{_infodir}/dir
 @@find_lang @@{name}
 % endif
 
-@@check
-cd tests
-make check-TESTS
+#@@check
+#cd tests
+#make check-TESTS
 
 
 @@clean
