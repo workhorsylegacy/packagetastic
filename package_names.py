@@ -1,6 +1,58 @@
 
 
 package_names = {
+	'hello' : { 
+		'fedora' : ['hello'], 
+		'ubuntu' : ['hello']
+	}, 
+	'jokosher' : { 
+		'fedora' : ['jokosher'], 
+		'ubuntu' : ['jokosher']
+	}, 
+	'mono-dev' : { 
+		'fedora' : ['mono-devel'], 
+		'ubuntu' : ['mono-dev']
+	}, 
+	'shrip' : { 
+		'fedora' : ['shrip'], 
+		'ubuntu' : ['shrip']
+	}, 
+	'spacepony-client' : { 
+		'fedora' : ['spacepony-client'], 
+		'ubuntu' : ['spacepony-client']
+	}, 
+	'pyactiveresource' : { 
+		'fedora' : ['pyactiveresource'], 
+		'ubuntu' : ['pyactiveresource']
+	}, 
+	'pitivi' : { 
+		'fedora' : ['pitivi'], 
+		'ubuntu' : ['pitivi']
+	}, 
+	'pexpect' : { 
+		'fedora' : ['pexpect'], 
+		'ubuntu' : ['pexpect']
+	}, 
+	'gwibber' : { 
+		'fedora' : ['gwibber'], 
+		'ubuntu' : ['gwibber']
+	}, 
+	'd-feet' : { 
+		'fedora' : ['d-feet'], 
+		'ubuntu' : ['d-feet']
+	}, 
+	'gpodder' : { 
+		'fedora' : ['gpodder'], 
+		'ubuntu' : ['gpodder']
+	}, 
+	'banshee' : { 
+		'fedora' : ['banshee'], 
+		'ubuntu' : ['banshee']
+	}, 
+	'monodoc-banshee' : { 
+		'fedora' : [], 
+		'ubuntu' : ['monodoc-banshee-manual']
+	}, 
 	'gstreamer-gnonlin' : { 
 		'fedora' : ['gnonlin'], 
 		'ubuntu' : ['gstreamer0.10-gnonlin']
@@ -76,6 +128,18 @@ package_names = {
 	'python-notify' : { 
 		'fedora' : ['notify-python'], 
 		'ubuntu' : ['python-notify']
+	}, 
+	'python-inotify' : { 
+		'fedora' : ['python-inotify'], 
+		'ubuntu' : ['python-pyinotify']
+	}, 
+	'tomboy' : { 
+		'fedora' : ['tomboy'], 
+		'ubuntu' : ['tomboy']
+	}, 
+	'terminator' : { 
+		'fedora' : ['terminator'], 
+		'ubuntu' : ['terminator']
 	}, 
 	'python-egenix-mxdatetime' : { 
 		'fedora' : [], 

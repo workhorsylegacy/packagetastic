@@ -382,8 +382,14 @@ def validate_package(distro_name, meta, packages):
 			print "Stem file is Broken. The additional_description field \"" + package.additional_description + "\" is not unicode. Exiting ..."
 			exit()
 
-	# Make sure we know about the build dependencies
+	# Make sure we know about the name
 	package_names = globals()['package_names']
+	for package in packages:
+		if not package_names.has_key(package.name):
+			print "The package name \"" + package.name + "\" was not found. Please add it to package_names.py. Exiting ..."
+			exit()
+
+	# Make sure we know about the build requirements
 	for build_requirement in meta.build_requirements:
 		build_requirement = build_requirement.split()[0]
 		if not package_names.has_key(build_requirement):
@@ -394,7 +400,7 @@ def validate_package(distro_name, meta, packages):
 			print "Stem file is Broken. The build requirement \"" + build_requirement + "\" is missing for this distro. Please add it to package_names.py. Exiting ..."
 			exit()
 
-	# Make sure we know about the install dependencies
+	# Make sure we know about the install requirements
 	for package in packages:
 		for install_requirement in package.install_requirements:
 			install_requirement = install_requirement.split()[0]

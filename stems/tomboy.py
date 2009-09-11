@@ -22,7 +22,7 @@ class Meta(BaseMeta):
 		self._license = 'LGPL2.1'
 		self._source = 'http://download.gnome.org/sources/tomboy/0.15/tomboy-0.15.0.tar.gz'
 
-		self._build_requirements = ['mono-devel (>= 2.0)', 
+		self._build_requirements = ['mono-dev (>= 2.0)', 
 									'libgtk2.0-cil (>= 2.10.4-2)', 
 									'libgnome2.24-cil (>= 2.16.1)', 
 									'libgconf2.24-cil', 

@@ -109,7 +109,7 @@ class Banshee(BasePackage):
 class Documentation(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
-		self._name = 'monodoc-banshee-manual'
+		self._name = 'monodoc-banshee'
 		self._build_method = 'documentation'
 		self._category = 'Documentation'
 		self._priority = 'optional'

@@ -31,6 +31,6 @@ class Shrip(BasePackage):
 		self._category = 'Applications/Internet'
 		self._priority = 'optional'
 		self._install_requirements = ['python-gobject', 'python-gconf', 'python-vte', 
-										'python-pyinotify', 'pyactiveresource']
+										'python-inotify', 'pyactiveresource']
 
 
