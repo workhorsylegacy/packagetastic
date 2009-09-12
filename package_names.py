@@ -1,4 +1,5 @@
-
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 
 package_names = {
 	'hello' : { 
@@ -98,7 +99,7 @@ package_names = {
 		'ubuntu' : ['info']
 	}, 
 	'python-vte' : { 
-		'fedora' : [''], 
+		'fedora' : [], 
 		'ubuntu' : ['python-vte']
 	}, 
 	'python-gobject' : { 
