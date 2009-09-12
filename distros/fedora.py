@@ -73,6 +73,10 @@ class Builder(object):
 		print "Copying the source code ..."
 		commands.getoutput(substitute_strings("cp ../../sources/" + meta.source.split('/')[-1] + " ~/rpmbuild/SOURCES/" + meta.source.split('/')[-1], meta.to_hash()))
 
+		# Copy any patches to the build tree
+		for patch in meta.patches:
+			commands.getoutput("cp ../../patches/" + meta.name + "/" + patch + " ~/rpmbuild/SOURCES/" + patch)
+
 		params = meta.to_hash()
 		params['packages'] = packages
 		params['category_to_group'] = self.category_to_group

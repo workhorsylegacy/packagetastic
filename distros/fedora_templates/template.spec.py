@@ -18,13 +18,13 @@ License:        ${license}
 URL:            ${homepage}
 Source0:        ${source}
 % if patches:
-<%n = 0%>
+<%n = 1%>
 % for patch in patches:
-Patch${n}: ${patch} \
+Patch${n}: ${patch}\
 <%n += 1%>
 % endfor
 % endif
-BuildRoot:      @@{_tmppath}/@@{name}-@@{version}-@@{release}-root-@@(@@{__id_u} -n)
+BuildRoot: @@{_tmppath}/@@{name}-@@{version}-@@{release}-root-@@(@@{__id_u} -n)
 
 ## Build Requirements
 % for build_requirement in build_requirements:
@@ -43,7 +43,13 @@ ${long_description}
 
 @@prep
 @@setup -q
-
+% if patches:
+<%n = 1%>\
+% for patch in patches:
+@@patch${n} -p0\
+<%n += 1%>
+% endfor
+% endif
 
 @@build
 % if uses_c:
