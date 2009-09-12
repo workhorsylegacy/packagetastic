@@ -104,6 +104,8 @@ class Builder(object):
 			params['has_man1'] = True
 		elif os.path.isfile('man/' + meta.name + '.1'):
 			params['has_man1'] = True
+		elif os.path.isfile('src/' + meta.name + '.1'):
+			params['has_man1'] = True
 		else:
 			params['has_man1'] = False
 
