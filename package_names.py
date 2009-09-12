@@ -227,7 +227,7 @@ package_names = {
 		'ubuntu' : ['libdvdread-dev']
 	}, 
 	'libhal-dev' : { 
-		'fedora' : ['hal-libs', 'hal-devel'], 
+		'fedora' : ['hal-devel', 'hal-libs'], 
 		'ubuntu' : ['libhal-dev']
 	}, 
 	'eject' : { 
@@ -255,7 +255,7 @@ package_names = {
 		'ubuntu' : ['lame']
 	}, 
 	'libgconf2-dev' : { 
-		'fedora' : [], 
+		'fedora' : ['GConf2-devel'], 
 		'ubuntu' : ['libgconf2-dev']
 	}, 
 	'libglade2-dev' : { 

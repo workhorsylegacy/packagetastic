@@ -59,7 +59,7 @@ class Builder(object):
 	}
 
 	def filter_requirement(self, value):
-		return value.replace('|', ' or ').replace('(', '').replace(')', '')
+		return value.replace('|', 'or').replace('(', '').replace(')', '')
 
 	def build(self, meta, packages, packager_sudo, packager_gpg):
 		# Setup the directories

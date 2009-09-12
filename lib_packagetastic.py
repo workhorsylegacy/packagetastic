@@ -146,8 +146,8 @@ def requirements_to_distro_specific(distro_name, requirements):
 		else:
 			name = requirement.split()[0]
 
-		new_name = package_names[name][distro_name][0]
-		distro_requirements.append(new_name + version)
+		for new_name in package_names[name][distro_name]:
+			distro_requirements.append(new_name + version)
 
 	return distro_requirements
 
@@ -487,7 +487,7 @@ def build(distro_name, package_name):
 
 	# Convert the requirements to be distro specific
 	meta.__dict__['_build_requirements'] = \
-		requirements_to_distro_specific('ubuntu', meta.build_requirements)
+		requirements_to_distro_specific(distro_name, meta.build_requirements)
 	for package in packages:
 		package.__dict__['_install_requirements'] = \
 			requirements_to_distro_specific(distro_name, package.install_requirements)
