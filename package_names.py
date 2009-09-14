@@ -2,6 +2,10 @@
 # -*- coding: UTF-8 -*-
 
 package_names = {
+	'desktop-file-utils' : { 
+		'fedora' : ['desktop-file-utils'], 
+		'ubuntu' : ['desktop-file-utils']
+	}, 
 	'hello' : { 
 		'fedora' : ['hello'], 
 		'ubuntu' : ['hello']

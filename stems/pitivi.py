@@ -54,13 +54,13 @@ class Pitivi(BasePackage):
 										'python-glade2', 
 										'python-gnome2', 
 										'python-dbus', 
-										'python-pkg-resources', 
+										#'python-pkg-resources', 
 										'python-zope-interface', 
 										'python-setuptools', 
 										'gstreamer-plugins-base', 
-										'gstreamer0.10-plugins-good', 
-										'libgstreamer0.10-0 (>= 0.10.13.1)', 
-										'gstreamer0.10-x', 
+										'gstreamer-plugins-good', 
+										#'libgstreamer0.10-0 (>= 0.10.13.1)', 
+										'gstreamer', 
 										'gnome-icon-theme', 
 										'python-pygoocanvas']
 

@@ -4,6 +4,7 @@
     escape symbols that will conflict with mako. After \
     mako is run, these symbols are replaced with others: \
     @@ is replaced with % \
+    \\\\ is replaced with \\n \
 </%doc>\
 % if uses_python:
 @@{!?python_sitelib: @@define python_sitelib @@(@@{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
@@ -25,6 +26,7 @@ Patch${n}: ${patch}\
 % endfor
 % endif
 BuildRoot: @@{_tmppath}/@@{name}-@@{version}-@@{release}-root-@@(@@{__id_u} -n)
+BuildArch: ${build_method_to_build_arch[packages[0].build_method]}
 
 ## Build Requirements
 % for build_requirement in build_requirements:
@@ -69,6 +71,13 @@ rm -f @@{buildroot}@@{_infodir}/dir
 @@{__python} setup.py install -O1 --skip-build --root @@{buildroot}
 % endif
 
+% if has_desktop_file:
+desktop-file-install --vendor=""                 \\\\
+  --delete-original                              \\\\
+  --dir=@@{buildroot}@@{_datadir}/applications     \\\\
+  @@{buildroot}@@{_datadir}/applications/${internal_name}.desktop
+% endif
+
 % if has_lang == True:
 @@find_lang @@{name}
 % endif
@@ -108,7 +117,7 @@ gtk-update-icon-cache -qf @@{_datadir}/icons/hicolor &>/dev/null || :
 % else:
 @@files
 % endif
-@@defattr(-,root,root)
+@@defattr(-,root,root,-)
 \
 % if len(docs) > 0:
 @@doc ${str.join(' ', docs)}
@@ -119,29 +128,27 @@ gtk-update-icon-cache -qf @@{_datadir}/icons/hicolor &>/dev/null || :
 % if has_man5 == True:
 @@{_mandir}/man5/@@{name}_config.5*
 % endif
+
+% if import_python_sitelib == True:
+@@{python_sitelib}/*
+% endif
 % if has_bindir == True:
 @@{_bindir}/@@{name}
+% endif
+% if has_datadir == True:
+@@{_datadir}/${internal_name}/
 % endif
 % if has_info == True:
 @@{_infodir}/@@{name}.info*
 % endif
-% if import_python_sitelib == True:
-@@{python_sitelib}/*
+% if has_icons == True:
+@@{_datadir}/icons/hicolor/48x48/apps/*.png
+@@{_datadir}/icons/hicolor/16x16/apps/*.png
 % endif
 % if has_desktop_file == True:
-@@{_datadir}/applications/@@{name}.desktop
-% endif
-% if has_icons == True:
-@@{_datadir}/icons/hicolor/*/*/@@{name}*.png
-@@{_datadir}/icons/hicolor/*/*/@@{name}*.svg
-@@{_datadir}/pixmaps/@@{name}.png
+@@{_datadir}/applications/${internal_name}.desktop
 % endif
 
-% if has_icons == True:
-rm -f @@{buildroot}/@@{_datadir}/icons/hicolor/icon-theme.cache
-rm -f @@{buildroot}/@@{_datadir}/applications/@@{name}.desktop
-desktop-file-install --dir=@@{buildroot}@@{_datadir}/applications data/@@{name}.desktop
-% endif
 
 ## FIXME: These should not be here
 <%

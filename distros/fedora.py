@@ -48,14 +48,14 @@ class Builder(object):
 		'System/WebServers' : 'System Environment/Daemons'
 	}
 
-	build_method_to_file_thing = {
+	build_method_to_build_arch = {
 		'c application' : 'i586', 
 		'c library' : 'i586', 
 		'mono application' : 'i586', 
 		'mono library' : 'i586', 
-		'python application' : 'all', 
-		'python library' : 'all', 
-		'documentation' : 'all'
+		'python application' : 'noarch', 
+		'python library' : 'noarch', 
+		'documentation' : 'noarch'
 	}
 
 	# FIXME: Figure out how to do "one or two or three"
@@ -81,6 +81,7 @@ class Builder(object):
 		params = meta.to_hash()
 		params['packages'] = packages
 		params['category_to_group'] = self.category_to_group
+		params['build_method_to_build_arch'] = self.build_method_to_build_arch
 		params['filter_requirement'] = self.filter_requirement
 
 		# Find out which languages are used
@@ -101,28 +102,41 @@ class Builder(object):
 				params['docs'].append(doc)
 
 		# Get the man1 params
-		if os.path.isfile('doc/' + meta.name + '.1'):
+		if os.path.isfile('doc/' + meta.internal_name + '.1'):
 			params['has_man1'] = True
-		elif os.path.isfile('man/' + meta.name + '.1'):
+		elif os.path.isfile('man/' + meta.internal_name + '.1'):
 			params['has_man1'] = True
-		elif os.path.isfile('src/' + meta.name + '.1'):
+		elif os.path.isfile('src/' + meta.internal_name + '.1'):
 			params['has_man1'] = True
 		else:
 			params['has_man1'] = False
 
 		# Get the man5 params
-		if os.path.isfile('doc/' + meta.name + '_config.5'):
+		if os.path.isfile('doc/' + meta.internal_name + '_config.5'):
 			params['has_man5'] = True
-		elif os.path.isfile('man/' + meta.name + '_config.5'):
+		elif os.path.isfile('man/' + meta.internal_name + '_config.5'):
 			params['has_man5'] = True
 		else:
 			params['has_man5'] = False
 
+		# Get the icons
+		params['has_icons'] = False
+		if os.path.isdir('data/icons') or os.path.isdir('icons'):
+			params['has_icons'] = True
+
+		# Get the desktop file
+		params['has_desktop_file'] = False
+		if os.path.isfile('data/' + meta.internal_name + '.desktop'):
+			params['has_desktop_file'] = True
+			params['desktop_file'] = 'data/' + meta.internal_name + '.desktop'
+		elif os.path.isfile('ui/' + meta.internal_name + '.desktop'):
+			params['has_desktop_file'] = True
+			params['desktop_file'] = 'ui/' + meta.internal_name + '.desktop'
+
 		# Get more params
-		params['has_info'] = os.path.isfile('doc/' + meta.name + '.info')
+		params['has_info'] = os.path.isfile('doc/' + meta.internal_name + '.info')
 		params['has_lang'] = os.path.isdir('po')
-		params['has_desktop_file'] = os.path.isfile('data/' + meta.name + '.desktop')
-		params['has_icons'] = os.path.isdir('data/icons')
+		params['has_datadir'] = os.path.isdir(meta.internal_name)
 
 		# Get the build params
 		params['has_bindir'] = False
@@ -139,7 +153,8 @@ class Builder(object):
 		# Add additional install requirements based on the languages it uses
 		params['additional_install_requirements'] = []
 		if params['uses_python']:
-			params['additional_install_requirements'] += ['python', 'python-devel']
+			params['additional_install_requirements'] += ['python']
+			params['build_requirements'] += ['python-devel']
 
 
 		# Create the spec file
@@ -150,7 +165,7 @@ class Builder(object):
 			from mako.lookup import TemplateLookup
 			lookup = TemplateLookup(directories=['distros/fedora_templates/'], output_encoding='utf-8')
 			template = lookup.get_template("template.spec.py")
-			spec_file.write(template.render(**params).replace("@@", "%"))
+			spec_file.write(template.render(**params).replace("@@", "%").replace("\\\\\\", "\\\n"))
 
 		# Create the rpm file
 		packagetastic_dir = commands.getoutput('pwd')
@@ -197,9 +212,9 @@ class Builder(object):
 		os.chdir(packagetastic_dir)
 		if not os.path.isdir("packages"): os.mkdir("packages")
 		for package in packages:
-			thing = self.build_method_to_file_thing[package.build_method]
-			rpm = meta.name + "-" + meta.version + "-" + str(meta.release) + ".fc11." + thing + ".rpm"
-			commands.getoutput("cp ~/rpmbuild/RPMS/" + thing + "/" + rpm + " packages/" + rpm)
+			build_arch = self.build_method_to_build_arch[package.build_method]
+			rpm = meta.name + "-" + meta.version + "-" + str(meta.release) + ".fc11." + build_arch + ".rpm"
+			print commands.getoutput("cp ~/rpmbuild/RPMS/" + build_arch + "/" + rpm + " packages/" + rpm)
 		print "Done"
 
 
