@@ -58,8 +58,9 @@ class Builder(object):
 		'documentation' : 'all'
 	}
 
+	# FIXME: Figure out how to do "one or two or three"
 	def filter_requirement(self, value):
-		return value.replace('|', 'or').replace('(', '').replace(')', '')
+		return value.replace('(', '').replace(')', '').split(' | ')[0]
 
 	def build(self, meta, packages, packager_sudo, packager_gpg):
 		# Setup the directories
