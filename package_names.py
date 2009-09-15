@@ -116,7 +116,7 @@ package_names = {
 	}, 
 	'mono-dev' : { 
 		'fedora' : ['mono-devel'], 
-		'ubuntu' : ['mono-dev']
+		'ubuntu' : ['mono-devel']
 	}, 
 	'shrip' : { 
 		'fedora' : ['shrip'], 
