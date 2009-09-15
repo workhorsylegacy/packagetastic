@@ -40,7 +40,7 @@ class Meta(BaseMeta):
 		self._build_requirements = ['cli-common-dev (>= 0.4.4)', 
 									'intltool (>= 0.35)', 
 									'lsb-release', 
-									'mono-devel (>= 2.0.0)', 
+									'mono-dev (>= 2.0.0)', 
 									'boo (>= 0.8.1)', 
 									'libmono-dev (>= 1.2.4)', 
 									'libmono-system-data2.0-cil', 

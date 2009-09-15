@@ -2,6 +2,106 @@
 # -*- coding: UTF-8 -*-
 
 package_names = {
+	'libmono-sharpzip2.84-cil' : { 
+		'fedora' : ['mono-devel'], 
+		'ubuntu' : ['libmono-sharpzip2.84-cil']
+	}, 
+	'libmono2.0-cil' : { 
+		'fedora' : ['mono-devel'], 
+		'ubuntu' : ['libmono2.0-cil']
+	}, 
+	'libmono-sqlite2.0-cil' : { 
+		'fedora' : ['mono-devel'], 
+		'ubuntu' : ['libmono-sqlite2.0-cil']
+	}, 
+	'libmono-system-web2.0-cil' : { 
+		'fedora' : ['mono-devel'], 
+		'ubuntu' : ['libmono-system-web2.0-cil']
+	}, 
+	'libmono-system-data2.0-cil' : { 
+		'fedora' : ['mono-devel'], 
+		'ubuntu' : ['libmono-system-data2.0-cil']
+	}, 
+	'libmono-dev' : { 
+		'fedora' : ['mono-devel'], 
+		'ubuntu' : ['libmono-dev']
+	}, 
+	'boo' : { 
+		'fedora' : ['boo'], 
+		'ubuntu' : ['boo']
+	}, 
+	'lsb-release' : { 
+		'fedora' : ['redhat-lsb'], 
+		'ubuntu' : ['lsb-release']
+	}, 
+	'libgnomepanel2.24-cil' : { 
+		'fedora' : ['gnome-desktop-sharp-devel'], 
+		'ubuntu' : ['libgnomepanel2.24-cil']
+	}, 
+	'libmono-addins-gui0.2-cil' : { 
+		'fedora' : ['mono-addins-devel'], 
+		'ubuntu' : ['libmono-addins-gui0.2-cil']
+	}, 
+	'libmono-addins0.2-cil' : { 
+		'fedora' : ['mono-addins-devel'], 
+		'ubuntu' : ['libmono-addins0.2-cil']
+	}, 
+	'libndesk-dbus-glib1.0-cil' : { 
+		'fedora' : ['ndesk-dbus-glib-devel'], 
+		'ubuntu' : ['libndesk-dbus-glib1.0-cil']
+	}, 
+	'libndesk-dbus1.0-cil' : { 
+		'fedora' : ['ndesk-dbus-devel'], 
+		'ubuntu' : ['libndesk-dbus1.0-cil']
+	}, 
+	'libmono-cairo2.0-cil' : { 
+		'fedora' : ['mono-devel'], 
+		'ubuntu' : ['libmono-cairo2.0-cil']
+	}, 
+	'scrollkeeper' : { 
+		'fedora' : ['rarian'], 
+		'ubuntu' : ['scrollkeeper']
+	}, 
+	'gnome-doc-utils' : { 
+		'fedora' : ['gnome-doc-utils'], 
+		'ubuntu' : ['gnome-doc-utils']
+	}, 
+	'libgmime2.2a-cil' : { 
+		'fedora' : ['gmime-sharp'], 
+		'ubuntu' : ['libgmime2.2a-cil']
+	}, 
+	'libatk1.0-dev' : { 
+		'fedora' : ['atk-devel'], 
+		'ubuntu' : ['libatk1.0-dev']
+	}, 
+	'sharutils' : { 
+		'fedora' : ['sharutils'], 
+		'ubuntu' : ['sharutils']
+	}, 
+	'cli-common-dev' : { 
+		'fedora' : ['mono-devel'], 
+		'ubuntu' : ['cli-common-dev']
+	}, 
+	'libpanel-applet2-dev' : { 
+		'fedora' : ['gnome-panel-devel', 'gnome-panel-libs'], 
+		'ubuntu' : ['libpanel-applet2-dev']
+	}, 
+	'libgtkspell-dev' : { 
+		'fedora' : ['gtkspell-devel'], 
+		'ubuntu' : ['libgtkspell-dev']
+	}, 
+	'libgconf2.24-cil' : { 
+		'fedora' : ['gnome-sharp-devel'], 
+		'ubuntu' : ['libgconf2.24-cil']
+	}, 
+	'libgnome2.24-cil' : { 
+		'fedora' : ['gnome-sharp-devel'], 
+		'ubuntu' : ['libgnome2.24-cil']
+	}, 
+	'libgtk2.0-cil' : { 
+		'fedora' : ['gtk-sharp2-devel'], 
+		'ubuntu' : ['libgtk2.0-cil']
+	}, 
 	'desktop-file-utils' : { 
 		'fedora' : ['desktop-file-utils'], 
 		'ubuntu' : ['desktop-file-utils']

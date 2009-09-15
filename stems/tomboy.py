@@ -23,7 +23,6 @@ class Meta(BaseMeta):
 		self._source = 'http://download.gnome.org/sources/tomboy/0.15/tomboy-0.15.0.tar.gz'
 
 		self._build_requirements = ['mono-dev (>= 2.0)', 
-									'libgtk2.0-cil (>= 2.10.4-2)', 
 									'libgnome2.24-cil (>= 2.16.1)', 
 									'libgconf2.24-cil', 
 									'libgtkspell-dev (>= 2.0.9)', 
@@ -31,7 +30,7 @@ class Meta(BaseMeta):
 									'libpanel-applet2-dev', 
 									'cli-common-dev (>= 0.4.4)', 
 									'sharutils', 
-									'libgtk2.0-dev (>= 2.10.0)', 
+									'libgtk2.0-cil (>= 2.10.0)', 
 									'libatk1.0-dev (>= 1.2.4)', 
 									'libgmime2.2a-cil', 
 									'gnome-doc-utils (>= 0.3.2)', 
