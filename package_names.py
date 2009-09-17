@@ -203,7 +203,7 @@ package_names = {
 		'ubuntu' : ['info']
 	}, 
 	'python-vte' : { 
-		'fedora' : [], 
+		'fedora' : ['vte'], 
 		'ubuntu' : ['python-vte']
 	}, 
 	'python-gobject' : { 

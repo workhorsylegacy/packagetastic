@@ -27,7 +27,7 @@ class Meta(BaseMeta):
 							u'Ben Thorp <mrben@jedimoose.org>']
 		self._homepage = 'http://jokosher.org'
 		self._license = 'GPL2+'
-		self._source = 'http://launchpad.net/jokosher/0.11/0.11.1/+download/jokosher-0.11.1.tar.gz'
+		self._source = 'http://launchpad.net/jokosher/0.11/0.11.3/+download/jokosher-0.11.3.tar.gz'
 
 		self._build_requirements = []
 
@@ -39,7 +39,8 @@ class Meta(BaseMeta):
 									u"Jokosher have re-thought audio production at every level, and created\n" + \
 									u"something devilishly simple to use."
 
-		self._changelog = [Changelog(version="0.11.1", release=1, time="Fri, 21 Aug 2009 19:49:12 -0700", text=u"Initial release") ]
+		self._changelog = [Changelog(version="0.11.3", release=1, time="Wed, 16 Sep 2009 09:57:00 -0700", text=u"New upstream release"), 
+							Changelog(version="0.11.1", release=1, time="Fri, 21 Aug 2009 19:49:12 -0700", text=u"Initial release")]
 
 class Jokosher(BasePackage):
 	def __init__(self):

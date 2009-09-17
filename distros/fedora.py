@@ -84,6 +84,14 @@ class Builder(object):
 		params['build_method_to_build_arch'] = self.build_method_to_build_arch
 		params['filter_requirement'] = self.filter_requirement
 
+		# Find an internal name that is a variation of the meta.name
+		params['internal_name'] = meta.name
+		pwd = commands.getoutput('pwd')
+		for entry in os.listdir(pwd):
+			if os.path.isdir(pwd + '/' + entry):
+				if entry.lower().replace('-', '').replace('_', '') == meta.name.lower().replace('-', '').replace('_', ''):
+					params['internal_name'] = entry
+
 		# Find out which languages are used
 		for lang in ['c', 'python', 'mono']:
 			params['uses_' + lang] = False
@@ -94,49 +102,56 @@ class Builder(object):
 		# FIXME: Figure out how %defattr(-,root,root,-) works
 		# Get the docs and example params
 		params['docs'] = []
-		for doc in ['README', 'COPYING', 'ChangeLog', 'LICENSE']:
+		for doc in ['README', 'COPYING', 'ChangeLog', 'LICENSE', 'AUTHORS']:
 			if os.path.isfile(doc):
 				params['docs'].append(doc)
 		for doc in ['doc', 'examples']:
 			if os.path.isdir(doc):
 				params['docs'].append(doc)
+		params['docs'].sort()
 
 		# Get the man1 params
-		if os.path.isfile('doc/' + meta.internal_name + '.1'):
+		if os.path.isfile('doc/' + params['internal_name'] + '.1'):
 			params['has_man1'] = True
-		elif os.path.isfile('man/' + meta.internal_name + '.1'):
+		elif os.path.isfile('man/' + params['internal_name'] + '.1'):
 			params['has_man1'] = True
-		elif os.path.isfile('src/' + meta.internal_name + '.1'):
+		elif os.path.isfile('src/' + params['internal_name'] + '.1'):
 			params['has_man1'] = True
 		else:
 			params['has_man1'] = False
 
 		# Get the man5 params
-		if os.path.isfile('doc/' + meta.internal_name + '_config.5'):
+		if os.path.isfile('doc/' + params['internal_name'] + '_config.5'):
 			params['has_man5'] = True
-		elif os.path.isfile('man/' + meta.internal_name + '_config.5'):
+		elif os.path.isfile('man/' + params['internal_name'] + '_config.5'):
 			params['has_man5'] = True
 		else:
 			params['has_man5'] = False
 
 		# Get the icons
-		params['has_icons'] = False
+		params['has_icon_pngs'] = False
+		params['has_icon_svgs'] = False
 		if os.path.isdir('data/icons') or os.path.isdir('icons'):
-			params['has_icons'] = True
+			params['has_icon_pngs'] = True
+		if os.path.isdir('data/icons/scalable') or os.path.isdir('icons/scalable'):
+			params['has_icon_svgs'] = True
 
 		# Get the desktop file
 		params['has_desktop_file'] = False
-		if os.path.isfile('data/' + meta.internal_name + '.desktop'):
+		if os.path.isfile('data/' + params['internal_name'] + '.desktop'):
 			params['has_desktop_file'] = True
-			params['desktop_file'] = 'data/' + meta.internal_name + '.desktop'
-		elif os.path.isfile('ui/' + meta.internal_name + '.desktop'):
+			params['desktop_file'] = 'data/' + params['internal_name'] + '.desktop'
+		elif os.path.isfile('ui/' + params['internal_name'] + '.desktop'):
 			params['has_desktop_file'] = True
-			params['desktop_file'] = 'ui/' + meta.internal_name + '.desktop'
+			params['desktop_file'] = 'ui/' + params['internal_name'] + '.desktop'
+		elif os.path.isfile('bin/' + params['internal_name'] + '.desktop'):
+			params['has_desktop_file'] = True
+			params['desktop_file'] = 'bin/' + params['internal_name'] + '.desktop'
 
 		# Get more params
-		params['has_info'] = os.path.isfile('doc/' + meta.internal_name + '.info')
+		params['has_info'] = os.path.isfile('doc/' + params['internal_name'] + '.info')
 		params['has_lang'] = os.path.isdir('po')
-		params['has_datadir'] = os.path.isdir(meta.internal_name)
+		params['has_datadir'] = os.path.isdir(params['internal_name'])
 
 		# Get the build params
 		params['has_bindir'] = False

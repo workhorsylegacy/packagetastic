@@ -6,7 +6,6 @@ class Meta(BaseMeta):
 	def __init__(self):
 		BaseMeta.__init__(self)
 		self._name = 'd-feet'
-		self._internal_name = 'dfeet'
 		self._category = 'Development/Tools'
 		self._priority = 'extra'
 		self._authors = [u'John (J5) Palmieri <johnp@redhat.com>']

@@ -191,7 +191,6 @@ class Changelog(object):
 class BaseMeta(object):
 	def __init__(self):
 		self._name = None
-		self._internal_name = None
 		self._priority = None
 		self._category = None
 		self._authors = []
@@ -208,9 +207,6 @@ class BaseMeta(object):
 
 	def get_name(self): return self._name
 	name = property(get_name)
-
-	def get_internal_name(self): return self._internal_name or self._name
-	internal_name = property(get_internal_name)
 
 	def get_priority(self): return self._priority
 	priority = property(get_priority)
@@ -298,7 +294,6 @@ class BaseMeta(object):
 				'license_text' : self.license_text, 
 				'long_description' : self.long_description, 
 				'name' : self.name, 
-				'internal_name' : self.internal_name, 
 				'packager_email' : self.packager_email, 
 				'packager_name' : self.packager_name, 
 				'patches' : self.patches, 

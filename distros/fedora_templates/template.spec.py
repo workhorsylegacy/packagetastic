@@ -7,7 +7,7 @@
     \\\\ is replaced with \\n \
 </%doc>\
 % if uses_python:
-@@{!?python_sitelib: @@define python_sitelib @@(@@{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
+@@{!?python_sitelib: @@global python_sitelib @@(@@{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 % endif
 Name:           ${name}
@@ -70,6 +70,9 @@ rm -f @@{buildroot}@@{_infodir}/dir
 % elif uses_python:
 @@{__python} setup.py install -O1 --skip-build --root @@{buildroot}
 % endif
+% if has_icon_pngs or has_icon_svgs:
+rm -f @@{buildroot}/@@{_datadir}/icons/hicolor/icon-theme.cache
+% endif
 
 % if has_desktop_file:
 desktop-file-install --vendor=""                 \\\\
@@ -102,7 +105,7 @@ fi
 % endif
 
 
-% if has_icons:
+% if has_icon_pngs or has_icon_svgs:
 @@post
 gtk-update-icon-cache -qf @@{_datadir}/icons/hicolor &>/dev/null || :
 
@@ -141,9 +144,12 @@ gtk-update-icon-cache -qf @@{_datadir}/icons/hicolor &>/dev/null || :
 % if has_info == True:
 @@{_infodir}/@@{name}.info*
 % endif
-% if has_icons == True:
-@@{_datadir}/icons/hicolor/48x48/apps/*.png
-@@{_datadir}/icons/hicolor/16x16/apps/*.png
+% if has_icon_pngs == True:
+@@{_datadir}/icons/hicolor/*/*/*.png
+% endif
+% if has_icon_svgs == True:
+@@{_datadir}/icons/hicolor/*/*/*.svg
+@@{_datadir}/pixmaps/@@{name}.png
 % endif
 % if has_desktop_file == True:
 @@{_datadir}/applications/${internal_name}.desktop
