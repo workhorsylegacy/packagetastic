@@ -2,9 +2,9 @@
 # -*- coding: UTF-8 -*-
 from lib_packagetastic import *
 
-class LibVirtPackage(BasePackage):
+class LibVirtPackage(BaseMeta):
 	def __init__(self):
-		BasePackage.__init__(self)
+		BaseMeta.__init__(self)
 		self._name = 'libvirt'
 		self._category = 'Development/Libraries'
 		self._priority = 'optional'
@@ -23,32 +23,25 @@ class LibVirtPackage(BasePackage):
 							u'2000 Bjorn Reese', 
 							u'2006, 2007 Binary Karma']
 		self._homepage = 'http://libvirt.org'
-		self._license = 'GPL'
+		self._license = 'GPL2+'
 		self._source = 'http://libvirt.org/sources/libvirt-0.6.0.tar.gz'
 
-		self._build_requirements = ["cdbs (>= 0.4.43)", 
-									"debhelper (>= 5.0.38)", 
-									"libxml2-dev", 
-									"libncurses5-dev", 
-									"libreadline5-dev", 
-									"zlib1g-dev", 
+		self._build_requirements = ["libxml2-dev", 
+									"libncurses-dev", 
+									"libreadline-dev", 
+									"zlib-dev", 
 									"libgnutls-dev", 
-									"python-dev (>= 2.3.5-11)",
-									"python-central (>= 0.5.6)", 
-									"quilt", 
 									"libavahi-client-dev", 
 									"libsasl2-dev", 
 									"libxen3-dev [i386 amd64]",
 									"lvm2", 
-									"libpolkit-dbus-dev", 
+									"libpolicykit-dbus-dev", 
 									"open-iscsi", 
-									"libparted1.8-dev"]
-
-		self._install_requirements = ["bridge-utils", 
-									"dnsmasq-base", 
-									"netcat-openbsd", 
-									"iptables", 
-									"adduser"]
+									"libparted1.8-dev", 
+									"libselinux-dev", 
+									"libdevmapper-dev", 
+									"uuid-dev", 
+									"libhal-dev"]
 
 		self._short_description = u'library for interfacing with different virtualization systems'
 
@@ -57,9 +50,75 @@ class LibVirtPackage(BasePackage):
 									u"a long term stable C API for different virtualization mechanisms. It currently \n" + \
 									u"supports QEMU, KVM, and XEN."
 
-		self._changelog = [Changelog(version="0.6.0", release=1, time="Fri, 21 Aug 2009 19:49:12 -0700", text=u"Initial release") ]
+		self._changelog = [Changelog(version="0.6.0", release=1, time="Wed, 16 Sep 2009 23:09:55 -0700", text=u"Initial release") ]
 
-	def install(self):
-		return ''
-		#self.configure_make()
+class LibVirtBin(BasePackage):
+	def __init__(self):
+		BasePackage.__init__(self)
+		self._name = 'libvirt-bin'
+		self._build_method = 'c application'
+		self._category = 'Development/Libraries'
+		self._priority = 'optional'
+		self._install_requirements = []
+		self._additional_description = \
+		u"This package contains the supporting binaries to use with libvirt"
+
+class LibVirtZero(BasePackage):
+	def __init__(self):
+		BasePackage.__init__(self)
+		self._name = 'libvirt0'
+		self._build_method = 'c application'
+		self._category = 'Development/Libraries'
+		self._priority = 'optional'
+		self._install_requirements = ['lvm2']
+		self._additional_description = u""
+
+class LibVirtZeroDebug(BasePackage):
+	def __init__(self):
+		BasePackage.__init__(self)
+		self._name = 'libvirt0-dbg'
+		self._build_method = 'c application'
+		self._category = 'Development/Libraries'
+		self._priority = 'optional'
+		self._install_requirements = ['libvirt0']
+		self._additional_description = \
+		u"This package contains the debugging symbols."
+
+class LibVirtDocumentation(BasePackage):
+	def __init__(self):
+		BasePackage.__init__(self)
+		self._name = 'libvirt-doc'
+		self._build_method = 'documentation'
+		self._category = 'Documentation'
+		self._priority = 'optional'
+		self._install_requirements = []
+		self._additional_description = \
+		u"This package contains the documentation."
+
+class LibVirtDev(BasePackage):
+	def __init__(self):
+		BasePackage.__init__(self)
+		self._name = 'libvirt-dev'
+		self._build_method = 'c application'
+		self._category = 'Development/Libraries'
+		self._priority = 'optional'
+		self._install_requirements = ['libvirt0', 'libxen3-dev']
+		self._additional_description = \
+		u"This package contains the header files and static libraries which are \n" + \
+		u"needed for developing the applications with libvirt."
+
+# FIXME: Make the python bindings work too
+'''
+class PythonLibVirt(BasePackage):
+	def __init__(self):
+		BasePackage.__init__(self)
+		self._name = 'python-libvirt'
+		self._build_method = 'python library'
+		self._category = 'Development/Libraries'
+		self._priority = 'optional'
+		self._install_requirements = ['libvirt0']
+		self._additional_description = \
+		u"This package contains Python bindings for the libvirt library"
+'''
+
 

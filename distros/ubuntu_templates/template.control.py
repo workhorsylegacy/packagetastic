@@ -31,6 +31,11 @@ Depends: ${str.join(', ', package.install_requirements + additional_install_requ
 XB-Python-Version: @@{python:Versions}
 % endif
 Description: ${short_description}
+% if len(package.additional_description) == 0:
 ${' ' + long_description.replace("\n", "\n ").replace("\n \n", "\n .\n")}
+% else:
+${' ' + (long_description + '\n\n' + package.additional_description).replace("\n", "\n ").replace("\n \n", "\n .\n")}
+% endif
+
 
 % endfor

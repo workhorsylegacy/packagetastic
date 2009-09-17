@@ -2,6 +2,94 @@
 # -*- coding: UTF-8 -*-
 
 package_names = {
+	'uuid-dev' : { 
+		'fedora' : ['uuid-devel'], 
+		'ubuntu' : ['uuid-dev']
+	}, 
+	'libdevmapper-dev' : { 
+		'fedora' : ['device-mapper-devel'], 
+		'ubuntu' : ['libdevmapper-dev']
+	}, 
+	'libselinux-dev' : { 
+		'fedora' : ['libselinux-devel'], 
+		'ubuntu' : ['libselinux1-dev']
+	}, 
+	'libparted1.8-dev' : { 
+		'fedora' : ['parted-devel'], 
+		'ubuntu' : ['libparted1.8-dev']
+	}, 
+	'open-iscsi' : { 
+		'fedora' : ['iscsi-initiator-utils'], 
+		'ubuntu' : ['open-iscsi']
+	}, 
+	'libpolicykit-dbus-dev' : { 
+		'fedora' : ['PolicyKit-devel'], 
+		'ubuntu' : ['libpolkit-dbus-dev']
+	}, 
+	'lvm2' : { 
+		'fedora' : ['lvm2'], 
+		'ubuntu' : ['lvm2']
+	}, 
+	'libxen3-dev' : { 
+		'fedora' : ['xen-devel'], 
+		'ubuntu' : ['libxen3-dev']
+	}, 
+	'libsasl2-dev' : { 
+		'fedora' : ['cyrus-sasl-devel'], 
+		'ubuntu' : ['libsasl2-dev']
+	}, 
+	'libavahi-client-dev' : { 
+		'fedora' : ['avahi-devel'], 
+		'ubuntu' : ['libavahi-client-dev']
+	}, 
+	'libgnutls-dev' : { 
+		'fedora' : ['gnutls-devel'], 
+		'ubuntu' : ['libgnutls-dev']
+	}, 
+	'zlib-dev' : { 
+		'fedora' : ['zlib-devel'], 
+		'ubuntu' : ['zlib1g-dev']
+	}, 
+	'libreadline-dev' : { 
+		'fedora' : ['readline-devel'], 
+		'ubuntu' : ['libreadline5-dev']
+	}, 
+	'libncurses-dev' : { 
+		'fedora' : ['ncurses-devel'], 
+		'ubuntu' : ['libncurses5-dev']
+	}, 
+	'libxml2-dev' : { 
+		'fedora' : ['libxml2-devel'], 
+		'ubuntu' : ['libxml2-dev']
+	}, 
+	'libvirt' : { 
+		'fedora' : ['libvirt'], 
+		'ubuntu' : ['libvirt']
+	}, 
+	'libvirt0' : { 
+		'fedora' : ['libvirt'], 
+		'ubuntu' : ['libvirt0']
+	}, 
+	'libvirt0-dbg' : { 
+		'fedora' : ['libvirt'], 
+		'ubuntu' : ['libvirt0-dbg']
+	}, 
+	'libvirt-bin' : { 
+		'fedora' : ['libvirt'], 
+		'ubuntu' : ['libvirt-bin']
+	}, 
+	'libvirt-doc' : { 
+		'fedora' : ['libvirt'], 
+		'ubuntu' : ['libvirt-doc']
+	}, 
+	'libvirt-dev' : { 
+		'fedora' : ['libvirt-devel'], 
+		'ubuntu' : ['libvirt-dev']
+	}, 
+	'python-libvirt' : { 
+		'fedora' : ['libvirt-python'], 
+		'ubuntu' : ['python-libvirt']
+	}, 
 	'libmono-sharpzip2.84-cil' : { 
 		'fedora' : ['mono-devel'], 
 		'ubuntu' : ['libmono-sharpzip2.84-cil']
