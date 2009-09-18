@@ -220,6 +220,8 @@ class Builder(object):
 
 		"DEBUG:     File not found: [\w|\d|\_|\-|\.|\/|\ ]*\r\n", 
 
+		"DEBUG: error: File not found: [\w|\d|\_|\-|\.|\/|\ ]*\r\n", 
+
 		"DEBUG: No Package Found for [\w|\d|\s|\>|\<|\=|\_|\-|\.|\/|\ ]*\r\n", 
 
 		"DEBUG: \/usr\/bin\/python: can't open file \'setup.py\': \[Errno 2\] No such file or directory", 
@@ -242,10 +244,14 @@ class Builder(object):
 				print "File not found '" + file_name + "'. Exiting ..."
 				exit()
 			elif result == 2:
+				file_name = child.after.split("DEBUG: error: File not found: ")[1].split()[0]
+				print "File not found '" + file_name + "'. Exiting ..."
+				exit()
+			elif result == 3:
 				file_name = child.after.split("DEBUG: No Package Found for ")[1].split()[0]
 				print "Unknown build requirement '" + file_name + "'."
 				had_error = True
-			elif result == 3:
+			elif result == 4:
 				print "No python setup.py file found. Exiting ..."
 				exit()
 			elif result == len(expected_lines)-1:
