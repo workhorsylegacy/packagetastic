@@ -53,7 +53,11 @@ Getting started on Fedora systems:
 
 	# install requirements:
 	sudo yum groupinstall "Development Tools"
-	sudo yum install rpmdevtools pexpect python-mako
+	sudo yum install mock rpmdevtools pexpect python-mako
+
+	# setup mock
+	sudo usermod -a -G mock username
+	mock -r fedora-11-i386 --init
 
 Packagetastic one time setup:
 	# Get the code if you have not

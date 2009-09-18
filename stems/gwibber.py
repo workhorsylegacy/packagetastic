@@ -12,7 +12,7 @@ class Meta(BaseMeta):
 		self._copyright = [u'2008 Ryan Paul']
 		self._homepage = 'https://launchpad.net/gwibber'
 		self._license = 'GPL2+'
-		self._source = 'http://launchpad.net/gwibber/+download/gwibber-2.0.0.tar.gz'
+		self._source = 'http://launchpad.net/gwibber/+download/gwibber-0.8.tar.gz'
 
 		self._build_requirements = ['python-all-dev', 
 									'python-distutils-extra']
@@ -21,7 +21,7 @@ class Meta(BaseMeta):
 
 		self._long_description = u"It supports Twitter, Jaiku, Identi.ca, Facebook, and Digg."
 
-		self._changelog = [Changelog(version="2.0.0", release=1, time="Mon, 24 Aug 2009 15:28:47 -0700", text=u"Initial release") ]
+		self._changelog = [Changelog(version="0.8", release=1, time="Mon, 24 Aug 2009 15:28:47 -0700", text=u"Initial release") ]
 
 class Gwibber(BasePackage):
 	def __init__(self):
@@ -34,7 +34,7 @@ class Gwibber(BasePackage):
 										'python-gtk2', 
 										'python-gconf', 
 										'python-notify', 
-										'python-egenix-mxdatetime', 
+										#'python-egenix-mxdatetime', 
 										'python-simplejson', 
 										'python-cairo', 
 										'libwebkit', 

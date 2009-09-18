@@ -165,11 +165,13 @@ class Builder(object):
 				params['has_bindir'] = True
 				params['import_python_sitelib'] = True
 
-		# Add additional install requirements based on the languages it uses
+		# Add additional install requirements based on our source code interrogation
 		params['additional_install_requirements'] = []
 		if params['uses_python']:
 			params['additional_install_requirements'] += ['python']
 			params['build_requirements'] += ['python-devel']
+		if params['has_desktop_file'] and meta.build_requirements.count('desktop-file-utils') == 0:
+			params['build_requirements'] += ['desktop-file-utils']
 
 
 		# Create the spec file
@@ -186,23 +188,13 @@ class Builder(object):
 		packagetastic_dir = commands.getoutput('pwd')
 		os.chdir(os.path.expanduser("~"))
 
-		print "Building the rpm package ..."
-		command = "rpmbuild -ba rpmbuild/SPECS/" + meta.name + ".spec"
-		print commands.getoutput(command)
-		"""
+		print "Running rpmbuild ..."
+		command = "rpmbuild -bs rpmbuild/SPECS/" + meta.name + ".spec"
+		#print commands.getoutput(command)
+		#"""
 		child = pexpect.spawn(command, timeout=1200)
 
-		expected_lines = ["error: Failed build dependencies:\r\n" +
-							"[\W]*[\w|\d|\.|\-]* is needed by [\w|\d|\.|\-]*fc[\d]*.src", 
-
-							"error: File /home/[\w|\d|\_]*/rpmbuild/SOURCES/" + 
-							meta.name + "-" + meta.version + ".tar.gz:" + 
-							" No such file or directory", 
-
-							"error: invalid Python installation: unable to open" + 
-							" /usr/lib/python2.6/config/Makefile", 
-
-							pexpect.EOF]
+		expected_lines = [pexpect.EOF]
 
 		still_reading = True
 		while still_reading:
@@ -210,18 +202,60 @@ class Builder(object):
 			#print "[[[" + str(child.before) + "]]]"
 			#print "[[[" + str(child.after) + "]]]"
 
+			if result == len(expected_lines)-1:
+				still_reading = False
+
+		child.close()
+		#"""
+
+		print "Running mock ..."
+		os.chdir("rpmbuild/SRPMS/")
+		command = "mock -r fedora-11-i386 --verbose --rebuild " + meta.name + "-" + meta.version + "-" + str(meta.release) + ".fc11.src.rpm"
+		#print commands.getoutput(command)
+		#"""
+		child = pexpect.spawn(command, timeout=1200)
+
+		expected_lines = [
+		"ERROR: Bad build req: No Package Found for [\w|\-]*. Exiting.", 
+
+		"DEBUG:     File not found: [\w|\d|\_|\-|\.|\/|\ ]*\r\n", 
+
+		"DEBUG: No Package Found for [\w|\d|\s|\>|\<|\=|\_|\-|\.|\/|\ ]*\r\n", 
+
+		"DEBUG: \/usr\/bin\/python: can't open file \'setup.py\': \[Errno 2\] No such file or directory", 
+
+		pexpect.EOF]
+
+		still_reading = True
+		had_error = False
+		while still_reading:
+			result = child.expect(expected_lines)
+			#print "[[[" + str(child.before) + "]]]"
+			#print "[[[" + str(child.after) + "]]]"
+
 			if result == 0:
-				print child.after
+				package_name = child.after.split('ERROR: Bad build req: No Package Found for ')[1].split('. Exiting.')[0]
+				print "Unknown build requirement '" + package_name + "'."
+				had_error = True
 			elif result == 1:
-				print child.after
+				file_name = child.after.split("DEBUG:     File not found: ")[1].split()[0]
+				print "File not found '" + file_name + "'. Exiting ..."
+				exit()
 			elif result == 2:
-				print "Please install python-devel. Exiting ..."
+				file_name = child.after.split("DEBUG: No Package Found for ")[1].split()[0]
+				print "Unknown build requirement '" + file_name + "'."
+				had_error = True
+			elif result == 3:
+				print "No python setup.py file found. Exiting ..."
 				exit()
 			elif result == len(expected_lines)-1:
 				still_reading = False
 
 		child.close()
-		"""
+		if had_error:
+			print "Exiting ..."
+			exit()
+		#"""
 
 		print "Copying the rpm package to the packages directory ..."
 		os.chdir(packagetastic_dir)
@@ -229,7 +263,7 @@ class Builder(object):
 		for package in packages:
 			build_arch = self.build_method_to_build_arch[package.build_method]
 			rpm = meta.name + "-" + meta.version + "-" + str(meta.release) + ".fc11." + build_arch + ".rpm"
-			print commands.getoutput("cp ~/rpmbuild/RPMS/" + build_arch + "/" + rpm + " packages/" + rpm)
+			print commands.getoutput("cp /var/lib/mock/fedora-11-i386/result/" + rpm + " packages/" + rpm)
 		print "Done"
 
 

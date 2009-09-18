@@ -33,7 +33,7 @@ class LibVirtPackage(BaseMeta):
 									"libgnutls-dev", 
 									"libavahi-client-dev", 
 									"libsasl2-dev", 
-									"libxen3-dev [i386 amd64]",
+									"libxen3-dev",
 									"lvm2", 
 									"libpolicykit-dbus-dev", 
 									"open-iscsi", 

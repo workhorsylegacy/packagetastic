@@ -190,10 +190,6 @@ package_names = {
 		'fedora' : ['gtk-sharp2-devel'], 
 		'ubuntu' : ['libgtk2.0-cil']
 	}, 
-	'desktop-file-utils' : { 
-		'fedora' : ['desktop-file-utils'], 
-		'ubuntu' : ['desktop-file-utils']
-	}, 
 	'hello' : { 
 		'fedora' : ['hello'], 
 		'ubuntu' : ['hello']
