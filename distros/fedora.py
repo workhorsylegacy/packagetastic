@@ -226,6 +226,8 @@ class Builder(object):
 
 		"DEBUG: \/usr\/bin\/python: can't open file \'setup.py\': \[Errno 2\] No such file or directory", 
 
+		"DEBUG: No package \'[\w|\d|\s|\>|\<|\=|\_|\-|\.|\/]*\' found\r\n", 
+
 		pexpect.EOF]
 
 		still_reading = True
@@ -249,11 +251,15 @@ class Builder(object):
 				exit()
 			elif result == 3:
 				file_name = child.after.split("DEBUG: No Package Found for ")[1].split()[0]
-				print "Unknown build requirement '" + file_name + "'."
+				print "Build requirement not found in the repository '" + file_name + "'."
 				had_error = True
 			elif result == 4:
 				print "No python setup.py file found. Exiting ..."
 				exit()
+			elif result == 5:
+				package_name = child.after.split("DEBUG: No package '")[1].split("' found\r\n")[0]
+				print "Requirement needed, but not listed in build requirements '" + package_name + "'."
+				had_error = True
 			elif result == len(expected_lines)-1:
 				still_reading = False
 
