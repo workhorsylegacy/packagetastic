@@ -70,7 +70,7 @@ rm -f @@{buildroot}@@{_infodir}/dir
 % elif uses_python:
 @@{__python} setup.py install -O1 --skip-build --root @@{buildroot}
 % endif
-% if has_icon_pngs or has_icon_svgs:
+% if has_icons:
 rm -f @@{buildroot}/@@{_datadir}/icons/hicolor/icon-theme.cache
 % endif
 
@@ -78,7 +78,7 @@ rm -f @@{buildroot}/@@{_datadir}/icons/hicolor/icon-theme.cache
 desktop-file-install --vendor=""                 \\\\
   --delete-original                              \\\\
   --dir=@@{buildroot}@@{_datadir}/applications     \\\\
-  @@{buildroot}@@{_datadir}/applications/${internal_name}.desktop
+  @@{buildroot}@@{_datadir}/${desktop_file_name}
 % endif
 
 % if has_lang == True:
@@ -93,23 +93,30 @@ desktop-file-install --vendor=""                 \\\\
 @@clean
 rm -rf @@{buildroot}
 
-## Pre and Post functions
-% if has_info:
+## Post install functions
 @@post
+% if has_info:
 /sbin/install-info @@{_infodir}/@@{name}.info @@{_infodir}/dir || :
+%endif
+% if has_mime:
+update-mime-database %{_datadir}/mime &> /dev/null ||:
+% endif
+% if has_icons:
+gtk-update-icon-cache -qf @@{_datadir}/icons/hicolor &>/dev/null || :
+% endif
 
+## Pre uninstall functions
 @@preun
+% if has_info:
 if [ $1 = 0 ] ; then
   /sbin/install-info --delete @@{_infodir}/@@{name}.info @@{_infodir}/dir || :
 fi
 % endif
 
 
-% if has_icon_pngs or has_icon_svgs:
-@@post
-gtk-update-icon-cache -qf @@{_datadir}/icons/hicolor &>/dev/null || :
-
+## Post uninstall functions
 @@postun
+% if has_icons:
 gtk-update-icon-cache -qf @@{_datadir}/icons/hicolor &>/dev/null || :
 % endif
 
@@ -125,12 +132,6 @@ gtk-update-icon-cache -qf @@{_datadir}/icons/hicolor &>/dev/null || :
 % if len(docs) > 0:
 @@doc ${str.join(' ', docs)}
 % endif
-% if has_man1 == True:
-@@{_mandir}/man1/@@{name}.1*
-% endif
-% if has_man5 == True:
-@@{_mandir}/man5/@@{name}_config.5*
-% endif
 
 % if import_python_sitelib == True:
 @@{python_sitelib}/*
@@ -138,22 +139,9 @@ gtk-update-icon-cache -qf @@{_datadir}/icons/hicolor &>/dev/null || :
 % if has_bindir == True:
 @@{_bindir}/@@{name}
 % endif
-% if has_datadir == True:
-@@{_datadir}/${internal_name}/
-% endif
-% if has_info == True:
-@@{_infodir}/@@{name}.info*
-% endif
-% if has_icon_pngs == True:
-@@{_datadir}/icons/hicolor/*/*/*.png
-% endif
-% if has_icon_svgs == True:
-@@{_datadir}/icons/hicolor/*/*/*.svg
-@@{_datadir}/pixmaps/@@{name}.png
-% endif
-% if has_desktop_file == True:
-@@{_datadir}/applications/${internal_name}.desktop
-% endif
+% for entry in datadir_entries:
+@@{_datadir}/${entry}
+% endfor
 
 
 ## FIXME: These should not be here

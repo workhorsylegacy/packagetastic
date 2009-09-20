@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-import os, time, re
+import os, sys, time, re
 import commands
 import platform
 import pexpect
 import base64
 import gc
+import distutils
 from helper import *
 
 exec_file("package_names.py", globals(), locals())

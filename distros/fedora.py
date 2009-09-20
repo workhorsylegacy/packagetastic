@@ -83,14 +83,44 @@ class Builder(object):
 		params['category_to_group'] = self.category_to_group
 		params['build_method_to_build_arch'] = self.build_method_to_build_arch
 		params['filter_requirement'] = self.filter_requirement
+		params['datadir_entries'] = []
 
-		# Find an internal name that is a variation of the meta.name
-		params['internal_name'] = meta.name
-		pwd = commands.getoutput('pwd')
-		for entry in os.listdir(pwd):
-			if os.path.isdir(pwd + '/' + entry):
-				if entry.lower().replace('-', '').replace('_', '') == meta.name.lower().replace('-', '').replace('_', ''):
-					params['internal_name'] = entry
+		# FIXME: Move these setup.py sections to their own file
+		# Load the python setup.py file
+		old_argv = sys.argv
+		sys.argv = ['setup.py', 'clean']
+		for package in packages:
+			if package.build_method.count('python') > 0:
+				try:
+					execfile('setup.py', globals(), locals())
+				except:
+					pass
+		sys.argv = old_argv
+
+		# Find the package meta data in memory
+		found_python_setup = False
+		for obj in gc.get_objects():
+			if not str(obj).startswith("<distutils.dist.Distribution instance at 0x"):
+				continue
+
+			# Add the datadir files
+			found_python_setup = True
+			for entry in obj.data_files or []:
+				dir_name = entry[0]
+				if dir_name.startswith('share/'):
+					dir_name = dir_name.split('share/')[1]
+				if dir_name.startswith('/usr/share/'):
+					dir_name = dir_name.split('/usr/share/')[1]
+				for dir_file in entry[1]:
+					file_name = dir_name + '/' + dir_file.split('/')[-1]
+					if file_name.count('omf/') > 0:
+						pass #params['datadir_entries'].append("omf/%{name}/")
+					else:
+						params['datadir_entries'].append(file_name)
+
+		if package.build_method.count('python') > 0 and not found_python_setup:
+			print "Failed to load the python setup.py file. Exiting ..."
+			exit()
 
 		# Find out which languages are used
 		for lang in ['c', 'python', 'mono']:
@@ -110,48 +140,40 @@ class Builder(object):
 				params['docs'].append(doc)
 		params['docs'].sort()
 
-		# Get the man1 params
-		if os.path.isfile('doc/' + params['internal_name'] + '.1'):
-			params['has_man1'] = True
-		elif os.path.isfile('man/' + params['internal_name'] + '.1'):
-			params['has_man1'] = True
-		elif os.path.isfile('src/' + params['internal_name'] + '.1'):
-			params['has_man1'] = True
-		else:
-			params['has_man1'] = False
-
-		# Get the man5 params
-		if os.path.isfile('doc/' + params['internal_name'] + '_config.5'):
-			params['has_man5'] = True
-		elif os.path.isfile('man/' + params['internal_name'] + '_config.5'):
-			params['has_man5'] = True
-		else:
-			params['has_man5'] = False
-
 		# Get the icons
-		params['has_icon_pngs'] = False
-		params['has_icon_svgs'] = False
-		if os.path.isdir('data/icons') or os.path.isdir('icons'):
-			params['has_icon_pngs'] = True
-		if os.path.isdir('data/icons/scalable') or os.path.isdir('icons/scalable'):
-			params['has_icon_svgs'] = True
+		params['has_icons'] = False
+		for entry in params['datadir_entries']:
+			if entry.endswith('.png') or entry.endswith('.svg'):
+				params['has_icons'] = True
+
+		# Get the mime types
+		params['has_mime'] = False
+		for entry in params['datadir_entries']:
+			if entry.count('/mime/') > 0:
+				params['has_mime'] = True
+
+		# Get the info types
+		params['has_info'] = False
+		for entry in params['datadir_entries']:
+			if entry.count('/info/') > 0:
+				params['has_info'] = True
 
 		# Get the desktop file
 		params['has_desktop_file'] = False
-		if os.path.isfile('data/' + params['internal_name'] + '.desktop'):
-			params['has_desktop_file'] = True
-			params['desktop_file'] = 'data/' + params['internal_name'] + '.desktop'
-		elif os.path.isfile('ui/' + params['internal_name'] + '.desktop'):
-			params['has_desktop_file'] = True
-			params['desktop_file'] = 'ui/' + params['internal_name'] + '.desktop'
-		elif os.path.isfile('bin/' + params['internal_name'] + '.desktop'):
-			params['has_desktop_file'] = True
-			params['desktop_file'] = 'bin/' + params['internal_name'] + '.desktop'
+		for entry in params['datadir_entries']:
+			if entry.endswith('.desktop'):
+				params['has_desktop_file'] = True
+				params['desktop_file_name'] = entry
+
+		# Get the omf files
+		params['has_omf'] = False
+		for entry in params['datadir_entries']:
+			if entry.count('omf/') > 0:
+				params['has_omf'] = True
 
 		# Get more params
-		params['has_info'] = os.path.isfile('doc/' + params['internal_name'] + '.info')
+		#params['has_info'] = os.path.isfile('doc/' + params['internal_name'] + '.info')
 		params['has_lang'] = os.path.isdir('po')
-		params['has_datadir'] = os.path.isdir(params['internal_name'])
 
 		# Get the build params
 		params['has_bindir'] = False
@@ -211,8 +233,8 @@ class Builder(object):
 		print "Running mock ..."
 		os.chdir("rpmbuild/SRPMS/")
 		command = "mock -r fedora-11-i386 --verbose --rebuild " + meta.name + "-" + meta.version + "-" + str(meta.release) + ".fc11.src.rpm"
-		#print commands.getoutput(command)
-		#"""
+		print commands.getoutput(command)
+		"""
 		child = pexpect.spawn(command, timeout=1200)
 
 		expected_lines = [
@@ -267,7 +289,7 @@ class Builder(object):
 		if had_error:
 			print "Exiting ..."
 			exit()
-		#"""
+		"""
 
 		print "Copying the rpm package to the packages directory ..."
 		os.chdir(packagetastic_dir)
