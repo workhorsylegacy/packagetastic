@@ -83,109 +83,10 @@ class Builder(object):
 		params['category_to_group'] = self.category_to_group
 		params['build_method_to_build_arch'] = self.build_method_to_build_arch
 		params['filter_requirement'] = self.filter_requirement
-		params['datadir_entries'] = []
 
-		# FIXME: Move these setup.py sections to their own file
-		# Load the python setup.py file
-		old_argv = sys.argv
-		sys.argv = ['setup.py', 'clean']
-		for package in packages:
-			if package.build_method.count('python') > 0:
-				try:
-					execfile('setup.py', globals(), locals())
-				except:
-					pass
-		sys.argv = old_argv
-
-		# Find the package meta data in memory
-		found_python_setup = False
-		for obj in gc.get_objects():
-			if not str(obj).startswith("<distutils.dist.Distribution instance at 0x"):
-				continue
-
-			# Add the datadir files
-			found_python_setup = True
-			for entry in obj.data_files or []:
-				dir_name = entry[0]
-				if dir_name.startswith('share/'):
-					dir_name = dir_name.split('share/')[1]
-				if dir_name.startswith('/usr/share/'):
-					dir_name = dir_name.split('/usr/share/')[1]
-				for dir_file in entry[1]:
-					file_name = dir_name + '/' + dir_file.split('/')[-1]
-					if file_name.count('omf/') > 0:
-						pass #params['datadir_entries'].append("omf/%{name}/")
-					else:
-						params['datadir_entries'].append(file_name)
-
-		if package.build_method.count('python') > 0 and not found_python_setup:
-			print "Failed to load the python setup.py file. Exiting ..."
-			exit()
-
-		# Find out which languages are used
-		for lang in ['c', 'python', 'mono']:
-			params['uses_' + lang] = False
-			for package in packages:
-				if package.build_method == lang + ' application' or package.build_method == lang + ' library':
-					params['uses_' + lang] = True
-
-		# FIXME: Figure out how %defattr(-,root,root,-) works
-		# Get the docs and example params
-		params['docs'] = []
-		for doc in ['README', 'COPYING', 'ChangeLog', 'LICENSE', 'AUTHORS']:
-			if os.path.isfile(doc):
-				params['docs'].append(doc)
-		for doc in ['doc', 'examples']:
-			if os.path.isdir(doc):
-				params['docs'].append(doc)
-		params['docs'].sort()
-
-		# Get the icons
-		params['has_icons'] = False
-		for entry in params['datadir_entries']:
-			if entry.endswith('.png') or entry.endswith('.svg'):
-				params['has_icons'] = True
-
-		# Get the mime types
-		params['has_mime'] = False
-		for entry in params['datadir_entries']:
-			if entry.count('/mime/') > 0:
-				params['has_mime'] = True
-
-		# Get the info types
-		params['has_info'] = False
-		for entry in params['datadir_entries']:
-			if entry.count('/info/') > 0:
-				params['has_info'] = True
-
-		# Get the desktop file
-		params['has_desktop_file'] = False
-		for entry in params['datadir_entries']:
-			if entry.endswith('.desktop'):
-				params['has_desktop_file'] = True
-				params['desktop_file_name'] = entry
-
-		# Get the omf files
-		params['has_omf'] = False
-		for entry in params['datadir_entries']:
-			if entry.count('omf/') > 0:
-				params['has_omf'] = True
-
-		# Get more params
-		#params['has_info'] = os.path.isfile('doc/' + params['internal_name'] + '.info')
-		params['has_lang'] = os.path.isdir('po')
-
-		# Get the build params
-		params['has_bindir'] = False
-		params['import_python_sitelib'] = False
-		for package in packages:
-			if package.build_method == 'c application' or package.build_method == 'c library':
-				params['has_bindir'] = True
-			elif package.build_method == 'python library':
-				params['import_python_sitelib'] = True
-			elif package.build_method == 'python application':
-				params['has_bindir'] = True
-				params['import_python_sitelib'] = True
+		# Get the file structure of the package
+		print "Determining package file structure ..."
+		get_file_structure_for_package(meta, packages, params)
 
 		# Add additional install requirements based on our source code interrogation
 		params['additional_install_requirements'] = []
@@ -194,7 +95,6 @@ class Builder(object):
 			params['build_requirements'] += ['python-devel']
 		if params['has_desktop_file'] and meta.build_requirements.count('desktop-file-utils') == 0:
 			params['build_requirements'] += ['desktop-file-utils']
-
 
 		# Create the spec file
 		os.chdir('../..')

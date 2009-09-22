@@ -131,11 +131,120 @@ def setup_source_code(meta):
 
 	# Uncompress the source code
 	print "Uncompressing source code ..."
-	if not os.path.isdir("builds"): os.mkdir("builds")
+	if os.path.isdir("builds"): commands.getoutput("rm -rf builds")
+	os.mkdir("builds")
 	commands.getoutput(substitute_strings("cp sources/" + source.split('/')[-1] + " builds/#{name}_#{version}.orig.tar.gz", meta.to_hash()))
 	os.chdir("builds")
 	commands.getoutput(substitute_strings("tar xzf #{name}_#{version}.orig.tar.gz", meta.to_hash()))
 	os.chdir(substitute_strings("#{name}-#{version}", meta.to_hash()))
+
+def get_file_structure_for_package(meta, packages, params):
+	# Set the default values
+	params['bindir_entries'] = []
+	params['infodir_entries'] = []
+	params['mandir_entries'] = []
+	params['datadir_entries'] = []
+	params['docs'] = []
+	params['import_python_sitelib'] = False
+	params['has_mime'] = False
+	params['has_info'] = False
+	params['has_icons'] = False
+	params['has_omf'] = False
+	params['has_lang'] = os.path.isdir('po')
+	params['has_desktop_file'] = False
+	params['desktop_file_name'] = None
+
+	# Find out which languages are used
+	for lang in ['c', 'python', 'mono']:
+		params['uses_' + lang] = False
+		for package in packages:
+			if package.build_method == lang + ' application' or package.build_method == lang + ' library':
+				params['uses_' + lang] = True
+
+	# Build the program in a sub directory
+	os.mkdir('packagetastic_build')
+	if params['uses_c'] or params['uses_mono']:
+		pwd = commands.getoutput('pwd')
+		commands.getoutput('./configure --prefix=' + pwd + '/packagetastic_build')
+		commands.getoutput('make')
+		commands.getoutput('make install')
+	elif params['uses_python']:
+		commands.getoutput('python setup.py bdist')
+		tgz_name = os.listdir('dist/')[0]
+
+		if tgz_name.count('tar.gz') == 0:
+			print "Broken python setup.py. Ran 'python setup.py bdist', but found no *.tar.gz. Exiting ..."
+			exit()
+
+		commands.getoutput('mv dist/' + tgz_name + ' packagetastic_build/' + tgz_name)
+		os.chdir('packagetastic_build/')
+		commands.getoutput("tar xzf " + tgz_name)
+		commands.getoutput("rm " + tgz_name)
+		os.chdir('..')
+		commands.getoutput('mv packagetastic_build/usr/ packagetastic_build_usr/')
+		commands.getoutput('rm -rf packagetastic_build/')
+		commands.getoutput('mv packagetastic_build_usr/ packagetastic_build/')
+
+	for package in packages:
+		if package.build_method == 'python library':
+			params['import_python_sitelib'] = True
+		elif package.build_method == 'python application':
+			params['has_bindir'] = True
+			params['import_python_sitelib'] = True
+
+	# Get the docs, lang, and example params
+	for doc in ['README', 'COPYING', 'ChangeLog', 'LICENSE', 'AUTHORS']:
+		if os.path.isfile(doc):
+			params['docs'].append(doc)
+	for doc in ['doc', 'examples']:
+		if os.path.isdir(doc):
+			params['docs'].append(doc)
+	params['docs'].sort()
+
+	# Get a list of all the files
+	files = []
+	entries = os.listdir("packagetastic_build/")
+	while len(entries) > 0:
+		entry = entries.pop(0)
+		if os.path.isdir("packagetastic_build/" + entry):
+			for sub in os.listdir("packagetastic_build/" + entry):
+				entries.append(entry + '/' + sub)
+		elif os.path.isfile("packagetastic_build/" + entry):
+			files.append(entry)
+
+	# Add the files to the categories they belong to
+	# FIXME: get the mime, omf, icons
+	for entry in files:
+		if entry.startswith('bin/'):
+			params['bindir_entries'].append(entry[len('bin/'):])
+		elif entry.startswith('info/'):
+			if entry != "info/dir":
+				params['infodir_entries'].append(entry[len('info/'):] + '*')
+				params['has_info'] = True
+		elif entry.startswith('man/'):
+			params['mandir_entries'].append(entry[len('man/'):] + '*')
+		#elif entry.startswith('data'):
+		#	params['datadir_entries'].append(entry[len('data/'):])
+		#	if entry.endswith('.desktop'):
+		#		params['has_desktop_file'] = True
+		elif entry.startswith('share/icons/'):
+			params['datadir_entries'].append(entry[len('share/'):])
+			params['has_icons'] = True
+		elif entry.startswith('share/pixmaps/'):
+			params['datadir_entries'].append(entry[len('share/'):])
+		elif entry.startswith('share/applications/'):
+			params['datadir_entries'].append(entry[len('share/'):])
+			if entry.endswith('.desktop'):
+				params['has_desktop_file'] = True
+				params['desktop_file_name'] = entry[len('share/'):]
+		elif entry.startswith('share/mime/'):
+			params['datadir_entries'].append(entry[len('share/'):])
+			params['has_mime'] = True
+		elif entry.startswith('share/gnome/help/'):
+			params['datadir_entries'].append(entry[len('share/'):])
+		elif entry.startswith('share/omf/'):
+			params['datadir_entries'].append(entry[len('share/'):])
+			params['has_omf'] = True
 
 def requirements_to_distro_specific(distro_name, requirements):
 	distro_requirements = []

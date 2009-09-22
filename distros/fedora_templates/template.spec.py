@@ -81,7 +81,7 @@ desktop-file-install --vendor=""                 \\\\
   @@{buildroot}@@{_datadir}/${desktop_file_name}
 % endif
 
-% if has_lang == True:
+% if has_lang:
 @@find_lang @@{name}
 % endif
 
@@ -99,7 +99,7 @@ rm -rf @@{buildroot}
 /sbin/install-info @@{_infodir}/@@{name}.info @@{_infodir}/dir || :
 %endif
 % if has_mime:
-update-mime-database %{_datadir}/mime &> /dev/null ||:
+update-mime-database @@{_datadir}/mime &> /dev/null ||:
 % endif
 % if has_icons:
 gtk-update-icon-cache -qf @@{_datadir}/icons/hicolor &>/dev/null || :
@@ -133,12 +133,18 @@ gtk-update-icon-cache -qf @@{_datadir}/icons/hicolor &>/dev/null || :
 @@doc ${str.join(' ', docs)}
 % endif
 
-% if import_python_sitelib == True:
+% if import_python_sitelib:
 @@{python_sitelib}/*
 % endif
-% if has_bindir == True:
-@@{_bindir}/@@{name}
-% endif
+% for entry in mandir_entries:
+@@{_mandir}/${entry}
+% endfor
+% for entry in bindir_entries:
+@@{_bindir}/${entry}
+% endfor
+% for entry in infodir_entries:
+@@{_infodir}/${entry}
+% endfor
 % for entry in datadir_entries:
 @@{_datadir}/${entry}
 % endfor
