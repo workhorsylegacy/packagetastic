@@ -70,7 +70,7 @@ rm -f @@{buildroot}@@{_infodir}/dir
 % elif uses_python:
 @@{__python} setup.py install -O1 --skip-build --root @@{buildroot}
 % endif
-% if has_icons:
+% if has_icon_cache:
 rm -f @@{buildroot}/@@{_datadir}/icons/hicolor/icon-theme.cache
 % endif
 

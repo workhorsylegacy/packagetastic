@@ -148,6 +148,7 @@ def get_file_structure_for_package(meta, packages, params):
 	params['import_python_sitelib'] = False
 	params['has_mime'] = False
 	params['has_info'] = False
+	params['has_icon_cache'] = False
 	params['has_icons'] = False
 	params['has_omf'] = False
 	params['has_lang'] = os.path.isdir('po')
@@ -170,8 +171,12 @@ def get_file_structure_for_package(meta, packages, params):
 		commands.getoutput('make install')
 	elif params['uses_python']:
 		commands.getoutput('python setup.py bdist')
-		tgz_name = os.listdir('dist/')[0]
 
+		if not os.path.isdir('dist/'):
+			print "Broken python setup.py. Ran 'python setup.py bdist', but found no *.tar.gz. Exiting ..."
+			exit()
+
+		tgz_name = os.listdir('dist/')[0]
 		if tgz_name.count('tar.gz') == 0:
 			print "Broken python setup.py. Ran 'python setup.py bdist', but found no *.tar.gz. Exiting ..."
 			exit()
@@ -221,22 +226,23 @@ def get_file_structure_for_package(meta, packages, params):
 			if entry != "info/dir":
 				params['infodir_entries'].append(entry[len('info/'):] + '*')
 				params['has_info'] = True
+		elif entry.startswith('share/man/'):
+			params['mandir_entries'].append(entry[len('share/man/'):] + '*')
 		elif entry.startswith('man/'):
 			params['mandir_entries'].append(entry[len('man/'):] + '*')
-		#elif entry.startswith('data'):
-		#	params['datadir_entries'].append(entry[len('data/'):])
-		#	if entry.endswith('.desktop'):
-		#		params['has_desktop_file'] = True
 		elif entry.startswith('share/icons/'):
-			params['datadir_entries'].append(entry[len('share/'):])
-			params['has_icons'] = True
+			if entry == 'share/icons/hicolor/icon-theme.cache':
+				params['has_icon_cache'] = True
+			else:
+				params['datadir_entries'].append(entry[len('share/'):])
+				params['has_icons'] = True
 		elif entry.startswith('share/pixmaps/'):
 			params['datadir_entries'].append(entry[len('share/'):])
 		elif entry.startswith('share/applications/'):
 			params['datadir_entries'].append(entry[len('share/'):])
-			if entry.endswith('.desktop'):
-				params['has_desktop_file'] = True
-				params['desktop_file_name'] = entry[len('share/'):]
+			if entry.endswith('.desktop'): continue
+			params['has_desktop_file'] = True
+			params['desktop_file_name'] = entry[len('share/'):]
 		elif entry.startswith('share/mime/'):
 			params['datadir_entries'].append(entry[len('share/'):])
 			params['has_mime'] = True
