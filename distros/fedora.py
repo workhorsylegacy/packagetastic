@@ -98,7 +98,7 @@ class Builder(object):
 
 		# Create the spec file
 		os.chdir('../..')
-		print "Building the spec file ..."
+		print "Generating the spec file ..."
 		with open(os.path.expanduser('~/rpmbuild/SPECS/') + meta.name + '.spec', 'w') as spec_file:
 			from mako.template import Template
 			from mako.lookup import TemplateLookup
@@ -191,7 +191,7 @@ class Builder(object):
 			exit()
 		#"""
 
-		print "Copying the rpm package to the packages directory ..."
+		print "Getting the rpm files ..."
 		os.chdir(packagetastic_dir)
 		if not os.path.isdir("packages"): os.mkdir("packages")
 		for package in packages:
