@@ -90,7 +90,7 @@ class Builder(object):
 
 		# Add additional install requirements based on our source code interrogation
 		params['additional_install_requirements'] = []
-		if params['uses_python']:
+		if params['builds_with_python']:
 			params['additional_install_requirements'] += ['python']
 			params['build_requirements'] += ['python-devel']
 		if params['has_desktop_file'] and meta.build_requirements.count('desktop-file-utils') == 0:
@@ -133,8 +133,8 @@ class Builder(object):
 		print "Running mock ..."
 		os.chdir("rpmbuild/SRPMS/")
 		command = "mock -r fedora-11-i386 --verbose --rebuild " + meta.name + "-" + meta.version + "-" + str(meta.release) + ".fc11.src.rpm"
-		print commands.getoutput(command)
-		"""
+		#print commands.getoutput(command)
+		#"""
 		child = pexpect.spawn(command, timeout=1200)
 
 		expected_lines = [
@@ -189,7 +189,7 @@ class Builder(object):
 		if had_error:
 			print "Exiting ..."
 			exit()
-		"""
+		#"""
 
 		print "Copying the rpm package to the packages directory ..."
 		os.chdir(packagetastic_dir)

@@ -6,7 +6,7 @@
     @@ is replaced with % \
     \\\\ is replaced with \\n \
 </%doc>\
-% if uses_python:
+% if builds_with_python:
 @@{!?python_sitelib: @@global python_sitelib @@(@@{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 % endif
@@ -54,20 +54,20 @@ ${long_description}
 % endif
 
 @@build
-% if uses_c:
+% if builds_with_autotools:
 @@configure
 make @@{?_smp_mflags}
-% elif uses_python:
+% elif builds_with_python:
 @@{__python} setup.py build
 % endif
 
 
 @@install
 rm -rf @@{buildroot}
-% if uses_c:
+% if builds_with_autotools:
 make install DESTDIR=@@{buildroot}
 rm -f @@{buildroot}@@{_infodir}/dir
-% elif uses_python:
+% elif builds_with_python:
 @@{__python} setup.py install -O1 --skip-build --root @@{buildroot}
 % endif
 % if has_icon_cache:

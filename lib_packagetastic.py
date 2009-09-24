@@ -144,6 +144,7 @@ def get_file_structure_for_package(meta, packages, params):
 	params['infodir_entries'] = []
 	params['mandir_entries'] = []
 	params['datadir_entries'] = []
+	params['libdir_entries'] = []
 	params['docs'] = []
 	params['import_python_sitelib'] = False
 	params['has_mime'] = False
@@ -155,21 +156,18 @@ def get_file_structure_for_package(meta, packages, params):
 	params['has_desktop_file'] = False
 	params['desktop_file_name'] = None
 
-	# Find out which languages are used
-	for lang in ['c', 'python', 'mono']:
-		params['uses_' + lang] = False
-		for package in packages:
-			if package.build_method == lang + ' application' or package.build_method == lang + ' library':
-				params['uses_' + lang] = True
+	# Find out which build methods are used
+	params['builds_with_autotools'] = os.path.isfile('Makefile.in')
+	params['builds_with_python'] = os.path.isfile('setup.py')
 
 	# Build the program in a sub directory
 	os.mkdir('packagetastic_build')
-	if params['uses_c'] or params['uses_mono']:
+	if params['builds_with_autotools']:
 		pwd = commands.getoutput('pwd')
 		commands.getoutput('./configure --prefix=' + pwd + '/packagetastic_build')
 		commands.getoutput('make')
 		commands.getoutput('make install')
-	elif params['uses_python']:
+	elif params['builds_with_python']:
 		commands.getoutput('python setup.py bdist')
 
 		if not os.path.isdir('dist/'):
@@ -191,10 +189,7 @@ def get_file_structure_for_package(meta, packages, params):
 		commands.getoutput('mv packagetastic_build_usr/ packagetastic_build/')
 
 	for package in packages:
-		if package.build_method == 'python library':
-			params['import_python_sitelib'] = True
-		elif package.build_method == 'python application':
-			params['has_bindir'] = True
+		if package.build_method.count('python') and params['builds_with_python']:
 			params['import_python_sitelib'] = True
 
 	# Get the docs, lang, and example params
@@ -216,6 +211,8 @@ def get_file_structure_for_package(meta, packages, params):
 				entries.append(entry + '/' + sub)
 		elif os.path.isfile("packagetastic_build/" + entry):
 			files.append(entry)
+
+	simple_name = meta.name.lower().replace('_', '').replace('-', '')
 
 	# Add the files to the categories they belong to
 	# FIXME: get the mime, omf, icons
@@ -251,6 +248,10 @@ def get_file_structure_for_package(meta, packages, params):
 		elif entry.startswith('share/omf/'):
 			params['datadir_entries'].append(entry[len('share/'):])
 			params['has_omf'] = True
+		elif entry.startswith('share/' + simple_name + '/'):
+			params['datadir_entries'].append(entry[len('share/'):])
+		elif entry.startswith('lib/'):
+			params['libdir_entries'].append(entry[len('lib/'):])
 
 def requirements_to_distro_specific(distro_name, requirements):
 	distro_requirements = []
