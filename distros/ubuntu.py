@@ -66,6 +66,9 @@ class Builder(object):
 	}
 
 	def build(self, meta, packages, packager_sudo, packager_gpg, use_chroot, use_raw_output):
+		if not use_chroot:
+			print "Warning: Using pbuilder as the chroot anyway."
+
 		# Make sure the password is legit
 		print "Checking if we can use sudo ..."
 		child = pexpect.spawn('bash -c "sudo -k; sudo su"', timeout=5)
@@ -256,155 +259,156 @@ class Builder(object):
 		os.chdir("..")
 
 		command = 'bash -c "debuild -S -sa"'
-		#print commands.getoutput(command)
-		#"""
-		child = pexpect.spawn(command, timeout=1200)
 
-		expected_lines = ["dpkg-buildpackage -rfakeroot -d -us -uc -S -sa\r\n",
-							"dpkg-buildpackage: set CFLAGS to default value: -g -O2\r\n",
-							"dpkg-buildpackage: set CPPFLAGS to default value:\r\n",
-							"dpkg-buildpackage: set LDFLAGS to default value: -Wl,-Bsymbolic-functions\r\n",
-							"dpkg-buildpackage: set FFLAGS to default value: -g -O2\r\n",
-							"dpkg-buildpackage: set CXXFLAGS to default value: -g -O2\r\n",
-							"dpkg-buildpackage: source package " + meta.name + "\r\n",
-							"dpkg-buildpackage: source version " + meta.version + "-" + str(meta.release) + "\r\n",
-							"dpkg-buildpackage: source changed by " + meta.packager_name + " <" + meta.packager_email + ">" + "\r\n",
-							"fakeroot debian/rules clean",
-							"dh_testdir",
-							"dh_testroot",
-							"rm -f build-stamp",
-							"rm -f config.sub config.guess",
-							"dh_clean",
-							"dpkg-source -b " + meta.name + "-" + meta.version,
-							"dpkg-source: info: using source format `1.0'",
-							"dpkg-source: info: building " + meta.name + " using existing " + meta.name + "_" + meta.version + ".orig.tar.gz",
-							"dpkg-source: info: building " + meta.name + " in " + meta.name + "_" + meta.version + "-" + str(meta.release) + ".diff.gz",
-							"dpkg-source: info: building " + meta.name + " in " + meta.name + "_" + meta.version + "-" + str(meta.release) + ".dsc",
-							"dpkg-genchanges: including full source code in upload",
-							"dpkg-buildpackage: source only upload (original source is included)",
-							"Now running lintian...",
-							"Now signing changes and any dsc files...",
-							"dpkg-source: error:",
-							"dpkg-buildpackage: failure:",
+		if use_raw_output:
+			print commands.getoutput(command)
+		else:
+			child = pexpect.spawn(command, timeout=1200)
 
-							"Finished running lintian.",
+			expected_lines = ["dpkg-buildpackage -rfakeroot -d -us -uc -S -sa\r\n",
+								"dpkg-buildpackage: set CFLAGS to default value: -g -O2\r\n",
+								"dpkg-buildpackage: set CPPFLAGS to default value:\r\n",
+								"dpkg-buildpackage: set LDFLAGS to default value: -Wl,-Bsymbolic-functions\r\n",
+								"dpkg-buildpackage: set FFLAGS to default value: -g -O2\r\n",
+								"dpkg-buildpackage: set CXXFLAGS to default value: -g -O2\r\n",
+								"dpkg-buildpackage: source package " + meta.name + "\r\n",
+								"dpkg-buildpackage: source version " + meta.version + "-" + str(meta.release) + "\r\n",
+								"dpkg-buildpackage: source changed by " + meta.packager_name + " <" + meta.packager_email + ">" + "\r\n",
+								"fakeroot debian/rules clean",
+								"dh_testdir",
+								"dh_testroot",
+								"rm -f build-stamp",
+								"rm -f config.sub config.guess",
+								"dh_clean",
+								"dpkg-source -b " + meta.name + "-" + meta.version,
+								"dpkg-source: info: using source format `1.0'",
+								"dpkg-source: info: building " + meta.name + " using existing " + meta.name + "_" + meta.version + ".orig.tar.gz",
+								"dpkg-source: info: building " + meta.name + " in " + meta.name + "_" + meta.version + "-" + str(meta.release) + ".diff.gz",
+								"dpkg-source: info: building " + meta.name + " in " + meta.name + "_" + meta.version + "-" + str(meta.release) + ".dsc",
+								"dpkg-genchanges: including full source code in upload",
+								"dpkg-buildpackage: source only upload (original source is included)",
+								"Now running lintian...",
+								"Now signing changes and any dsc files...",
+								"dpkg-source: error:",
+								"dpkg-buildpackage: failure:",
 
-							"You need a passphrase to unlock the secret key for\r\n" +
-							"user: \"" + meta.packager_name + " <" + meta.packager_email + ">" + "\"\r\n" +
-							"1024-bit DSA key, ID [\w]*, created \d*-\d*-\d*\r\n" +
-							"\r\n" +
-							"Enter passphrase: [\w|\s\W]*",
+								"Finished running lintian.",
 
-							"gpg: Invalid passphrase; please try again ...",
+								"You need a passphrase to unlock the secret key for\r\n" +
+								"user: \"" + meta.packager_name + " <" + meta.packager_email + ">" + "\"\r\n" +
+								"1024-bit DSA key, ID [\w]*, created \d*-\d*-\d*\r\n" +
+								"\r\n" +
+								"Enter passphrase: [\w|\s\W]*",
 
-							"dpkg-source: error: syntax error in " + meta.name + "-" + meta.version + "/debian/control at line \d*: ",
+								"gpg: Invalid passphrase; please try again ...",
 
-							"dpkg-buildpackage: failure: fakeroot debian/rules clean gave error exit status 2", 
+								"dpkg-source: error: syntax error in " + meta.name + "-" + meta.version + "/debian/control at line \d*: ",
 
-							"Successfully signed dsc and changes files\r\n",
+								"dpkg-buildpackage: failure: fakeroot debian/rules clean gave error exit status 2", 
 
-							"W\: " + meta.name + " source\: [\w|\d|\s|\W|\.|\-]*\r\n",
+								"Successfully signed dsc and changes files\r\n",
 
-							"E\: " + meta.name + " source\: [\w|\d|\s|\W|\.|\-]*\r\n",
+								"W\: " + meta.name + " source\: [\w|\d|\s|\W|\.|\-]*\r\n",
 
-							"ImportError: No module named [\w|\d|\.|\-|\_]*\r\n", 
+								"E\: " + meta.name + " source\: [\w|\d|\s|\W|\.|\-]*\r\n",
 
-							pexpect.EOF]
+								"ImportError: No module named [\w|\d|\.|\-|\_]*\r\n", 
 
-		still_reading = True
-		had_lintian_error = False
-		while still_reading:
-			result = child.expect(expected_lines)
+								pexpect.EOF]
 
-			if result >= 0 and result <= 25:
-				pass
-			elif result == 26 and had_lintian_error:
-				print "Lintian has errors. Exiting ..."
-				exit()
-			elif result == 27:
-				child.sendline(packager_gpg)
-			elif result == 28:
-				print "Invalid gpg password. Exiting ..."
-				exit()
-			elif result == 29:
-				print "Broke when reading the debian/control file '" + \
-				child.after + "'. Exiting ..."
-				exit()
-			elif result == 30:
-				print "Broke when running clean from the debian/rules file '" + \
-				child.after + "'. Exiting ..."
-				exit()
-			elif result == 31:
-				pass
-			elif result == 32:
-				print "    Lintian warning: " + child.after[3:-2]
-			elif result == 33:
-				print "    Lintian error: " + child.after[3:-2]
-				had_lintian_error = True
-			elif result == 34:
-				print "Compile error. " + child.after + " Exiting ..."
-				exit()
-			elif result == len(expected_lines)-1:
-				still_reading = False
+			still_reading = True
+			had_lintian_error = False
+			while still_reading:
+				result = child.expect(expected_lines)
 
-		child.close()
-		#"""
+				if result >= 0 and result <= 25:
+					pass
+				elif result == 26 and had_lintian_error:
+					print "Lintian has errors. Exiting ..."
+					exit()
+				elif result == 27:
+					child.sendline(packager_gpg)
+				elif result == 28:
+					print "Invalid gpg password. Exiting ..."
+					exit()
+				elif result == 29:
+					print "Broke when reading the debian/control file '" + \
+					child.after + "'. Exiting ..."
+					exit()
+				elif result == 30:
+					print "Broke when running clean from the debian/rules file '" + \
+					child.after + "'. Exiting ..."
+					exit()
+				elif result == 31:
+					pass
+				elif result == 32:
+					print "    Lintian warning: " + child.after[3:-2]
+				elif result == 33:
+					print "    Lintian error: " + child.after[3:-2]
+					had_lintian_error = True
+				elif result == 34:
+					print "Compile error. " + child.after + " Exiting ..."
+					exit()
+				elif result == len(expected_lines)-1:
+					still_reading = False
+
+			child.close()
 
 		# Run pbuilder
 		print "Running pbuilder ..."
 		os.chdir("..")
 
 		command = 'bash -c "sudo pbuilder build ' + meta.name + '_' + meta.version + '-' + str(meta.release) + '.dsc"'
-		#print commands.getoutput(command)
-		#"""
-		child = pexpect.spawn(command, timeout=1200)
+		if use_raw_output:
+			print commands.getoutput(command)
+		else:
+			child = pexpect.spawn(command, timeout=1200)
 
-		expected_lines = ["\[sudo\] password for [\w|\s]*: ",
+			expected_lines = ["\[sudo\] password for [\w|\s]*: ",
 
-							"pbuilder: Failed autobuilding of package", 
+								"pbuilder: Failed autobuilding of package", 
 
-							"patching file [\w|\s|\d|\.|\-|\/]*\r\nHunk \#\d FAILED at [\d]*\.\r\nHunk \#\d FAILED at [\d]*\.\r\n", 
+								"patching file [\w|\s|\d|\.|\-|\/]*\r\nHunk \#\d FAILED at [\d]*\.\r\nHunk \#\d FAILED at [\d]*\.\r\n", 
 
-							"patch -p0 < debian\/patches\/[\d|\w|\.|\-|\_]*\r\ncan't find file to patch at input line [\d]*", 
+								"patch -p0 < debian\/patches\/[\d|\w|\.|\-|\_]*\r\ncan't find file to patch at input line [\d]*", 
 
-							"The following packages have unmet dependencies:\r\n" + 
-							"[\w|\W|\s|\d|\.|\-|\/|\r|\n]*" + 
-							"The following actions will resolve these dependencies:", 
+								"The following packages have unmet dependencies:\r\n" + 
+								"[\w|\W|\s|\d|\.|\-|\/|\r|\n]*" + 
+								"The following actions will resolve these dependencies:", 
 
-							pexpect.EOF]
+								pexpect.EOF]
 
-		still_reading = True
-		had_error = False
-		while still_reading:
-			result = child.expect(expected_lines)
+			still_reading = True
+			had_error = False
+			while still_reading:
+				result = child.expect(expected_lines)
 
-			if result == 0:
-				child.sendline(packager_sudo)
-			elif result == 1:
-				print "Failed to build package. Make sure it can be compiled manually before trying to package. Exiting ..."
-				had_error = True
-			elif result == 2:
-				print "Failed to build package. Broke when applying patch. Exiting ..."
-				print child.after
-				had_error = True
-			elif result == 3:
-				print "Failed to build package. Broke when applying patch. Exiting ..."
-				print child.after
-				had_error = True
-				child.sendcontrol('c')
-			elif result == 4:
-				print "Failed to build. Dependencies not in the repositories:"
-				for entry in child.after.split('Depends: ')[1:]:
-					print entry.strip().split(' which is a')[0]
-				print "Exiting ..."
-				had_error = True
-			elif result == len(expected_lines)-1:
-				still_reading = False
+				if result == 0:
+					child.sendline(packager_sudo)
+				elif result == 1:
+					print "Failed to build package. Make sure it can be compiled manually before trying to package. Exiting ..."
+					had_error = True
+				elif result == 2:
+					print "Failed to build package. Broke when applying patch. Exiting ..."
+					print child.after
+					had_error = True
+				elif result == 3:
+					print "Failed to build package. Broke when applying patch. Exiting ..."
+					print child.after
+					had_error = True
+					child.sendcontrol('c')
+				elif result == 4:
+					print "Failed to build. Dependencies not in the repositories:"
+					for entry in child.after.split('Depends: ')[1:]:
+						print entry.strip().split(' which is a')[0]
+					print "Exiting ..."
+					had_error = True
+				elif result == len(expected_lines)-1:
+					still_reading = False
 
-		child.close()
-		if had_error:
-			exit()
-		#"""
+			child.close()
+			if had_error:
+				exit()
 
 		# Copy the deb files from the cache
 		print "Getting the deb files ..."
