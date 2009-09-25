@@ -62,7 +62,7 @@ class Builder(object):
 	def filter_requirement(self, value):
 		return value.replace('(', '').replace(')', '').split(' | ')[0]
 
-	def build(self, meta, packages, packager_sudo, packager_gpg):
+	def build(self, meta, packages, packager_sudo, packager_gpg, use_chroot, use_raw_output):
 		# Setup the directories
 		print "Setting up the rpmdev directories ..."
 		commands.getoutput('rm -rf ~/rpmbuild')
@@ -111,85 +111,92 @@ class Builder(object):
 		os.chdir(os.path.expanduser("~"))
 
 		print "Running rpmbuild ..."
-		command = "rpmbuild -bs rpmbuild/SPECS/" + meta.name + ".spec"
-		#print commands.getoutput(command)
-		#"""
-		child = pexpect.spawn(command, timeout=1200)
+		command = ""
+		if use_chroot:
+			command = "rpmbuild -bs rpmbuild/SPECS/" + meta.name + ".spec"
+		else:
+			command = "rpmbuild -ba rpmbuild/SPECS/" + meta.name + ".spec"
 
-		expected_lines = [pexpect.EOF]
+		if use_raw_output:
+			print commands.getoutput(command)
 
-		still_reading = True
-		while still_reading:
-			result = child.expect(expected_lines)
-			#print "[[[" + str(child.before) + "]]]"
-			#print "[[[" + str(child.after) + "]]]"
+		else:
+			child = pexpect.spawn(command, timeout=1200)
 
-			if result == len(expected_lines)-1:
-				still_reading = False
+			expected_lines = [pexpect.EOF]
 
-		child.close()
-		#"""
+			still_reading = True
+			while still_reading:
+				result = child.expect(expected_lines)
+				#print "[[[" + str(child.before) + "]]]"
+				#print "[[[" + str(child.after) + "]]]"
 
-		print "Running mock ..."
-		os.chdir("rpmbuild/SRPMS/")
-		command = "mock -r fedora-11-i386 --verbose --rebuild " + meta.name + "-" + meta.version + "-" + str(meta.release) + ".fc11.src.rpm"
-		#print commands.getoutput(command)
-		#"""
-		child = pexpect.spawn(command, timeout=1200)
+				if result == len(expected_lines)-1:
+					still_reading = False
 
-		expected_lines = [
-		"ERROR: Bad build req: No Package Found for [\w|\-]*. Exiting.", 
+			child.close()
 
-		"DEBUG:     File not found: [\w|\d|\_|\-|\.|\/|\ ]*\r\n", 
+		if use_chroot:
+			print "Running mock ..."
+			os.chdir("rpmbuild/SRPMS/")
+			command = "mock -r fedora-11-i386 --verbose --rebuild " + meta.name + "-" + meta.version + "-" + str(meta.release) + ".fc11.src.rpm"
+			if use_raw_output:
+				print commands.getoutput(command)
+			else:
+				child = pexpect.spawn(command, timeout=1200)
 
-		"DEBUG: error: File not found: [\w|\d|\_|\-|\.|\/|\ ]*\r\n", 
+				expected_lines = [
+				"ERROR: Bad build req: No Package Found for [\w|\-]*. Exiting.", 
 
-		"DEBUG: No Package Found for [\w|\d|\s|\>|\<|\=|\_|\-|\.|\/|\ ]*\r\n", 
+				"DEBUG:     File not found: [\w|\d|\_|\-|\.|\/|\ ]*\r\n", 
 
-		"DEBUG: \/usr\/bin\/python: can't open file \'setup.py\': \[Errno 2\] No such file or directory", 
+				"DEBUG: error: File not found: [\w|\d|\_|\-|\.|\/|\ ]*\r\n", 
 
-		"DEBUG: No package \'[\w|\d|\s|\>|\<|\=|\_|\-|\.|\/]*\' found\r\n", 
+				"DEBUG: No Package Found for [\w|\d|\s|\>|\<|\=|\_|\-|\.|\/|\ ]*\r\n", 
 
-		pexpect.EOF]
+				"DEBUG: \/usr\/bin\/python: can't open file \'setup.py\': \[Errno 2\] No such file or directory", 
 
-		still_reading = True
-		had_error = False
-		while still_reading:
-			result = child.expect(expected_lines)
-			#print "[[[" + str(child.before) + "]]]"
-			#print "[[[" + str(child.after) + "]]]"
+				"DEBUG: No package \'[\w|\d|\s|\>|\<|\=|\_|\-|\.|\/]*\' found\r\n", 
 
-			if result == 0:
-				package_name = child.after.split('ERROR: Bad build req: No Package Found for ')[1].split('. Exiting.')[0]
-				print "Unknown build requirement '" + package_name + "'."
-				had_error = True
-			elif result == 1:
-				file_name = child.after.split("DEBUG:     File not found: ")[1].split()[0]
-				print "File not found '" + file_name + "'. Exiting ..."
-				exit()
-			elif result == 2:
-				file_name = child.after.split("DEBUG: error: File not found: ")[1].split()[0]
-				print "File not found '" + file_name + "'. Exiting ..."
-				exit()
-			elif result == 3:
-				file_name = child.after.split("DEBUG: No Package Found for ")[1].split()[0]
-				print "Build requirement not found in the repository '" + file_name + "'."
-				had_error = True
-			elif result == 4:
-				print "No python setup.py file found. Exiting ..."
-				exit()
-			elif result == 5:
-				package_name = child.after.split("DEBUG: No package '")[1].split("' found\r\n")[0]
-				print "Requirement needed, but not listed in build requirements '" + package_name + "'."
-				had_error = True
-			elif result == len(expected_lines)-1:
-				still_reading = False
+				pexpect.EOF]
 
-		child.close()
-		if had_error:
-			print "Exiting ..."
-			exit()
-		#"""
+				still_reading = True
+				had_error = False
+				while still_reading:
+					result = child.expect(expected_lines)
+					#print "[[[" + str(child.before) + "]]]"
+					#print "[[[" + str(child.after) + "]]]"
+
+					if result == 0:
+						package_name = child.after.split('ERROR: Bad build req: No Package Found for ')[1].split('. Exiting.')[0]
+						print "Unknown build requirement '" + package_name + "'."
+						had_error = True
+					elif result == 1:
+						file_name = child.after.split("DEBUG:     File not found: ")[1].split()[0]
+						print "File not found '" + file_name + "'. Exiting ..."
+						exit()
+					elif result == 2:
+						file_name = child.after.split("DEBUG: error: File not found: ")[1].split()[0]
+						print "File not found '" + file_name + "'. Exiting ..."
+						exit()
+					elif result == 3:
+						file_name = child.after.split("DEBUG: No Package Found for ")[1].split()[0]
+						print "Build requirement not found in the repository '" + file_name + "'."
+						had_error = True
+					elif result == 4:
+						print "No python setup.py file found. Exiting ..."
+						exit()
+					elif result == 5:
+						package_name = child.after.split("DEBUG: No package '")[1].split("' found\r\n")[0]
+						print "Requirement needed, but not listed in build requirements '" + package_name + "'."
+						had_error = True
+					elif result == len(expected_lines)-1:
+						still_reading = False
+
+				child.close()
+				if had_error:
+					print "Exiting ..."
+					exit()
 
 		print "Getting the rpm files ..."
 		os.chdir(packagetastic_dir)

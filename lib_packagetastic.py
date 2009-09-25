@@ -544,7 +544,7 @@ def validate_package(distro_name, meta, packages):
 				print "Stem file is Broken. The install requirement \"" + install_requirement + "\" is missing for this distro. Please add it to package_names.py. Exiting ..."
 				exit()
 
-def build(distro_name, package_name):
+def build(distro_name, package_name, use_chroot, use_raw_output):
 	# Make sure the packager_name file exists
 	if not os.path.isfile('packager_name'):
 		print "Add the packager name to the 'packager_name' file."
@@ -613,6 +613,6 @@ def build(distro_name, package_name):
 	meta.packager_name = packager_name
 	meta.packager_email = packager_email
 	builder = eval('Builder()')
-	builder.build(meta, packages, packager_sudo, packager_gpg)
+	builder.build(meta, packages, packager_sudo, packager_gpg, use_chroot, use_raw_output)
 
 

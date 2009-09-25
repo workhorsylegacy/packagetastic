@@ -65,7 +65,7 @@ class Builder(object):
 		'documentation' : 'all'
 	}
 
-	def build(self, meta, packages, packager_sudo, packager_gpg):
+	def build(self, meta, packages, packager_sudo, packager_gpg, use_chroot, use_raw_output):
 		# Make sure the password is legit
 		print "Checking if we can use sudo ..."
 		child = pexpect.spawn('bash -c "sudo -k; sudo su"', timeout=5)
