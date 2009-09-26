@@ -65,7 +65,7 @@ class Builder(object):
 		'documentation' : 'all'
 	}
 
-	def build(self, meta, packages, packager_sudo, packager_gpg, use_chroot, use_raw_output):
+	def build(self, meta, packages, packager_sudo, packager_gpg, use_chroot, is_interactive):
 		if not use_chroot:
 			print "Warning: Using pbuilder as the chroot anyway."
 
@@ -260,7 +260,7 @@ class Builder(object):
 
 		command = 'bash -c "debuild -S -sa"'
 
-		if use_raw_output:
+		if is_interactive:
 			print commands.getoutput(command)
 		else:
 			child = pexpect.spawn(command, timeout=1200)
@@ -359,7 +359,7 @@ class Builder(object):
 		os.chdir("..")
 
 		command = 'bash -c "sudo pbuilder build ' + meta.name + '_' + meta.version + '-' + str(meta.release) + '.dsc"'
-		if use_raw_output:
+		if is_interactive:
 			print commands.getoutput(command)
 		else:
 			child = pexpect.spawn(command, timeout=1200)

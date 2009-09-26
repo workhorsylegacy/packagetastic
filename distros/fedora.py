@@ -62,7 +62,7 @@ class Builder(object):
 	def filter_requirement(self, value):
 		return value.replace('(', '').replace(')', '').split(' | ')[0]
 
-	def build(self, meta, packages, packager_sudo, packager_gpg, use_chroot, use_raw_output):
+	def build(self, meta, packages, packager_sudo, packager_gpg, use_chroot, is_interactive):
 		# Setup the directories
 		print "Setting up the rpmdev directories ..."
 		commands.getoutput('rm -rf ~/rpmbuild')
@@ -117,9 +117,8 @@ class Builder(object):
 		else:
 			command = "rpmbuild -ba rpmbuild/SPECS/" + meta.name + ".spec"
 
-		if use_raw_output:
+		if is_interactive:
 			print commands.getoutput(command)
-
 		else:
 			child = pexpect.spawn(command, timeout=1200)
 
@@ -140,7 +139,7 @@ class Builder(object):
 			print "Running mock ..."
 			os.chdir("rpmbuild/SRPMS/")
 			command = "mock -r fedora-11-i386 --verbose --rebuild " + meta.name + "-" + meta.version + "-" + str(meta.release) + ".fc11.src.rpm"
-			if use_raw_output:
+			if is_interactive:
 				print commands.getoutput(command)
 			else:
 				child = pexpect.spawn(command, timeout=1200)

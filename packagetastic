@@ -10,29 +10,29 @@ os.chdir(os.sys.path[0])
 # Show the usage if the args are wrong
 if len(sys.argv) < 3:
 	print "usage:"
-	print "./packagetastic distro package [nochroot] [rawoutput]"
+	print "./packagetastic distro package [nochroot] [interactive]"
 	print ""
 	print "[nochroot] builds the package with the local installed libraries, rather than"
 	print "building it inside a chroot that has no installed libraries."
 	print ""
-	print "[rawoutput] outputs all build commands to the terminal. The user will also"
+	print "[interactive] outputs all build commands to the terminal. The user will also"
 	print "be required to perform input if needed."
 	print ""
 	print "examples:"
 	print "./packagetastic fedora hello"
-	print "./packagetastic ubuntu hello nochroot rawoutput"
+	print "./packagetastic ubuntu hello nochroot interactive"
 	exit()
 
 # Get the arguments
 package_name = sys.argv[2].lower()
 distro_name = sys.argv[1].lower()
 use_chroot = sys.argv[3:].count('nochroot') == 0
-use_raw_output = sys.argv[3:].count('rawoutput') != 0
+is_interactive = sys.argv[3:].count('interactive') != 0
 
 # Setup packagetastic
 lib_packagetastic.init_packagetastic(distro_name, package_name)
 
 # Build the package
-lib_packagetastic.build(distro_name, package_name, use_chroot, use_raw_output)
+lib_packagetastic.build(distro_name, package_name, use_chroot, is_interactive)
 
 
