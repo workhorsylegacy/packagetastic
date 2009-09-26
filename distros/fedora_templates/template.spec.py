@@ -142,6 +142,9 @@ gtk-update-icon-cache -qf @@{_datadir}/icons/hicolor &>/dev/null || :
 % for entry in bindir_entries:
 @@{_bindir}/${entry}
 % endfor
+% for entry in libdir_entries:
+@@{_libdir}/${entry}
+% endfor
 % for entry in infodir_entries:
 @@{_infodir}/${entry}
 % endfor

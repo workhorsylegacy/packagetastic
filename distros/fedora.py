@@ -122,18 +122,31 @@ class Builder(object):
 		else:
 			child = pexpect.spawn(command, timeout=1200)
 
-			expected_lines = [pexpect.EOF]
+			expected_lines = [
+			"error: Installed \(but unpackaged\) file\(s\) found:\r\n[\w|\W|\s]*\r\n\r\n", 
+
+			pexpect.EOF]
 
 			still_reading = True
+			had_error = False
 			while still_reading:
 				result = child.expect(expected_lines)
 				#print "[[[" + str(child.before) + "]]]"
 				#print "[[[" + str(child.after) + "]]]"
 
-				if result == len(expected_lines)-1:
+				if result == 0:
+					had_error = True
+					print "Files were found in the built package that were not expected:"
+					for line in child.after.strip().split("\r\n")[1:]:
+						line = line.strip()
+						print "\t" + line
+				elif result == len(expected_lines)-1:
 					still_reading = False
 
 			child.close()
+			if had_error:
+				print "Exiting ..."
+				exit()
 
 		if use_chroot:
 			print "Running mock ..."
