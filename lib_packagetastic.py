@@ -139,6 +139,8 @@ def setup_source_code(meta):
 	os.chdir(substitute_strings("#{name}-#{version}", meta.to_hash()))
 
 def get_file_structure_for_package(meta, packages, params):
+	# FIXME: We no longer need to probe for file names on each build.
+	# Move the build/probe code to the ./packagetastic update_files blah area 
 	# Set the default values
 	params['bindir_entries'] = []
 	params['infodir_entries'] = []
@@ -237,9 +239,9 @@ def get_file_structure_for_package(meta, packages, params):
 			params['datadir_entries'].append(entry[len('share/'):])
 		elif entry.startswith('share/applications/'):
 			params['datadir_entries'].append(entry[len('share/'):])
-			if entry.endswith('.desktop'): continue
-			params['has_desktop_file'] = True
-			params['desktop_file_name'] = entry[len('share/'):]
+			if entry.endswith('.desktop'):
+				params['has_desktop_file'] = True
+				params['desktop_file_name'] = entry[len('share/'):]
 		elif entry.startswith('share/mime/'):
 			params['datadir_entries'].append(entry[len('share/'):])
 			params['has_mime'] = True
@@ -436,6 +438,7 @@ class BasePackage(object):
 		self._priority = None
 		self._category = None
 		self._install_requirements = []
+		self._files = []
 		self._additional_description = u""
 
 	def get_name(self): return self._name
@@ -456,6 +459,9 @@ class BasePackage(object):
 	def get_install_requirements(self): return self._install_requirements
 	install_requirements = property(get_install_requirements)
 
+	def get_files(self): return self._files
+	files = property(get_files)
+
 	def get_additional_description(self): return self._additional_description
 	additional_description = property(get_additional_description)
 
@@ -465,6 +471,7 @@ class BasePackage(object):
 				'build_method' : self.build_method, 
 				'category' : self.category, 
 				'install_requirements' : self.install_requirements, 
+				'files' : self._files, 
 				'name' : self.name, 
 				'priority' : self.priority, 
 				}

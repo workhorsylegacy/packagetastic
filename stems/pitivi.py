@@ -64,3 +64,10 @@ class Pitivi(BasePackage):
 										'gnome-icon-theme', 
 										'python-pygoocanvas']
 
+		self._files = ['/usr/bin/pitivi', 
+						'/usr/share/pitivi', 
+						'/usr/share/applications/*', 
+						'/usr/share/icons/hicolor/*/apps/pitivi.*', 
+						'/usr/share/mime/packages/pitivi.xml']
+
+

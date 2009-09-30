@@ -46,3 +46,10 @@ class Gwibber(BasePackage):
 										'python-gnome2-desktop', 
 										'python-xdg']
 
+		self._files = ['/usr/lib/python2.6/site-packages/gwibber', 
+						'/usr/lib/python2.6/site-packages/gwibber-*.egg-info', 
+						'/usr/bin/gwibber', 
+						'/usr/share/gwibber', 
+						'/usr/share/pixmaps/gwibber.svg', 
+						'/usr/share/applications/fedora-gwibber.desktop']
+

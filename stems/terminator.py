@@ -38,3 +38,13 @@ class Shrip(BasePackage):
 		self._install_requirements = ['python-gobject', 'python-gtk2', 
 										'python-gconf', 'python-vte']
 
+		self._files = ['/usr/share/man/man1/terminator.*', 
+						'/usr/share/man/man5/terminator_config.*', 
+						'/usr/bin/terminator', 
+						'/usr/lib/python2.6/site-packages/*', 
+						'/usr/share/applications/terminator.desktop', 
+						'/usr/share/icons/hicolor/*/*/terminator*.png', 
+						'/usr/share/icons/hicolor/*/*/terminator*.svg', 
+						'/usr/share/pixmaps/terminator.png']
+
+

@@ -29,7 +29,8 @@ class Meta(BaseMeta):
 		self._license = 'GPL2+'
 		self._source = 'http://launchpad.net/jokosher/0.11/0.11.3/+download/jokosher-0.11.3.tar.gz'
 
-		self._build_requirements = []
+		self._build_requirements = ['python-setuptools', 'desktop-file-utils', 
+									'gettext', 'python-gtk2-dev', 'scrollkeeper']
 
 		self._short_description = u"simple and easy to use audio multi-tracker"
 
@@ -58,4 +59,15 @@ class Jokosher(BasePackage):
 										'gstreamer-plugins-good (>= 0.10.9)', 
 										'gstreamer-plugins-base (>= 0.10.12)', 
 										'python-setuptools']
+
+		self._files = ['/usr/lib/python2.6/site-packages/jokosher-0.11.3-py2.6.egg-info', 
+						'/usr/lib/python2.6/site-packages/Jokosher', 
+						'/usr/bin/jokosher', 
+						'/usr/share/jokosher/', 
+						'/usr/share/icons/hicolor/48x48/apps/jokosher.png', 
+						'/usr/share/pixmaps/jokosher.png', 
+						'/usr/share/applications/jokosher.desktop', 
+						'/usr/share/mime/packages/jokosher.xml', 
+						'/usr/share/gnome/help/jokosher/', 
+						'/usr/share/omf/jokosher/']
 

@@ -2,6 +2,10 @@
 # -*- coding: UTF-8 -*-
 
 package_names = {
+	'python-gtk2-dev' : { 
+		'fedora' : ['pygtk2-devel'], 
+		'ubuntu' : ['python-gtk2-dev']
+	}, 
 	'uuid-dev' : { 
 		'fedora' : ['uuid-devel'], 
 		'ubuntu' : ['uuid-dev']
@@ -275,7 +279,7 @@ package_names = {
 		'ubuntu' : ['gstreamer0.10-plugins-base']
 	}, 
 	'python-setuptools' : { 
-		'fedora' : ['python-setuptools'], 
+		'fedora' : ['python-setuptools-devel'], 
 		'ubuntu' : ['python-setuptools']
 	}, 
 	'gettext' : { 

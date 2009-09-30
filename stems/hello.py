@@ -33,3 +33,8 @@ class Hello(BasePackage):
 		self._priority = 'optional'
 		self._install_requirements = ["info"]
 
+		self._files = ['/usr/share/man/man1/hello.1*', 
+						'/usr/bin/hello', 
+						'/usr/share/info/hello.info*']
+
+

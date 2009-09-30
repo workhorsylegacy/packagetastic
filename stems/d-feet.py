@@ -40,3 +40,10 @@ class DFeet(BasePackage):
 										'python-gtk2', 
 										'python-glade2']
 
+		self._files = ['/usr/lib/python2.6/site-packages/*', 
+						'/usr/bin/d-feet', 
+						'/usr/share/dfeet/', 
+						'/usr/share/icons/hicolor/48x48/apps/*.png', 
+						'/usr/share/icons/hicolor/16x16/apps/*.png', 
+						'/usr/share/applications/dfeet.desktop']
+

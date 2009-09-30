@@ -34,4 +34,5 @@ class Pyactiveresource(BasePackage):
 		self._priority = 'optional'
 		self._install_requirements = []
 
+		self._files = ['/usr/lib/python2.6/site-packages/*']
 

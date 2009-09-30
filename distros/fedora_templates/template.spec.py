@@ -133,24 +133,9 @@ gtk-update-icon-cache -qf @@{_datadir}/icons/hicolor &>/dev/null || :
 @@doc ${str.join(' ', docs)}
 % endif
 
-% if import_python_sitelib:
-@@{python_sitelib}/*
-% endif
-% for entry in mandir_entries:
-@@{_mandir}/${entry}
-% endfor
-% for entry in bindir_entries:
-@@{_bindir}/${entry}
-% endfor
-% for entry in libdir_entries:
-@@{_libdir}/${entry}
-% endfor
-% for entry in infodir_entries:
-@@{_infodir}/${entry}
-% endfor
-% for entry in datadir_entries:
-@@{_datadir}/${entry}
-% endfor
+%for entry in packages[0].files:
+${entry}
+%endfor
 
 
 ## FIXME: These should not be here

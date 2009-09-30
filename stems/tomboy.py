@@ -60,5 +60,23 @@ class Tomboy(BasePackage):
 		self._priority = 'optional'
 		self._install_requirements = []
 
+		self._files = ['/usr/bin/banshee-1', 
+						'/usr/lib/banshee-1', 
+						'/usr/share/applications/*.desktop', 
+						'/usr/share/dbus-1/services/org.bansheeproject.Banshee.service', 
+						'/usr/share/dbus-1/services/org.bansheeproject.CollectionIndexer.service', 
+						'/usr/share/banshee-1/', 
+						'/usr/share/icons/hicolor/*/apps/media-player-banshee.png']
+
+'/usr/lib/tomboy/*', 
+'/usr/bin/tomboy', 
+'/usr/bin/tomboy-panel', 
+'/usr/lib/tomboy/*', 
+'/usr/lib/bonobo/servers/GNOME_TomboyApplet.server', 
+'/usr/share/dbus-1/services/org.gnome.Tomboy.service', 
+'/usr/share/man/man1/tomboy.1.gz', 
+'/usr/share/tomboy', 
+'/usr/share/icons/hicolor/*/apps/tomboy.*', 
+'/etc/gconf/schemas/tomboy.schemas']
 
 

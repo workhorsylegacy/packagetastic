@@ -216,7 +216,10 @@ class Builder(object):
 		for package in packages:
 			build_arch = self.build_method_to_build_arch[package.build_method]
 			rpm = meta.name + "-" + meta.version + "-" + str(meta.release) + ".fc11." + build_arch + ".rpm"
-			print commands.getoutput("cp /var/lib/mock/fedora-11-i386/result/" + rpm + " packages/" + rpm)
+			if use_chroot:
+				print commands.getoutput("cp /var/lib/mock/fedora-11-i386/result/" + rpm + " packages/" + rpm)
+			else:
+				print commands.getoutput("cp ~/rpmbuild/RPMS/" + build_arch + "/" + rpm + " packages/" + rpm)
 		print "Done"
 
 

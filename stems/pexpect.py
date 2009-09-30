@@ -36,13 +36,6 @@ class Meta(BaseMeta):
 
 		self._changelog = [Changelog(version="2.3", release=1, time="Fri, 07 Aug 2009 18:32:26 -0700", text=u"Initial release") ]
 
-
-	def after_install(self):
-		return \
-		"# Correct some permissions\n" + \
-		"find examples -type f -exec chmod a-x \{\} \;\n" + \
-		"chmod 755 $RPM_BUILD_ROOT%{python_sitelib}/FSM.py"
-
 class Pexpect(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
@@ -51,5 +44,7 @@ class Pexpect(BasePackage):
 		self._category = 'Development/Libraries'
 		self._priority = 'optional'
 		self._install_requirements = []
+
+		self._files = ['/usr/lib/python2.6/site-packages/*']
 
 

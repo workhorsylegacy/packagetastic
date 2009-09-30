@@ -117,5 +117,12 @@ class Documentation(BasePackage):
 
 		self._additional_description = u"This package contains the developer documentation for Banshee."
 
+		self._files = ['/usr/bin/banshee-1', 
+						'/usr/lib/banshee-1', 
+						'/usr/share/applications/*.desktop', 
+						'/usr/share/dbus-1/services/org.bansheeproject.Banshee.service', 
+						'/usr/share/dbus-1/services/org.bansheeproject.CollectionIndexer.service', 
+						'/usr/share/banshee-1/', 
+						'/usr/share/icons/hicolor/*/apps/media-player-banshee.png']
 
 

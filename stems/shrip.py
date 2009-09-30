@@ -71,5 +71,6 @@ class Shrip(BasePackage):
 									"tesseract | ocrad | gocr",
 									"gpac"]
 
-
+		self._files = ['/usr/bin/shrip', 
+						'/usr/share/man/man1/shrip.1*']
 

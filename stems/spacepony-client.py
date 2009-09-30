@@ -33,4 +33,7 @@ class Shrip(BasePackage):
 		self._install_requirements = ['python-gobject', 'python-gconf', 'python-vte', 
 										'python-inotify', 'pyactiveresource']
 
+		self._files = ['/usr/lib/python2.6/site-packages/*', 
+						'/usr/bin/spacepony-client']
+
 
