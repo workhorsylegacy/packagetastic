@@ -125,6 +125,10 @@ class Builder(object):
 			expected_lines = [
 			"error: Installed \(but unpackaged\) file\(s\) found:\r\n[\w|\W|\s]*\r\n\r\n", 
 
+			"	[\w|\W]* is needed by [\w|\d|\s|\>|\<|\=|\_|\-|\.|\/|\ ]*\r\n", 
+
+			"    File not found\: [\w|\d|\_|\-|\.|\/|\ ]*\r\n", 
+
 			pexpect.EOF]
 
 			still_reading = True
@@ -140,6 +144,14 @@ class Builder(object):
 					for line in child.after.strip().split("\r\n")[1:]:
 						line = line.strip()
 						print "\t" + line
+				elif result == 1:
+					package_name = child.after.split(' is needed by ')[0].strip()
+					print "Unknown build requirement '" + package_name + "'."
+					had_error = True
+				elif result == 2:
+					file_name = child.after.split('File not found: ')[1].strip()
+					print "File not found: '" + file_name + "'."
+					had_error = True
 				elif result == len(expected_lines)-1:
 					still_reading = False
 
@@ -161,8 +173,6 @@ class Builder(object):
 				"ERROR: Bad build req: No Package Found for [\w|\-]*. Exiting.", 
 
 				"DEBUG:     File not found: [\w|\d|\_|\-|\.|\/|\ ]*\r\n", 
-
-				"DEBUG: error: File not found: [\w|\d|\_|\-|\.|\/|\ ]*\r\n", 
 
 				"DEBUG: No Package Found for [\w|\d|\s|\>|\<|\=|\_|\-|\.|\/|\ ]*\r\n", 
 
@@ -186,19 +196,15 @@ class Builder(object):
 					elif result == 1:
 						file_name = child.after.split("DEBUG:     File not found: ")[1].split()[0]
 						print "File not found '" + file_name + "'. Exiting ..."
-						exit()
+						had_error = True
 					elif result == 2:
-						file_name = child.after.split("DEBUG: error: File not found: ")[1].split()[0]
-						print "File not found '" + file_name + "'. Exiting ..."
-						exit()
-					elif result == 3:
 						file_name = child.after.split("DEBUG: No Package Found for ")[1].split()[0]
 						print "Build requirement not found in the repository '" + file_name + "'."
 						had_error = True
-					elif result == 4:
+					elif result == 3:
 						print "No python setup.py file found. Exiting ..."
 						exit()
-					elif result == 5:
+					elif result == 4:
 						package_name = child.after.split("DEBUG: No package '")[1].split("' found\r\n")[0]
 						print "Requirement needed, but not listed in build requirements '" + package_name + "'."
 						had_error = True
