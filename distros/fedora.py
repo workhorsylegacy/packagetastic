@@ -146,7 +146,7 @@ class Builder(object):
 						print "\t" + line
 				elif result == 1:
 					package_name = child.after.split(' is needed by ')[0].strip()
-					print "Unknown build requirement '" + package_name + "'."
+					print "Build requirement not installed '" + package_name + "'."
 					had_error = True
 				elif result == 2:
 					file_name = child.after.split('File not found: ')[1].strip()
@@ -174,8 +174,6 @@ class Builder(object):
 
 				"DEBUG:     File not found: [\w|\d|\_|\-|\.|\/|\ ]*\r\n", 
 
-				"DEBUG: No Package Found for [\w|\d|\s|\>|\<|\=|\_|\-|\.|\/|\ ]*\r\n", 
-
 				"DEBUG: \/usr\/bin\/python: can't open file \'setup.py\': \[Errno 2\] No such file or directory", 
 
 				"DEBUG: No package \'[\w|\d|\s|\>|\<|\=|\_|\-|\.|\/]*\' found\r\n", 
@@ -191,20 +189,16 @@ class Builder(object):
 
 					if result == 0:
 						package_name = child.after.split('ERROR: Bad build req: No Package Found for ')[1].split('. Exiting.')[0]
-						print "Unknown build requirement '" + package_name + "'."
+						print "Build requirement not found in the repository '" + package_name + "'."
 						had_error = True
 					elif result == 1:
 						file_name = child.after.split("DEBUG:     File not found: ")[1].split()[0]
 						print "File not found '" + file_name + "'. Exiting ..."
 						had_error = True
 					elif result == 2:
-						file_name = child.after.split("DEBUG: No Package Found for ")[1].split()[0]
-						print "Build requirement not found in the repository '" + file_name + "'."
-						had_error = True
-					elif result == 3:
 						print "No python setup.py file found. Exiting ..."
 						exit()
-					elif result == 4:
+					elif result == 3:
 						package_name = child.after.split("DEBUG: No package '")[1].split("' found\r\n")[0]
 						print "Requirement needed, but not listed in build requirements '" + package_name + "'."
 						had_error = True
