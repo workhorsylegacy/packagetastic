@@ -53,7 +53,10 @@ Getting started on Fedora systems:
 
 	# install requirements:
 	sudo yum groupinstall "Development Tools"
-	sudo yum install mock rpmdevtools pexpect python-mako
+	sudo yum install mock rpmdevtools pexpect python-mako python-devel
+
+	# create gpg key:
+	gpg --no-use-agent --gen-key
 
 	# setup mock
 	sudo usermod -a -G mock username
