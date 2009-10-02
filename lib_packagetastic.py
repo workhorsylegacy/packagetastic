@@ -67,7 +67,7 @@ def init_packagetastic(distro_name, package_name):
 		exit()
 
 	# Make sure we have a stem file that matches the name
-	if not os.path.isfile('stems/' + package_name + '.py'):
+	if not os.path.isfile('stems/' + package_name + '.stem'):
 		print "Packagetastic does not have a stem file for the package '" + package_name + "'. Exiting ..."
 		exit()
 
@@ -646,7 +646,7 @@ def build(distro_name, package_name, use_chroot, is_interactive):
 
 	# Load the distro and stem files
 	execfile('distros/' + distro_name + '.py')
-	execfile('stems/' + package_name + '.py')
+	execfile('stems/' + package_name + '.stem')
 
 	# Get the package meta data
 	meta = None
