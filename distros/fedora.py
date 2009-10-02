@@ -170,7 +170,7 @@ class Builder(object):
 				child = pexpect.spawn(command, timeout=1200)
 
 				expected_lines = [
-				"ERROR: Bad build req: No Package Found for [\w|\-]*. Exiting.", 
+				"ERROR: Bad build req: No Package Found for [\w|\-|\<|\>|\=|\.|\s]*. Exiting.", 
 
 				"DEBUG:     File not found: [\w|\d|\_|\-|\.|\/|\ ]*\r\n", 
 
