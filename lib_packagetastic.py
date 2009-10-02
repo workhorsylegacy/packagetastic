@@ -55,13 +55,14 @@ packagetastic_categories = [
 	'System/WebServers'
 ]
 
-def download_file(file_url, file_name, cb=None):
+def download_file(file_url, file_name):
 	opener1 = urllib2.build_opener()
 	page1 = opener1.open(file_url)
 	file_chunk = None
 	file_length = int(page1.headers['Content-Length'])
 	file_chunk_length = 0
 	out_file = open(file_name, 'wb')
+	prev_output_length = 0
 
 	while True:
 		file_chunk = page1.read(1024)
@@ -70,10 +71,13 @@ def download_file(file_url, file_name, cb=None):
 		out_file.write(file_chunk)
 
 		percent = 100.0 * (float(file_chunk_length) / float(file_length))
-		if cb:
-			cb(percent)
+		output = ('Downloading source code: ' + str(percent) + ' %').ljust(50)
+		sys.stdout.write("\b" * prev_output_length + output)
+		sys.stdout.flush()
+		prev_output_length = len(output)
 
 	out_file.close()
+	sys.stdout.write("\n")
 
 packagetastic_dir = None
 def init_packagetastic(distro_name, package_name):
@@ -691,9 +695,7 @@ def build(distro_name, package_name, use_chroot, is_interactive):
 		file_url = meta.source
 		file_name = 'sources/' + meta.source.split('/')[-1]
 		if not os.path.isfile(file_name):
-			def print_percent(percent):
-				print 'Downloading source code: ' + str(percent) + '%'
-			download_file(file_url, file_name, print_percent)
+			download_file(file_url, file_name)
 	except urllib2.HTTPError:
 		print "Failed to download the source code. Exiting ..."
 		exit()
