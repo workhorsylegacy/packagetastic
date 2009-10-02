@@ -137,7 +137,7 @@ def setup_source_code(meta):
 	os.chdir("builds")
 	commands.getoutput(substitute_strings("tar xzf #{name}_#{version}.orig.tar.gz", meta.to_hash()))
 	os.chdir(substitute_strings("#{name}-#{version}", meta.to_hash()))
-
+'''
 def get_file_structure_for_package(meta, packages, params):
 	# FIXME: We no longer need to probe for file names on each build.
 	# Move the build/probe code to the ./packagetastic update_files blah area 
@@ -254,6 +254,62 @@ def get_file_structure_for_package(meta, packages, params):
 			params['datadir_entries'].append(entry[len('share/'):])
 		elif entry.startswith('lib/'):
 			params['libdir_entries'].append(entry[len('lib/'):])
+'''
+
+def get_file_structure_for_package(meta, packages, params):
+	# Set the default values
+	params['infodir_entries'] = []
+	params['mandir_entries'] = []
+	params['datadir_entries'] = []
+	params['libdir_entries'] = []
+	params['docs'] = []
+	params['import_python_sitelib'] = False
+	params['has_mime'] = False
+	params['has_info'] = False
+	params['has_icon_cache'] = False
+	params['has_icons'] = False
+	params['has_omf'] = False
+	params['has_lang'] = os.path.isdir('po')
+	params['has_desktop_file'] = False
+	params['desktop_file_name'] = None
+
+	# Find out which build methods are used
+	params['builds_with_autotools'] = os.path.isfile('Makefile.in')
+	params['builds_with_python'] = os.path.isfile('setup.py')
+
+	for package in packages:
+		if package.build_method.count('python') and params['builds_with_python']:
+			params['import_python_sitelib'] = True
+
+	# Get the docs, lang, and example params
+	for doc in ['README', 'COPYING', 'ChangeLog', 'LICENSE', 'AUTHORS']:
+		if os.path.isfile(doc):
+			params['docs'].append(doc)
+	for doc in ['doc', 'examples']:
+		if os.path.isdir(doc):
+			params['docs'].append(doc)
+	params['docs'].sort()
+
+	simple_name = meta.name.lower().replace('_', '').replace('-', '')
+
+	# Add the files to the categories they belong to
+	for entry in packages[0].files:
+		if entry.startswith('/usr/share/info/'):
+			if not entry.startswith("/usr/share/info/dir"):
+				params['has_info'] = True
+		elif entry.startswith('/usr/share/icons/'):
+			if entry == '/usr/share/icons/hicolor/icon-theme.cache':
+				params['has_icon_cache'] = True
+			else:
+				params['has_icons'] = True
+		elif entry.startswith('/usr/share/applications/'):
+			if entry.endswith('.desktop'):
+				params['has_desktop_file'] = True
+				params['desktop_file_name'] = entry[len('/usr/share/'):]
+		elif entry.startswith('/usr/share/mime/'):
+			params['has_mime'] = True
+		elif entry.startswith('/usr/share/omf/'):
+			params['has_omf'] = True
 
 def requirements_to_distro_specific(distro_name, requirements):
 	distro_requirements = []
