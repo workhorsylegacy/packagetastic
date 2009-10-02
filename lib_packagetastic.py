@@ -8,6 +8,7 @@ import pexpect
 import base64
 import gc
 import distutils
+import urllib2
 from helper import *
 
 exec_file("package_names.py", globals(), locals())
@@ -53,6 +54,26 @@ packagetastic_categories = [
 	'System/Virtualization', 
 	'System/WebServers'
 ]
+
+def download_file(file_url, file_name, cb=None):
+	opener1 = urllib2.build_opener()
+	page1 = opener1.open(file_url)
+	file_chunk = None
+	file_length = int(page1.headers['Content-Length'])
+	file_chunk_length = 0
+	out_file = open(file_name, 'wb')
+
+	while True:
+		file_chunk = page1.read(1024)
+		if len(file_chunk) == 0: break
+		file_chunk_length += len(file_chunk)
+		out_file.write(file_chunk)
+
+		percent = 100.0 * (float(file_chunk_length) / float(file_length))
+		if cb:
+			cb(percent)
+
+	out_file.close()
 
 packagetastic_dir = None
 def init_packagetastic(distro_name, package_name):
@@ -664,6 +685,18 @@ def build(distro_name, package_name, use_chroot, is_interactive):
 
 	# Validate the meta and packages
 	validate_package(distro_name, meta, packages)
+
+	# Download the source code
+	try:
+		file_url = meta.source
+		file_name = 'sources/' + meta.source.split('/')[-1]
+		if not os.path.isfile(file_name):
+			def print_percent(percent):
+				print 'Downloading source code: ' + str(percent) + '%'
+			download_file(file_url, file_name, print_percent)
+	except urllib2.HTTPError:
+		print "Failed to download the source code. Exiting ..."
+		exit()
 
 	# Convert the requirements to be distro specific
 	meta.__dict__['_build_requirements'] = \
