@@ -8,39 +8,43 @@ class Meta(BaseMeta):
 		self._name = 'tomboy'
 		self._category = 'Applications/Office'
 		self._priority = 'optional'
-		self._authors = [u'Alex Graveley <alex@beatniksoftware.com>', 
-							u'Boyd Timothy <btimothy@gmail.com>', 
-							u'Chris Scobell <chris@thescobells.com>', 
-							u'David Trowbridge <trowbrds@gmail.com>', 
-							u'Ryan Lortie <desrt@desrt.ca>', 
-							u'Sandy Armstrong <sanfordarmstrong@gmail.com>', 
-							u'Sebastian Rittau <srittau@jroger.in-berlin.de>', 
-							u'Kevin Kubasik <kevin@kubasik.net>', 
-							u'Stefan Schweizer <steve.schweizer@gmail.com>']
+		self._authors = [
+			u'Alex Graveley <alex@beatniksoftware.com>', 
+			u'Boyd Timothy <btimothy@gmail.com>', 
+			u'Chris Scobell <chris@thescobells.com>', 
+			u'David Trowbridge <trowbrds@gmail.com>', 
+			u'Ryan Lortie <desrt@desrt.ca>', 
+			u'Sandy Armstrong <sanfordarmstrong@gmail.com>', 
+			u'Sebastian Rittau <srittau@jroger.in-berlin.de>', 
+			u'Kevin Kubasik <kevin@kubasik.net>', 
+			u'Stefan Schweizer <steve.schweizer@gmail.com>'
+		]
 		self._copyright = [u'2004-2007 Alex Graveley']
 		self._homepage = 'http://projects.gnome.org/tomboy/'
 		self._license = 'LGPL2.1'
 		self._source = 'http://download.gnome.org/sources/tomboy/0.15/tomboy-0.15.0.tar.gz'
 
-		self._build_requirements = ['mono-dev (>= 2.0)', 
-									'libgnome2.24-cil (>= 2.16.1)', 
-									'libgconf2.24-cil', 
-									'libgtkspell-dev (>= 2.0.9)', 
-									'intltool', 
-									'libpanel-applet2-dev', 
-									'cli-common-dev (>= 0.4.4)', 
-									'sharutils', 
-									'libgtk2.0-cil (>= 2.10.0)', 
-									'libatk1.0-dev (>= 1.2.4)', 
-									'libgmime2.2a-cil', 
-									'gnome-doc-utils (>= 0.3.2)', 
-									'scrollkeeper', 
-									'libmono-cairo2.0-cil', 
-									'libndesk-dbus1.0-cil (>= 0.4)', 
-									'libndesk-dbus-glib1.0-cil (>= 0.3)', 
-									'libmono-addins0.2-cil (>= 0.2-4)', 
-									'libmono-addins-gui0.2-cil (>= 0.2-4)', 
-									'libgnomepanel2.24-cil']
+		self._build_requirements = [
+			'mono-dev (>= 2.0)', 
+			'libgnome2.24-cil (>= 2.16.1)', 
+			'libgconf2.24-cil', 
+			'libgtkspell-dev (>= 2.0.9)', 
+			'intltool', 
+			'libpanel-applet2-dev', 
+			'cli-common-dev (>= 0.4.4)', 
+			'sharutils', 
+			'libgtk2.0-cil (>= 2.10.0)', 
+			'libatk1.0-dev (>= 1.2.4)', 
+			'libgmime2.2a-cil', 
+			'gnome-doc-utils (>= 0.3.2)', 
+			'scrollkeeper', 
+			'libmono-cairo2.0-cil', 
+			'libndesk-dbus1.0-cil (>= 0.4)', 
+			'libndesk-dbus-glib1.0-cil (>= 0.3)', 
+			'libmono-addins0.2-cil (>= 0.2-4)', 
+			'libmono-addins-gui0.2-cil (>= 0.2-4)', 
+			'libgnomepanel2.24-cil'
+		]
 
 		self._short_description = u"desktop note taking program using Wiki style links"
 
@@ -60,23 +64,17 @@ class Tomboy(BasePackage):
 		self._priority = 'optional'
 		self._install_requirements = []
 
-		self._files = ['/usr/bin/banshee-1', 
-						'/usr/lib/banshee-1', 
-						'/usr/share/applications/*.desktop', 
-						'/usr/share/dbus-1/services/org.bansheeproject.Banshee.service', 
-						'/usr/share/dbus-1/services/org.bansheeproject.CollectionIndexer.service', 
-						'/usr/share/banshee-1/', 
-						'/usr/share/icons/hicolor/*/apps/media-player-banshee.png']
-
-'/usr/lib/tomboy/*', 
-'/usr/bin/tomboy', 
-'/usr/bin/tomboy-panel', 
-'/usr/lib/tomboy/*', 
-'/usr/lib/bonobo/servers/GNOME_TomboyApplet.server', 
-'/usr/share/dbus-1/services/org.gnome.Tomboy.service', 
-'/usr/share/man/man1/tomboy.1.gz', 
-'/usr/share/tomboy', 
-'/usr/share/icons/hicolor/*/apps/tomboy.*', 
-'/etc/gconf/schemas/tomboy.schemas']
+		self._files = [
+			'/usr/lib/tomboy/*', 
+			'/usr/bin/tomboy', 
+			'/usr/bin/tomboy-panel', 
+			'/usr/lib/tomboy/*', 
+			'/usr/lib/bonobo/servers/GNOME_TomboyApplet.server', 
+			'/usr/share/dbus-1/services/org.gnome.Tomboy.service', 
+			'/usr/share/man/man1/tomboy.1.gz', 
+			'/usr/share/tomboy', 
+			'/usr/share/icons/hicolor/*/apps/tomboy.*', 
+			'/etc/gconf/schemas/tomboy.schemas'
+		]
 
 
