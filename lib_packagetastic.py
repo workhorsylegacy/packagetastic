@@ -294,7 +294,7 @@ def get_file_structure_for_package(meta, packages, params):
 	params['has_icon_cache'] = False
 	params['has_icons'] = False
 	params['has_omf'] = False
-	params['has_lang'] = os.path.isdir('po')
+	params['has_lang'] = (os.path.isdir('po') or os.path.isdir('locale'))
 	params['has_desktop_file'] = False
 	params['desktop_file_name'] = None
 

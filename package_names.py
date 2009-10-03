@@ -151,7 +151,7 @@ package_names = {
 		'ubuntu' : ['libmono-cairo2.0-cil']
 	}, 
 	'scrollkeeper' : { 
-		'fedora' : ['rarian'], 
+		'fedora' : ['scrollkeeper'], 
 		'ubuntu' : ['scrollkeeper']
 	}, 
 	'gnome-doc-utils' : { 
