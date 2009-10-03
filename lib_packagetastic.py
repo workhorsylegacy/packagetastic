@@ -697,7 +697,10 @@ def build(distro_name, package_name, use_chroot, is_interactive):
 		if not os.path.isfile(file_name):
 			download_file(file_url, file_name)
 	except urllib2.HTTPError:
-		print "Failed to download the source code. Exiting ..."
+		print "HTTPError: Failed to download the source code. Exiting ..."
+		exit()
+	except urllib2.URLError:
+		print "URLError: Failed to download the source code. Exiting ..."
 		exit()
 
 	# Convert the requirements to be distro specific
