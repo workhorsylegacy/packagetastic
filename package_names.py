@@ -2,6 +2,122 @@
 # -*- coding: UTF-8 -*-
 
 package_names = {
+	#'libkarma-cil' : { 
+	#	'fedora' : [], 
+	#	'ubuntu' : ['libkarma-cil']
+	#}, 
+	#'gstreamer0.10-gnomevfs' : { 
+	#	'fedora' : [], 
+	#	'ubuntu' : ['gstreamer0.10-gnomevfs']
+	#}, 
+	'avahi-daemon' : { 
+		'fedora' : ['avahi'], 
+		'ubuntu' : ['avahi-daemon']
+	}, 
+	'brasero' : { 
+		'fedora' : ['brasero'], 
+		'ubuntu' : ['brasero']
+	}, 
+	'podsleuth' : { 
+		'fedora' : ['podsleuth-devel'], 
+		'ubuntu' : ['podsleuth']
+	}, 
+	'hal' : { 
+		'fedora' : ['hal'], 
+		'ubuntu' : ['hal']
+	}, 
+	'gstreamer0.10-ffmpeg' : { 
+		'fedora' : ['gstreamer-ffmpeg'], 
+		'ubuntu' : ['gstreamer0.10-ffmpeg']
+	}, 
+	'gstreamer0.10-plugins-ugly' : { 
+		'fedora' : ['gstreamer-plugins-ugly'], 
+		'ubuntu' : ['gstreamer0.10-plugins-ugly']
+	}, 
+	'gstreamer0.10-plugins-bad' : { 
+		'fedora' : ['gstreamer-plugins-bad'], 
+		'ubuntu' : ['gstreamer0.10-plugins-bad']
+	}, 
+	'gstreamer0.10-plugins-good' : { 
+		'fedora' : ['gstreamer-plugins-good'], 
+		'ubuntu' : ['gstreamer0.10-plugins-good']
+	}, 
+	'gstreamer0.10-plugins-base' : { 
+		'fedora' : ['gstreamer-plugins-base'], 
+		'ubuntu' : ['gstreamer0.10-plugins-base']
+	}, 
+	'libgstreamer-plugins-base0.10-dev' : { 
+		'fedora' : ['gstreamer-plugins-base-devel'], 
+		'ubuntu' : ['libgstreamer-plugins-base0.10-dev']
+	}, 
+	'libgstreamer0.10-dev' : { 
+		'fedora' : ['gstreamer-devel'], 
+		'ubuntu' : ['libgstreamer0.10-dev']
+	}, 
+	'libgnomevfs2-dev' : { 
+		'fedora' : ['gnome-vfs2-devel'], 
+		'ubuntu' : ['libgnomevfs2-dev']
+	}, 
+	'libxxf86vm-dev' : { 
+		'fedora' : ['libXxf86vm-devel'], 
+		'ubuntu' : ['libxxf86vm-dev']
+	}, 
+	'libxrandr-dev' : { 
+		'fedora' : ['libXrandr-devel'], 
+		'ubuntu' : ['libxrandr-dev']
+	}, 
+	'libx11-dev' : { 
+		'fedora' : ['libX11-devel'], 
+		'ubuntu' : ['libx11-dev']
+	}, 
+	'libgtk2.0-dev' : { 
+		'fedora' : ['gtk2-devel'], 
+		'ubuntu' : ['libgtk2.0-dev']
+	}, 
+	'libglib2.0-dev' : { 
+		'fedora' : ['glib2-devel'], 
+		'ubuntu' : ['libglib2.0-dev']
+	}, 
+	'libmtp-dev' : { 
+		'fedora' : ['libmtp-devel'], 
+		'ubuntu' : ['libmtp-dev']
+	}, 
+	'libsqlite3-dev' : { 
+		'fedora' : ['libsqlite3x-devel'], 
+		'ubuntu' : ['libsqlite3-dev']
+	}, 
+	'libipodui-cil' : { 
+		'fedora' : ['ipod-sharp'], 
+		'ubuntu' : ['libipodui-cil']
+	}, 
+	'libipod-cil' : { 
+		'fedora' : ['ipod-sharp'], 
+		'ubuntu' : ['libipod-cil']
+	}, 
+	'libglade2.0-cil' : { 
+		'fedora' : ['mono-devel'], 
+		'ubuntu' : ['libglade2.0-cil']
+	}, 
+	'libglib2.0-cil' : { 
+		'fedora' : ['mono-devel'], 
+		'ubuntu' : ['libglib2.0-cil']
+	}, 
+	'libnotify0.4-cil' : { 
+		'fedora' : ['notify-sharp'], 
+		'ubuntu' : ['libnotify0.4-cil']
+	}, 
+	'libnotify-dev' : { 
+		'fedora' : ['libnotify-devel'], 
+		'ubuntu' : ['libnotify-dev-gtk2.10']
+	}, 
+	'libmono-zeroconf1.0-cil' : { 
+		'fedora' : ['mono-zeroconf'], 
+		'ubuntu' : ['libmono-zeroconf1.0-cil']
+	}, 
+	'libtaglib2.0-cil' : { 
+		'fedora' : ['taglib-sharp'], 
+		'ubuntu' : ['libtaglib2.0-cil']
+	}, 
 	'python-gtk2-dev' : { 
 		'fedora' : ['pygtk2-devel'], 
 		'ubuntu' : ['python-gtk2-dev']
@@ -242,9 +358,17 @@ package_names = {
 		'fedora' : ['banshee'], 
 		'ubuntu' : ['banshee']
 	}, 
+	'monodoc-manual' : { 
+		'fedora' : ['monodoc'], 
+		'ubuntu' : ['monodoc-manual']
+	}, 
 	'monodoc-banshee' : { 
 		'fedora' : [], 
 		'ubuntu' : ['monodoc-banshee-manual']
+	}, 
+	'monodoc-base' : { 
+		'fedora' : ['monodoc'], 
+		'ubuntu' : ['monodoc-base']
 	}, 
 	'gstreamer-gnonlin' : { 
 		'fedora' : ['gnonlin'], 
@@ -450,6 +574,10 @@ package_names = {
 		'fedora' : ['GConf2-devel'], 
 		'ubuntu' : ['libgconf2-dev']
 	}, 
+	'gconf2' : { 
+		'fedora' : ['GConf2'], 
+		'ubuntu' : ['gconf2']
+	}, 
 	'libglade2-dev' : { 
 		'fedora' : ['libglade2-devel'], 
 		'ubuntu' : ['libglade2-dev']
@@ -481,10 +609,6 @@ package_names = {
 	'ogmtools' : { 
 		'fedora' : ['ogmtools'], 
 		'ubuntu' : ['ogmtools']
-	}, 
-	'libnotify-dev' : { 
-		'fedora' : ['libnotify-devel'], 
-		'ubuntu' : ['libnotify-dev-gtk2.10']
 	}, 
 	'tesseract' : { 
 		'fedora' : ['tesseract'], 

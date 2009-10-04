@@ -63,7 +63,7 @@ class Meta(BaseMeta):
 									'libgnome2.24-cil', 
 									'libipod-cil (>= 0.8.2)', 
 									'libipodui-cil (>= 0.8.2)', 
-									'libkarma-cil (>= 0.0.5)', 
+									#'libkarma-cil (>= 0.0.5)', 
 									'monodoc-base (>= 1.1.9)', 
 									'libsqlite3-dev (>= 3.4)', 
 									'libmtp-dev (>= 0.2.0)', 
@@ -96,14 +96,14 @@ class Banshee(BasePackage):
 		self._priority = 'optional'
 		self._install_requirements = ['gstreamer0.10-plugins-base', 
 										'gstreamer0.10-plugins-good (>= 0.10.8-4)', 
-										'gstreamer0.10-gnomevfs', 
+										#'gstreamer0.10-gnomevfs', 
 										'hal', 
 										'gnome-icon-theme (>= 2.16)', 
 										'gstreamer0.10-plugins-ugly', 
 										'gstreamer0.10-plugins-bad', 
 										'gstreamer0.10-ffmpeg', 
 										'podsleuth (>= 0.6.0)', 
-										'brasero',  
+										'brasero', 
 										'avahi-daemon']
 
 class Documentation(BasePackage):
