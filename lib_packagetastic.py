@@ -692,6 +692,7 @@ def build(distro_name, package_name, use_chroot, is_interactive):
 
 	# Download the source code
 	try:
+		if not os.path.isdir('sources'): os.mkdir('sources')
 		file_url = meta.source
 		file_name = 'sources/' + meta.source.split('/')[-1]
 		if not os.path.isfile(file_name):
