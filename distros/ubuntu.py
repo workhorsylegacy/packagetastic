@@ -376,6 +376,8 @@ class Builder(object):
 								"[\w|\W|\s|\d|\.|\-|\/|\r|\n]*" + 
 								"The following actions will resolve these dependencies:", 
 
+								"error: can\'t copy \'[\w|\s|\d|\.|\-|\/]*\': doesn\'t exist or not a regular file", 
+
 								pexpect.EOF]
 
 			still_reading = True
@@ -385,7 +387,7 @@ class Builder(object):
 
 				if result == 0:
 					child.sendline(packager_sudo)
-				elif result == 1:
+				elif result == 1 and not had_error:
 					print "Failed to build package. Make sure it can be compiled manually before trying to package. Exiting ..."
 					had_error = True
 				elif result == 2:
@@ -402,6 +404,10 @@ class Builder(object):
 					for entry in child.after.split('Depends: ')[1:]:
 						print entry.strip().split(' which is a')[0]
 					print "Exiting ..."
+					had_error = True
+				elif result == 5:
+					file_name = child.after.split("error: can't copy '")[1].split("':")[0]
+					print "File not found: '" + file_name + "'. Exiting ..."
 					had_error = True
 				elif result == len(expected_lines)-1:
 					still_reading = False
