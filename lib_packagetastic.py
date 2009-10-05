@@ -529,6 +529,17 @@ def validate_package(distro_name, meta, packages):
 		print "Stem file is Broken. The meta changelog list must have at least one entry. Exiting ..."
 		exit()
 
+	for entry in meta.changelog:
+		if entry.version is None or entry.version == "":
+			print "Stem file is Broken. The meta changelog's version field is blank or null. Exiting ..."
+			exit()
+		elif entry.time is None or entry.time == "":
+			print "Stem file is Broken. The meta changelog's time field is blank or null. Exiting ..."
+			exit()
+		elif entry.text is None or entry.text == "":
+			print "Stem file is Broken. The meta changelog's text field is blank or null. Exiting ..."
+			exit()
+
 	for package in packages:
 		if package.name is None or package.name == "":
 			print "Stem file is Broken. The package name is blank or null. Exiting ..."
