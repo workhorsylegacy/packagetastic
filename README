@@ -5,6 +5,8 @@ replace traditional packaging systems, while being backwards compatible with
 them. For Example, you can create a Packagetastic package and install it, or 
 have a Dpkg or RPM package automatically generated from it.
 
+Right now it only works on 32 bit Fedora 11, Ubuntu 9.04, and Debian Lenny.
+
 Development happens at:
 http://launchpad.net/packagetastic
 
@@ -22,13 +24,13 @@ Getting started on Debian:
 	debhelper devscripts gnupg python-dev python-distutils-extra \
 	python-pexpect python-mako bzr
 
-	# create gpg key:
-	gpg --no-use-agent --gen-key
-
 	# setup pbuilder:
 	cd ~
 	echo "COMPONENTS=\"main contrib non-free\"" > ~/.pbuilderrc
 	sudo pbuilder create
+
+	# create gpg key:
+	gpg --no-use-agent --gen-key
 
 Getting started on Ubuntu:
 
@@ -37,13 +39,13 @@ Getting started on Ubuntu:
 	debhelper devscripts gnupg python-dev python-distutils-extra \
 	python-pexpect python-mako bzr
 
-	# create gpg key:
-	gpg --no-use-agent --gen-key
-
 	# setup pbuilder:
 	cd ~
 	echo "COMPONENTS=\"main restricted universe multiverse\"" > ~/.pbuilderrc
 	sudo pbuilder create
+
+	# create gpg key:
+	gpg --no-use-agent --gen-key
 
 	# Turn off the gpg use agent. This makes it so we
 	# can sign the packages with the cli, instead of
@@ -60,12 +62,12 @@ Getting started on Fedora:
 	sudo yum install mock rpmdevtools pexpect python-mako python-devel \
 	python-distutils-extra
 
-	# create gpg key:
-	gpg --no-use-agent --gen-key
-
 	# setup mock
 	sudo usermod -a -G mock username
 	mock -r fedora-11-i386 --init
+
+	# create gpg key:
+	gpg --no-use-agent --gen-key
 
 Packagetastic one time setup:
 	# Get the code if you have not
