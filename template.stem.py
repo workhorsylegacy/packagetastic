@@ -44,7 +44,8 @@ class ${package['name'].capitalize()}(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = "${package['name']}"
-		self._build_method = "${package['build_method']}"
+		#FIXME: Build Method is required
+		self._build_method = ""
 		#FIXME: Category is required
 		self._category = ''
 		self._priority = 'optional'

@@ -676,11 +676,17 @@ def gen_stem(name, version, source):
 			for sub in os.listdir("packagetastic_build/" + entry):
 				entries.append(entry + '/' + sub)
 		elif os.path.isfile("packagetastic_build/" + entry):
-			files.append('/usr/' + entry)
+			if entry.startswith('share/locale/') or entry.startswith('share/po/'):
+				pass
+			elif entry.endswith('.old'):
+				pass
+			elif entry.startswith('man/') or entry.startswith('info/'):
+				files.append('/usr/share/' + entry + '*')
+			else:
+				files.append('/usr/' + entry)
+
 	params['packages'][0]['files'] = files
 	params['packages'][0]['name'] = name
-	params['packages'][0]['build_method'] = 'autotools'
-
 	os.chdir('../..')
 
 	# Write the stem file
