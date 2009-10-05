@@ -458,31 +458,91 @@ def validate_package(distro_name, meta, packages):
 	# Make sure unicode is used for the correct fields
 	for author in meta.authors:
 		if not isinstance(author, unicode):
-			print "Stem file is Broken. The authors field \"" + author + "\" is not unicode. Exiting ..."
+			print "Stem file is Broken. The meta authors field \"" + author + "\" is not unicode. Exiting ..."
 			exit()
 
 	for copyright in meta.copyright:
 		if not isinstance(copyright, unicode):
-			print "Stem file is Broken. The copyright field \"" + copyright + "\" is not unicode. Exiting ..."
+			print "Stem file is Broken. The meta copyright field \"" + copyright + "\" is not unicode. Exiting ..."
 			exit()
 
 	if not isinstance(meta.short_description, unicode):
-		print "Stem file is Broken. The short_description field \"" + meta.short_description + "\" is not unicode. Exiting ..."
+		print "Stem file is Broken. The meta short_description field \"" + meta.short_description + "\" is not unicode. Exiting ..."
 		exit()
 
 	if not isinstance(meta.long_description, unicode):
-		print "Stem file is Broken. The long_description field \"" + meta.long_description + "\" is not unicode. Exiting ..."
+		print "Stem file is Broken. The meta long_description field \"" + meta.long_description + "\" is not unicode. Exiting ..."
 		exit()
-
-	for entry in meta.changelog:
-		if not isinstance(entry.text, unicode):
-			print "Stem file is Broken. The changelog's text field for \"version:" + entry.version + ' -- time:' + entry.time + "\" is not unicode. Exiting ..."
-			exit()
 
 	for package in packages:
 		if not isinstance(package.additional_description, unicode):
-			print "Stem file is Broken. The additional_description field \"" + package.additional_description + "\" is not unicode. Exiting ..."
+			print "Stem file is Broken. The package additional_description field \"" + package.additional_description + "\" is not unicode. Exiting ..."
 			exit()
+
+	for entry in meta.changelog:
+		if not isinstance(entry.text, unicode):
+			print "Stem file is Broken. The meta changelog's text field for \"version:" + entry.version + ' -- time:' + entry.time + "\" is not unicode. Exiting ..."
+			exit()
+
+	# Make sure the fields are valid
+	if meta.name is None or meta.name == "":
+		print "Stem file is Broken. The meta name is blank or null. Exiting ..."
+		exit()
+
+	if packagetastic_categories.count(meta.category) == 0:
+		print "Stem file is Broken. The meta category field of \"" + str(meta.category) + "\" in unknown. Exiting ..."
+		exit()
+
+	if meta.priority is None or meta.priority == "":
+		print "Stem file is Broken. The meta priority is blank or null. Exiting ..."
+		exit()
+
+	if len(meta.authors) == 0:
+		print "Stem file is Broken. The meta authors list must have at least one entry. Exiting ..."
+		exit()
+
+	if len(meta.copyright) == 0:
+		print "Stem file is Broken. The meta copyright list must have at least one entry. Exiting ..."
+		exit()
+
+	if meta.homepage is None or meta.homepage == "":
+		print "Stem file is Broken. The meta homepage is blank or null. Exiting ..."
+		exit()
+
+	if ['AGPL3+', 'GPL2+', 'GPL3+', 'LGPL3+', 'MIT'].count(meta.license) == 0:
+		print "Stem file is Broken. The meta license field of \"" + str(meta.license) + "\" in unknown. Exiting ..."
+		exit()
+
+	if meta.source is None or meta.source == "":
+		print "Stem file is Broken. The meta source is blank or null. Exiting ..."
+		exit()
+
+	if meta.short_description is None or meta.short_description == "":
+		print "Stem file is Broken. The meta short_description is blank or null. Exiting ..."
+		exit()
+
+	if meta.long_description is None or meta.long_description == "":
+		print "Stem file is Broken. The meta long_description is blank or null. Exiting ..."
+		exit()
+
+	if len(meta.changelog) == 0:
+		print "Stem file is Broken. The meta changelog list must have at least one entry. Exiting ..."
+		exit()
+
+	for package in packages:
+		if package.name is None or package.name == "":
+			print "Stem file is Broken. The package name is blank or null. Exiting ..."
+			exit()
+		elif package.build_method is None or package.build_method == "":
+			print "Stem file is Broken. The package build_method is blank or null. Exiting ..."
+			exit()
+		elif packagetastic_categories.count(package.category) == 0:
+			print "Stem file is Broken. The package category field of \"" + str(package.category) + "\" in unknown. Exiting ..."
+			exit()
+		elif package.priority is None or package.priority == "":
+			print "Stem file is Broken. The package priority is blank or null. Exiting ..."
+			exit()
+
 
 	# Make sure we know about the name
 	package_names = globals()['package_names']
