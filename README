@@ -85,6 +85,6 @@ Building packages:
 
 	# Run packagetastic with arguments for package and distro
 	# For now, use ubuntu as the distro name instead of debian
-	./packagetastic ubuntu hello
+	./packagetastic build distro:=ubuntu package:=hello
 
 

@@ -162,124 +162,6 @@ def setup_source_code(meta):
 	os.chdir("builds")
 	commands.getoutput(substitute_strings("tar xzf #{name}_#{version}.orig.tar.gz", meta.to_hash()))
 	os.chdir(substitute_strings("#{name}-#{version}", meta.to_hash()))
-'''
-def get_file_structure_for_package(meta, packages, params):
-	# FIXME: We no longer need to probe for file names on each build.
-	# Move the build/probe code to the ./packagetastic update_files blah area 
-	# Set the default values
-	params['bindir_entries'] = []
-	params['infodir_entries'] = []
-	params['mandir_entries'] = []
-	params['datadir_entries'] = []
-	params['libdir_entries'] = []
-	params['docs'] = []
-	params['import_python_sitelib'] = False
-	params['has_mime'] = False
-	params['has_info'] = False
-	params['has_icon_cache'] = False
-	params['has_icons'] = False
-	params['has_omf'] = False
-	params['has_lang'] = os.path.isdir('po')
-	params['has_desktop_file'] = False
-	params['desktop_file_name'] = None
-
-	# Find out which build methods are used
-	params['builds_with_autotools'] = os.path.isfile('Makefile.in')
-	params['builds_with_python'] = os.path.isfile('setup.py')
-
-	# Build the program in a sub directory
-	os.mkdir('packagetastic_build')
-	if params['builds_with_autotools']:
-		pwd = commands.getoutput('pwd')
-		commands.getoutput('./configure --prefix=' + pwd + '/packagetastic_build')
-		commands.getoutput('make')
-		commands.getoutput('make install')
-	elif params['builds_with_python']:
-		commands.getoutput('python setup.py bdist')
-
-		if not os.path.isdir('dist/'):
-			print "Broken python setup.py. Ran 'python setup.py bdist', but found no *.tar.gz. Exiting ..."
-			exit()
-
-		tgz_name = os.listdir('dist/')[0]
-		if tgz_name.count('tar.gz') == 0:
-			print "Broken python setup.py. Ran 'python setup.py bdist', but found no *.tar.gz. Exiting ..."
-			exit()
-
-		commands.getoutput('mv dist/' + tgz_name + ' packagetastic_build/' + tgz_name)
-		os.chdir('packagetastic_build/')
-		commands.getoutput("tar xzf " + tgz_name)
-		commands.getoutput("rm " + tgz_name)
-		os.chdir('..')
-		commands.getoutput('mv packagetastic_build/usr/ packagetastic_build_usr/')
-		commands.getoutput('rm -rf packagetastic_build/')
-		commands.getoutput('mv packagetastic_build_usr/ packagetastic_build/')
-
-	for package in packages:
-		if package.build_method.count('python') and params['builds_with_python']:
-			params['import_python_sitelib'] = True
-
-	# Get the docs, lang, and example params
-	for doc in ['README', 'COPYING', 'ChangeLog', 'LICENSE', 'AUTHORS']:
-		if os.path.isfile(doc):
-			params['docs'].append(doc)
-	for doc in ['doc', 'examples']:
-		if os.path.isdir(doc):
-			params['docs'].append(doc)
-	params['docs'].sort()
-
-	# Get a list of all the files
-	files = []
-	entries = os.listdir("packagetastic_build/")
-	while len(entries) > 0:
-		entry = entries.pop(0)
-		if os.path.isdir("packagetastic_build/" + entry):
-			for sub in os.listdir("packagetastic_build/" + entry):
-				entries.append(entry + '/' + sub)
-		elif os.path.isfile("packagetastic_build/" + entry):
-			files.append(entry)
-
-	simple_name = meta.name.lower().replace('_', '').replace('-', '')
-
-	# Add the files to the categories they belong to
-	# FIXME: get the mime, omf, icons
-	for entry in files:
-		if entry.startswith('bin/'):
-			params['bindir_entries'].append(entry[len('bin/'):])
-		elif entry.startswith('info/'):
-			if entry != "info/dir":
-				params['infodir_entries'].append(entry[len('info/'):] + '*')
-				params['has_info'] = True
-		elif entry.startswith('share/man/'):
-			params['mandir_entries'].append(entry[len('share/man/'):] + '*')
-		elif entry.startswith('man/'):
-			params['mandir_entries'].append(entry[len('man/'):] + '*')
-		elif entry.startswith('share/icons/'):
-			if entry == 'share/icons/hicolor/icon-theme.cache':
-				params['has_icon_cache'] = True
-			else:
-				params['datadir_entries'].append(entry[len('share/'):])
-				params['has_icons'] = True
-		elif entry.startswith('share/pixmaps/'):
-			params['datadir_entries'].append(entry[len('share/'):])
-		elif entry.startswith('share/applications/'):
-			params['datadir_entries'].append(entry[len('share/'):])
-			if entry.endswith('.desktop'):
-				params['has_desktop_file'] = True
-				params['desktop_file_name'] = entry[len('share/'):]
-		elif entry.startswith('share/mime/'):
-			params['datadir_entries'].append(entry[len('share/'):])
-			params['has_mime'] = True
-		elif entry.startswith('share/gnome/help/'):
-			params['datadir_entries'].append(entry[len('share/'):])
-		elif entry.startswith('share/omf/'):
-			params['datadir_entries'].append(entry[len('share/'):])
-			params['has_omf'] = True
-		elif entry.startswith('share/' + simple_name + '/'):
-			params['datadir_entries'].append(entry[len('share/'):])
-		elif entry.startswith('lib/'):
-			params['libdir_entries'].append(entry[len('lib/'):])
-'''
 
 def get_file_structure_for_package(meta, packages, params):
 	# Set the default values
@@ -631,6 +513,113 @@ def validate_package(distro_name, meta, packages):
 				len(package_names[install_requirement][distro_name]) == 0:
 				print "Stem file is Broken. The install requirement \"" + install_requirement + "\" is missing for this distro. Please add it to package_names.py. Exiting ..."
 				exit()
+
+def gen_stem(name, version, source):
+	# Download the source code if needed
+	try:
+		if not os.path.isdir('sources'): os.mkdir('sources')
+		file_url = source
+		file_name = 'sources/' + source.split('/')[-1]
+		if not os.path.isfile(file_name):
+			download_file(file_url, file_name)
+	except urllib2.HTTPError:
+		print "HTTPError: Failed to download the source code. Exiting ..."
+		exit()
+	except urllib2.URLError:
+		print "URLError: Failed to download the source code. Exiting ..."
+		exit()
+
+	# Convert any .tar.bz2 files to .tar.gz
+	if source.split('/')[-1].endswith('.tar.bz2'):
+		os.chdir('sources')
+		dir_name = source.split('/')[-1].rstrip('.tar.bz2')
+		print "Converting bzip source code to gzip ..."
+		commands.getoutput("tar xjf " + source.split('/')[-1])
+		commands.getoutput("mv " + dir_name + " " + name + "-" + version)
+		commands.getoutput("tar -czf " + name + "-" + version + ".tar.gz " + name +"-" + version)
+		commands.getoutput("rm -rf " + name + "-" + version)
+		source = source.rstrip(source.split('/')[-1]) + name + "-" + version + ".tar.gz"
+		os.chdir('..')
+
+	# Uncompress the source code
+	print "Uncompressing source code ..."
+	if os.path.isdir("builds"): commands.getoutput("rm -rf builds")
+	os.mkdir("builds")
+	commands.getoutput("cp sources/" + source.split('/')[-1] + " builds/" + name + "_" + version + ".orig.tar.gz")
+	os.chdir("builds")
+	commands.getoutput("tar xzf " + name + "_" + version + ".orig.tar.gz")
+	os.chdir(name + "-" + version)
+
+	# Determine the build method for the code
+	build_method = None
+	if os.path.isfile('Makefile.in'):
+		build_method = "autotools"
+	elif os.path.isfile('setup.py'):
+		build_method = "python"
+
+	# Build the program in a sub directory
+	os.mkdir('packagetastic_build')
+	if build_method == 'autotools':
+		print "Building program with autotools ..."
+		pwd = commands.getoutput('pwd')
+		commands.getoutput('./configure --prefix=' + pwd + '/packagetastic_build')
+		commands.getoutput('make')
+		commands.getoutput('make install')
+	elif build_method == 'python':
+		print "Building program with python ..."
+		commands.getoutput('python setup.py bdist')
+
+		if not os.path.isdir('dist/'):
+			print "Broken python setup.py. Ran 'python setup.py bdist', but found no *.tar.gz. Exiting ..."
+			exit()
+
+		tgz_name = os.listdir('dist/')[0]
+		if tgz_name.count('tar.gz') == 0:
+			print "Broken python setup.py. Ran 'python setup.py bdist', but found no *.tar.gz. Exiting ..."
+			exit()
+
+		commands.getoutput('mv dist/' + tgz_name + ' packagetastic_build/' + tgz_name)
+		os.chdir('packagetastic_build/')
+		commands.getoutput("tar xzf " + tgz_name)
+		commands.getoutput("rm " + tgz_name)
+		os.chdir('..')
+		commands.getoutput('mv packagetastic_build/usr/ packagetastic_build_usr/')
+		commands.getoutput('rm -rf packagetastic_build/')
+		commands.getoutput('mv packagetastic_build_usr/ packagetastic_build/')
+
+	# Examine the source code and get the parameters for the template
+	params = {}
+	params['packages'] = [{}]
+	params['name'] = name
+	params['version'] = version
+	params['source'] = source
+	params['authors'] = ['a','b', 'c']
+	params['copyright'] = ['x', 'y', 'z']
+
+	# Get a list of all the files
+	files = []
+	entries = os.listdir("packagetastic_build/")
+	while len(entries) > 0:
+		entry = entries.pop(0)
+		if os.path.isdir("packagetastic_build/" + entry):
+			for sub in os.listdir("packagetastic_build/" + entry):
+				entries.append(entry + '/' + sub)
+		elif os.path.isfile("packagetastic_build/" + entry):
+			files.append('/usr/' + entry)
+	params['packages'][0]['files'] = files
+	params['packages'][0]['name'] = name
+	params['packages'][0]['build_method'] = 'autotools'
+
+	os.chdir('../..')
+
+	# Write the stem file
+	print "Generating the stem file ..."
+	with open('stems/' + name + '.stem', 'w') as spec_file:
+		from mako.template import Template
+		from mako.lookup import TemplateLookup
+		lookup = TemplateLookup(directories=['.'], output_encoding='utf-8')
+		template = lookup.get_template("template.stem.py")
+		spec_file.write(template.render(**params).replace("@@", "%").replace("\\\\\\", "\\\n"))
 
 def build(distro_name, package_name, use_chroot, is_interactive):
 	# Make sure the packager_name file exists

@@ -7,10 +7,23 @@ import lib_packagetastic
 # Move the path to the location of the current file
 os.chdir(os.sys.path[0])
 
-# Show the usage if the args are wrong
-if len(sys.argv) < 3:
+# Determine what we are going to do
+mode = ""
+if len(sys.argv) >= 4 and sys.argv[1] == "build":
+	mode = "build"
+elif len(sys.argv) == 5 and sys.argv[1] == "gen_stem":
+	mode = "gen_stem"
+else:
+	mode = "help"
+
+# Show the usage
+if mode == "help":
 	print "usage:"
-	print "./packagetastic distro package [nochroot] [interactive]"
+	print "./packagetastic build distro:=name package:=name [nochroot] [interactive]"
+	print "./packagetastic gen_stem name:=name version:=version source:=url"
+	print ""
+	print "distro: Generates a native package for the target distro."
+	print "gen_stem: Generates a stem file from the source code at the url."
 	print ""
 	print "[nochroot] builds the package with the local installed libraries, rather than"
 	print "building it inside a chroot that has no installed libraries."
@@ -19,20 +32,61 @@ if len(sys.argv) < 3:
 	print "be required to perform input if needed."
 	print ""
 	print "examples:"
-	print "./packagetastic fedora hello"
-	print "./packagetastic ubuntu hello nochroot interactive"
+	print "./packagetastic build distro:=fedora package:=hello"
+	print "./packagetastic build distro:=ubuntu package:=hello nochroot interactive"
+	print "./packagetastic gen_stem name:=hello version:=2.1.1 source:=http://ftp.gnu.org/gnu/hello/hello-2.1.1.tar.gz"
 	exit()
 
-# Get the arguments
-package_name = sys.argv[2].lower()
-distro_name = sys.argv[1].lower()
-use_chroot = sys.argv[3:].count('nochroot') == 0
-is_interactive = sys.argv[3:].count('interactive') != 0
+# Build a package
+if mode == "build":
+	package_name, distro_name = None, None
+	use_chroot, is_interactive = True, False
 
-# Setup packagetastic
-lib_packagetastic.init_packagetastic(distro_name, package_name)
+	# Get the arguments
+	for arg in sys.argv[2:]:
+		if arg.startswith('package:='):
+			package_name = arg.lower().split(':=')[1]
+		elif arg.startswith('distro:='):
+			distro_name = arg.lower().split(':=')[1]
+		elif arg == 'nochroot':
+			use_chroot = False
+		elif arg == 'interactive':
+			is_interactive = True
 
-# Build the package
-lib_packagetastic.build(distro_name, package_name, use_chroot, is_interactive)
+	# Make sure we got something
+	pairs = {'package' : package_name, 'distro' : distro_name}
+	for key, value in pairs.iteritems():
+		if value == None:
+			print "No argument for " + key + " was found. Exiting ..."
+			exit()
+
+	# Setup packagetastic
+	lib_packagetastic.init_packagetastic(distro_name, package_name)
+
+	# Build the package
+	lib_packagetastic.build(distro_name, package_name, use_chroot, is_interactive)
+
+# Generate a stem file
+if mode == "gen_stem":
+	name, version, source = None, None, None
+
+	# Get the arguments
+	for arg in sys.argv[2:]:
+		if arg.startswith('name:='):
+			name = arg.lower().split(':=')[1]
+		elif arg.startswith('version:='):
+			version = arg.lower().split(':=')[1]
+		elif arg.startswith('source:='):
+			source = arg.lower().split(':=')[1]
+
+	# Make sure we got something
+	pairs = {'name' : name, 'version' : version, 'source' : source}
+	for key, value in pairs.iteritems():
+		if value == None:
+			print "No argument for " + key + " was found. Exiting ..."
+			exit()
+
+	lib_packagetastic.gen_stem(name, version, source)
+
 
 
