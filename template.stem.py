@@ -14,27 +14,19 @@ class Meta(BaseMeta):
 	def __init__(self):
 		BaseMeta.__init__(self)
 		self._name = '${name}'
-		#FIXME: Category is required
-		self._category = ''
+		self._category = '' #FIXME: required
 		self._priority = 'optional'
-		#FIXME: Authors are required
-		self._authors = []
-		#FIXME: Copyright is required
-		self._copyright = []
-		#FIXME: Homepage is required
-		self._homepage = ''
-		#FIXME: License is required
-		self._license = ''
+		self._authors = [] #FIXME: required
+		self._copyright = [] #FIXME: required
+		self._homepage = '' #FIXME: required
+		self._license = '' #FIXME: required
 		self._source = '${source}'
 
-		#FIXME: Build Requirements are required
 		self._build_requirements = []
 
-		#FIXME: Short Description is required
-		self._short_description = u""
+		self._short_description = u"" #FIXME: required
 
-		#FIXME: Long Description is required
-		self._long_description = u""
+		self._long_description = u"" #FIXME: required
 
 		#FIXME: Add a proper time
 		self._changelog = [Changelog(version="${version}", release=1, time="", text=u"Initial release") ]
@@ -44,17 +36,13 @@ class ${package['name'].capitalize()}(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = "${package['name']}"
-		#FIXME: Build Method is required
-		self._build_method = ""
-		#FIXME: Category is required
-		self._category = ''
+		self._build_method = "" #FIXME: required
+		self._category = '' #FIXME: required
 		self._priority = 'optional'
-		#FIXME: Install Requirements are required
 		self._install_requirements = []
 
-		#FIXME: This should be simplified to list a directory rather than
-		# each file in said directory.
-		self._files = [
+		#FIXME: May need to be adjusted manually
+		self._files = [ 
 		% for entry in package['files']:
 			'${entry}', 
 		% endfor
