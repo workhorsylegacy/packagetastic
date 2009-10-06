@@ -1,9 +1,7 @@
 
 
-Packagetastic is a new software packaging system for Linux. It is designed to 
-replace traditional packaging systems, while being backwards compatible with 
-them. For Example, you can create a Packagetastic package and install it, or 
-have a Dpkg or RPM package automatically generated from it.
+Packagetastic is a meta packaging system for Linux. It generates RPM 
+and Dpkg packages from one simple file.
 
 Right now it only works on 32 bit Fedora 11, Ubuntu 9.04, and Debian Lenny.
 
