@@ -509,7 +509,7 @@ def validate_package(distro_name, meta, packages):
 		print "Stem file is Broken. The meta homepage is blank or null. Exiting ..."
 		exit()
 
-	if ['AGPL3+', 'GPL2+', 'GPL3+', 'LGPL3+', 'MIT'].count(meta.license) == 0:
+	if ['AGPL3+', 'GPL2+', 'GPL3+', 'LGPL2.1', 'MIT'].count(meta.license) == 0:
 		print "Stem file is Broken. The meta license field of \"" + str(meta.license) + "\" in unknown. Exiting ..."
 		exit()
 
