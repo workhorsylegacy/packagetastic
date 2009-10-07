@@ -210,7 +210,7 @@ def get_file_structure_for_package(meta, packages, params):
 			else:
 				params['has_icons'] = True
 		elif entry.startswith('/usr/share/applications/'):
-			if entry.endswith('.desktop'):
+			if entry.endswith('.desktop') or entry.endswith('.desktop.in'):
 				params['has_desktop_file'] = True
 				params['desktop_file_name'] = entry[len('/usr/share/'):]
 		elif entry.startswith('/usr/share/mime/'):
