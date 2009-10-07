@@ -116,6 +116,9 @@ fi
 
 ## Post uninstall functions
 @@postun
+% if has_mime:
+update-mime-database @@{_datadir}/mime &> /dev/null ||:
+% endif
 % if has_icons:
 gtk-update-icon-cache -qf @@{_datadir}/icons/hicolor &>/dev/null || :
 % endif
