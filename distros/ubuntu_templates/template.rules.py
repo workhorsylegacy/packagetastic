@@ -141,7 +141,7 @@ binary-indep: build install
 #	dh_installpam
 #	dh_installmime
 	dh_pysupport
-	dh_python
+#	dh_python
 #	dh_installinit
 #	dh_installcron
 #	dh_installinfo
