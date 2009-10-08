@@ -20,7 +20,7 @@ package_names = {
 	}, 
 	'theora-tools' : { 
 		'fedora' : ['theora-tools'], 
-		'ubuntu' : ['libogg0', 'libtheora0', 'libvorbis0', 'libpng12-0', 'libsdl1.2debian', 'libglib2.0-0']
+		'ubuntu' : ['libogg0', 'libtheora0', 'libvorbis0a', 'libpng12-0', 'libsdl1.2debian', 'libglib2.0-0']
 	}, 
 	'autoconf' : { 
 		'fedora' : ['autoconf'], 
@@ -572,7 +572,7 @@ package_names = {
 	}, 
 	'ogmrip-dev' : { 
 		'fedora' : ['ogmrip-devel'], 
-		'ubuntu' : ['ogmrip-dev']
+		'ubuntu' : ['libogmrip-dev', 'ogmrip']
 	}, 
 	'ogmrip' : { 
 		'fedora' : ['ogmrip'], 
