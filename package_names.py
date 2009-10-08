@@ -10,6 +10,38 @@ package_names = {
 	#	'fedora' : [], 
 	#	'ubuntu' : ['gstreamer0.10-gnomevfs']
 	#}, 
+	'pkgconfig' : { 
+		'fedora' : ['pkgconfig'], 
+		'ubuntu' : ['pkg-config']
+	}, 
+	'subtitleripper' : { 
+		'fedora' : ['subtitleripper'], 
+		'ubuntu' : ['subtitleripper']
+	}, 
+	'theora-tools' : { 
+		'fedora' : ['theora-tools'], 
+		'ubuntu' : ['libogg0', 'libtheora0', 'libvorbis0', 'libpng12-0', 'libsdl1.2debian', 'libglib2.0-0']
+	}, 
+	'autoconf' : { 
+		'fedora' : ['autoconf'], 
+		'ubuntu' : ['autoconf']
+	}, 
+	'libtiff-dev' : { 
+		'fedora' : ['libtiff-devel'], 
+		'ubuntu' : ['libtiff4-dev']
+	}, 
+	'libtiff' : { 
+		'fedora' : ['libtiff'], 
+		'ubuntu' : ['libtiff4']
+	}, 
+	'enca' : { 
+		'fedora' : ['enca'], 
+		'ubuntu' : ['enca', 'libenca0']
+	}, 
+	'enca-dev' : { 
+		'fedora' : ['enca-devel'], 
+		'ubuntu' : ['enca', 'libenca-dev']
+	}, 
 	'avahi-daemon' : { 
 		'fedora' : ['avahi'], 
 		'ubuntu' : ['avahi-daemon']
@@ -23,8 +55,12 @@ package_names = {
 		'ubuntu' : ['podsleuth']
 	}, 
 	'hal' : { 
-		'fedora' : ['hal'], 
+		'fedora' : ['hal', 'hal-devel'], 
 		'ubuntu' : ['hal']
+	}, 
+	'libhal-dev' : { 
+		'fedora' : ['hal-libs'], 
+		'ubuntu' : ['libhal1', 'libhal-dev']
 	}, 
 	'gstreamer0.10-ffmpeg' : { 
 		'fedora' : ['gstreamer-ffmpeg'], 
@@ -74,6 +110,14 @@ package_names = {
 		'fedora' : ['gtk2-devel'], 
 		'ubuntu' : ['libgtk2.0-dev']
 	}, 
+	'python-gtk2-dev' : { 
+		'fedora' : ['pygtk2-devel'], 
+		'ubuntu' : ['python-gtk2-dev']
+	}, 
+	'python-gtk2' : { 
+		'fedora' : ['pygtk2'], 
+		'ubuntu' : ['python-gtk2']
+	}, 
 	'libglib2.0-dev' : { 
 		'fedora' : ['glib2-devel'], 
 		'ubuntu' : ['libglib2.0-dev']
@@ -117,10 +161,6 @@ package_names = {
 	'libtaglib2.0-cil' : { 
 		'fedora' : ['taglib-sharp'], 
 		'ubuntu' : ['libtaglib2.0-cil']
-	}, 
-	'python-gtk2-dev' : { 
-		'fedora' : ['pygtk2-devel'], 
-		'ubuntu' : ['python-gtk2-dev']
 	}, 
 	'uuid-dev' : { 
 		'fedora' : ['uuid-devel'], 
@@ -386,10 +426,6 @@ package_names = {
 		'fedora' : ['pygtk2-libglade'], 
 		'ubuntu' : ['python-glade2']
 	}, 
-	'python-gtk2' : { 
-		'fedora' : ['pygtk2'], 
-		'ubuntu' : ['python-gtk2']
-	}, 
 	'python-gstreamer' : { 
 		'fedora' : ['gstreamer-python'], 
 		'ubuntu' : ['python-gst0.10']
@@ -408,6 +444,10 @@ package_names = {
 	}, 
 	'gettext' : { 
 		'fedora' : ['gettext'], 
+		'ubuntu' : ['gettext']
+	}, 
+	'gettext-dev' : { 
+		'fedora' : ['gettext-devel'], 
 		'ubuntu' : ['gettext']
 	}, 
 	'info' : { 
@@ -530,9 +570,9 @@ package_names = {
 		'fedora' : ['pygoocanvas'], 
 		'ubuntu' : ['python-pygoocanvas']
 	}, 
-	'libogmrip-dev' : { 
+	'ogmrip-dev' : { 
 		'fedora' : ['ogmrip-devel'], 
-		'ubuntu' : ['libogmrip-dev']
+		'ubuntu' : ['ogmrip-dev']
 	}, 
 	'ogmrip' : { 
 		'fedora' : ['ogmrip'], 
@@ -541,10 +581,6 @@ package_names = {
 	'libdvdread-dev' : { 
 		'fedora' : ['libdvdread-devel'], 
 		'ubuntu' : ['libdvdread-dev']
-	}, 
-	'libhal-dev' : { 
-		'fedora' : ['hal-devel', 'hal-libs'], 
-		'ubuntu' : ['libhal-dev']
 	}, 
 	'eject' : { 
 		'fedora' : ['eject'], 
@@ -612,7 +648,11 @@ package_names = {
 	}, 
 	'tesseract' : { 
 		'fedora' : ['tesseract'], 
-		'ubuntu' : ['tesseract']
+		'ubuntu' : ['tesseract-ocr']
+	}, 
+	'tesseract-dev' : { 
+		'fedora' : ['tesseract-devel'], 
+		'ubuntu' : ['tesseract-ocr-dev']
 	}, 
 	'ocrad' : { 
 		'fedora' : ['ocrad'], 

@@ -14,7 +14,7 @@ class Meta(BaseMeta):
 		self._license = 'GPL2+'
 		self._source = 'http://downloads.sourceforge.net/ogmrip/shrip-0.5.0.tar.gz'
 
-		self._build_requirements = ["libogmrip-dev (>= 0.10.0)",
+		self._build_requirements = ["ogmrip-dev (>= 0.10.0)",
 									"libdvdread-dev",
 									"libhal-dev",
 									"eject",

@@ -1,0 +1,128 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+from lib_packagetastic import *
+
+class Meta(BaseMeta):
+	def __init__(self):
+		BaseMeta.__init__(self)
+		self._name = 'ogmrip'
+		self._category = 'Applications/Video'
+		self._priority = 'optional'
+		self._authors = [u'Olivier Rolland <billl@users.sf.net>']
+		self._copyright = [u'2004-2008 Olivier Rolland']
+		self._homepage = 'http://ogmrip.sourceforge.net'
+		self._license = 'GPL2+'
+		self._source = 'http://downloads.sourceforge.net/ogmrip/ogmrip-0.13.1.tar.gz'
+
+		self._build_requirements = [
+			'libgtk2.0-dev', 
+			'libglade2-dev', 
+			'libgconf2-dev', 
+			'libxml2-dev', 
+			'libhal-dev', 
+			'libdbus-glib-dev', 
+			'libenchant-dev', 
+			'enca-dev', 
+			'libdvdread-dev', 
+			'libtheora-dev', 
+			'libvorbis-dev', 
+			'libtiff-dev', 
+			'tesseract-dev', 
+			'libnotify-dev', 
+			'gettext-dev', 
+			'intltool', 
+			'desktop-file-utils', 
+			'autoconf', 
+			'eject', 
+			'mplayer', 
+			'mencoder', 
+			'ogmtools', 
+			'vorbis-tools', 
+			'theora-tools', 
+			'mkvtoolnix', 
+			'lame'
+		]
+
+		self._short_description = u'Application for ripping and encoding DVD into AVI/OGM files'
+
+		self._long_description = u"OGMRip is an application and a set of libraries for ripping and encoding DVDs\n" + \
+									u"into AVI, OGM MP4 or Matroska files using a wide variety of codecs. It relies\n" + \
+									u"on mplayer, mencoder, ogmtools, mkvtoolnix, oggenc, lame and faac to perform\n" + \
+									u"its tasks."
+
+		self._changelog = [ Changelog(version="0.13.1", release=1, time="Tue, 06 Oct 2009 19:42:43 -0700", text=u"Initial release") ]
+
+class Ogmrip(BasePackage):
+	def __init__(self):
+		BasePackage.__init__(self)
+		self._name = 'ogmrip'
+		self._build_method = 'c application'
+		self._category = 'Applications/Video'
+		self._priority = 'optional'
+		self._install_requirements = [
+			'eject', 
+			'mplayer', 
+			'mencoder', 
+			'ogmtools', 
+			'vorbis-tools', 
+			'theora-tools', 
+			'mkvtoolnix', 
+			'lame', 
+			'gpac', 
+			'subtitleripper', 
+			'tesseract', 
+			'gconf2'
+		]
+
+		self._files = [
+			'/etc/gconf/schemas/ogmrip.schemas', 
+			'/usr/bin/dvdcpy', 
+			'/usr/bin/avibox', 
+			'/usr/bin/ogmrip', 
+			'/usr/bin/subp2pgm', 
+			'/usr/bin/subp2png', 
+			'/usr/bin/subp2tiff', 
+			'/usr/bin/subptools', 
+			'/usr/bin/theoraenc', 
+			'/usr/lib/*.so.*', 
+			'/usr/lib/ogmrip/', 
+			'/usr/share/applications/ogmrip.desktop', 
+			'/usr/share/gtk-doc/html/ogm*', 
+			'/usr/share/ogmrip/', 
+			'/usr/share/pixmaps/ogmrip.png', 
+			'/usr/share/man/man1/*.1*'
+		]
+
+class OgmripDev(BasePackage):
+	def __init__(self):
+		BasePackage.__init__(self)
+		self._name = 'ogmrip-dev'
+		self._build_method = 'c library'
+		self._category = 'Development/Libraries'
+		self._priority = 'optional'
+		self._install_requirements = [
+			'ogmrip', 
+			'libgtk2.0-dev', 
+			'libglade2-dev', 
+			'libgconf2-dev', 
+			'libxml2-dev', 
+			'hal', 
+			'libdbus-glib-dev', 
+			'libenchant-dev', 
+			'enca-dev', 
+			'libdvdread-dev', 
+			'libtheora-dev', 
+			'libvorbis-dev', 
+			'libtiff-dev', 
+			'tesseract-dev', 
+			'libnotify-dev', 
+			'pkgconfig'
+		]
+
+		self._files = [
+			'/usr/include/*', 
+			'/usr/lib/pkgconfig/*.pc', 
+			'/usr/lib/*.so'
+		]
+
+
