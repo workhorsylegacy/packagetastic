@@ -7,6 +7,7 @@ class Meta(BaseMeta):
 		BaseMeta.__init__(self)
 		self._name = 'pyactiveresource'
 		self._category = 'Development/Libraries'
+		self._build_method = 'python'
 		self._priority = 'optional'
 		self._authors = [u'Jared Kuolt <me@superjared.com>', u'Mark Roach <mrroach@google.com>']
 		self._copyright = [u'2008 Jared Kuolt', u'2008 Mark Roach', u'2008 Google Inc.']
@@ -30,8 +31,8 @@ class Pyactiveresource(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'pyactiveresource'
-		self._build_method = 'python library'
 		self._category = 'Development/Libraries'
+		self._package_type = 'python library'
 		self._priority = 'optional'
 		self._install_requirements = []
 

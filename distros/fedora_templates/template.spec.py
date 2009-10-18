@@ -26,7 +26,7 @@ Patch${n}: ${patch}\
 % endfor
 % endif
 BuildRoot: @@{_tmppath}/@@{name}-@@{version}-@@{release}-root-@@(@@{__id_u} -n)
-BuildArch: ${build_method_to_build_arch[packages[0].build_method]}
+BuildArch: ${package_type_to_architecture[packages[0].package_type]}
 
 ## Build Requirements
 % for build_requirement in build_requirements:

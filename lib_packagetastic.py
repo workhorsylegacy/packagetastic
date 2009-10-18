@@ -13,6 +13,21 @@ from helper import *
 
 exec_file("package_names.py", globals(), locals())
 
+packagetastic_package_types = [
+	'c application', 
+	'c library', 
+	'python application', 
+	'python library', 
+	'mono application', 
+	'mono library', 
+	'documentation'
+]
+
+packagetastic_build_methods = [
+	'autotools', 
+	'python'
+]
+
 packagetastic_categories = [
 	'Applications/Archiving', 
 	'Applications/Audio', 
@@ -184,9 +199,8 @@ def get_file_structure_for_package(meta, packages, params):
 	params['builds_with_autotools'] = os.path.isfile('Makefile.in')
 	params['builds_with_python'] = os.path.isfile('setup.py')
 
-	for package in packages:
-		if package.build_method.count('python') and params['builds_with_python']:
-			params['import_python_sitelib'] = True
+	if meta.build_method.count('python') > 0 and params['builds_with_python']:
+		params['import_python_sitelib'] = True
 
 	# Get the docs, lang, and example params
 	for doc in ['README', 'COPYING', 'ChangeLog', 'LICENSE', 'AUTHORS']:
@@ -275,6 +289,7 @@ class BaseMeta(object):
 		self._name = None
 		self._priority = None
 		self._category = None
+		self._build_method = None
 		self._authors = []
 		self._copyright = []
 		self._packager_name = None
@@ -295,6 +310,9 @@ class BaseMeta(object):
 
 	def get_category(self): return self._category
 	category = property(get_category)
+
+	def get_build_method(self): return self._build_method
+	build_method = property(get_build_method)
 
 	def get_authors(self): return self._authors
 	authors = property(get_authors)
@@ -369,6 +387,7 @@ class BaseMeta(object):
 				'before_uninstall' : self.before_uninstall(), 
 				'build_requirements' : self.build_requirements, 
 				'category' : self.category, 
+				'build_method' : self.build_method, 
 				'changelog' : self.changelog, 
 				'copyright' : self.copyright, 
 				'homepage' : self.homepage, 
@@ -396,19 +415,16 @@ class BaseMeta(object):
 class BasePackage(object):
 	def __init__(self):
 		self._name = None
-		self._build_method = None
 		self._alternate_name = None
 		self._priority = None
 		self._category = None
+		self._package_type = None
 		self._install_requirements = []
 		self._files = []
 		self._additional_description = u""
 
 	def get_name(self): return self._name
 	name = property(get_name)
-
-	def get_build_method(self): return self._build_method
-	build_method = property(get_build_method)
 
 	def get_alternate_name(self): return self._alternate_name
 	alternate_name = property(get_alternate_name)
@@ -418,6 +434,9 @@ class BasePackage(object):
 
 	def get_category(self): return self._category
 	category = property(get_category)
+
+	def get_package_type(self): return self._package_type
+	package_type = property(get_package_type)
 
 	def get_install_requirements(self): return self._install_requirements
 	install_requirements = property(get_install_requirements)
@@ -431,8 +450,8 @@ class BasePackage(object):
 	def to_hash(self):
 		retval={'additional_description' : self.additional_description, 
 				'alternate_name' : self.alternate_name, 
-				'build_method' : self.build_method, 
 				'category' : self.category, 
+				'package_type' : self.package_type, 
 				'install_requirements' : self.install_requirements, 
 				'files' : self._files, 
 				'name' : self.name, 
@@ -493,6 +512,10 @@ def validate_package(distro_name, meta, packages):
 		print "Stem file is Broken. The meta category field of \"" + str(meta.category) + "\" in unknown. Exiting ..."
 		exit()
 
+	if packagetastic_build_methods.count(meta.build_method) == 0:
+		print "Stem file is Broken. The meta build method field of \"" + str(meta.build_method) + "\" in unknown. Exiting ..."
+		exit()
+
 	if meta.priority is None or meta.priority == "":
 		print "Stem file is Broken. The meta priority is blank or null. Exiting ..."
 		exit()
@@ -544,11 +567,11 @@ def validate_package(distro_name, meta, packages):
 		if package.name is None or package.name == "":
 			print "Stem file is Broken. The package name is blank or null. Exiting ..."
 			exit()
-		elif package.build_method is None or package.build_method == "":
-			print "Stem file is Broken. The package build_method is blank or null. Exiting ..."
-			exit()
 		elif packagetastic_categories.count(package.category) == 0:
 			print "Stem file is Broken. The package category field of \"" + str(package.category) + "\" in unknown. Exiting ..."
+			exit()
+		elif packagetastic_package_types.count(package.package_type) == 0:
+			print "Stem file is Broken. The package type field of \"" + str(package.package_type) + "\" in unknown. Exiting ..."
 			exit()
 		elif package.priority is None or package.priority == "":
 			print "Stem file is Broken. The package priority is blank or null. Exiting ..."

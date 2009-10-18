@@ -7,6 +7,7 @@ class Meta(BaseMeta):
 		BaseMeta.__init__(self)
 		self._name = 'pexpect'
 		self._category = 'Development/Libraries'
+		self._build_method = 'python'
 		self._priority = 'optional'
 		self._authors = [u'Noah Spurrier <noah@noah.org>', u'Richard Holden', u'Marco Molteni', u'Kimberley Burchett',
 						u'Robert Stone', u'Hartmut Goebel', u'Chad Schroeder', u'Erick Tryzelaar', u'Dave Kirby', 
@@ -40,8 +41,8 @@ class Pexpect(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'pexpect'
-		self._build_method = 'python library'
 		self._category = 'Development/Libraries'
+		self._package_type = 'python library'
 		self._priority = 'optional'
 		self._install_requirements = []
 

@@ -45,7 +45,7 @@ class Builder(object):
 		'System/WebServers' : 'web'
 	}
 
-	build_method_to_architecture = {
+	package_type_to_architecture = {
 		'c application' : 'any', 
 		'c library' : 'any', 
 		'mono application' : 'any', 
@@ -55,7 +55,7 @@ class Builder(object):
 		'documentation' : 'all'
 	}
 
-	build_method_to_file_thing = {
+	package_type_to_file_thing = {
 		'c application' : 'i386', 
 		'c library' : 'i386', 
 		'mono application' : 'i386', 
@@ -163,13 +163,13 @@ class Builder(object):
 		params['section'] = self.category_to_section[meta.category]
 		params['build_requirements'] += ["debhelper (>= 7)", "autotools-dev"]
 		params['category_to_section'] = self.category_to_section
-		params['build_method_to_architecture'] = self.build_method_to_architecture
+		params['package_type_to_architecture'] = self.package_type_to_architecture
 
 		# Find out which languages it uses
 		for lang in ['c', 'python', 'mono']:
 			params['uses_' + lang] = False
 			for package in packages:
-				if package.build_method == lang + ' application' or package.build_method == lang + ' library':
+				if package.package_type == lang + ' application' or package.package_type == lang + ' library':
 					params['uses_' + lang] = True
 
 		# Add additional install requirements based on the languages it uses
@@ -183,11 +183,10 @@ class Builder(object):
 
 		# Make sure any python programs have a setup.py
 		if params['uses_python']:
-			for package in packages:
-				if package.build_method =='python application' or package.build_method == 'python library':
-					if not os.path.isfile('../setup.py'):
-						print "Packagetastic can only build python packages with a setup.py file. Exiting ..."
-						exit()
+			if meta.build_method =='python':
+				if not os.path.isfile('../setup.py'):
+					print "Packagetastic can only build python packages with a setup.py file. Exiting ..."
+					exit()
 
 		# Generate the rules file
 		print "Generating the rules file ..."
@@ -421,7 +420,7 @@ class Builder(object):
 		os.chdir('..')
 		if not os.path.isdir("packages"): os.mkdir("packages")
 		for package in packages:
-			thing = self.build_method_to_file_thing[package.build_method]
+			thing = self.package_type_to_file_thing[package.package_type]
 			command = "cp /var/cache/pbuilder/result/" + \
 					package.name + "_" + meta.version + '-' + str(meta.release) + "_" + thing + ".deb " + \
 					"packages/" + \

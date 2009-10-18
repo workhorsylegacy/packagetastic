@@ -7,6 +7,7 @@ class Meta(BaseMeta):
 		BaseMeta.__init__(self)
 		self._name = 'd-feet'
 		self._category = 'Development/Tools'
+		self._build_method = 'python'
 		self._priority = 'extra'
 		self._authors = [u'John (J5) Palmieri <johnp@redhat.com>']
 		self._copyright = [u'2003, 2004, 2005, 2006 Red Hat Inc. <http://www.redhat.com/>', 
@@ -33,8 +34,8 @@ class DFeet(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'd-feet'
-		self._build_method = 'python application'
 		self._category = 'Development/Tools'
+		self._package_type = 'python application'
 		self._priority = 'extra'
 		self._install_requirements = ['python-dbus (>= 0.82.3)', 
 										'python-gtk2', 

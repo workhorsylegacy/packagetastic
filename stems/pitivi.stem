@@ -7,6 +7,7 @@ class Meta(BaseMeta):
 		BaseMeta.__init__(self)
 		self._name = 'pitivi'
 		self._category = 'Applications/Video'
+		self._build_method = 'autotools'
 		self._priority = 'optional'
 		self._authors = [u'Christophe Sauthier <christophe.sauthier@gmail.com>', 
 							u'Laszlo Pandy <laszlok2@gmail.com>', 
@@ -44,8 +45,8 @@ class Pitivi(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'pitivi'
-		self._build_method = 'python application'
 		self._category = 'Applications/Video'
+		self._package_type = 'python application'
 		self._priority = 'optional'
 		self._install_requirements = ['python-gtk2 (>= 2.8)', 
 										'python-gstreamer (>= 0.10.6)', 

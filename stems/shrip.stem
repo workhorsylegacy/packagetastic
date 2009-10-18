@@ -7,6 +7,7 @@ class Meta(BaseMeta):
 		BaseMeta.__init__(self)
 		self._name = 'shrip'
 		self._category = 'Applications/Video'
+		self._build_method = 'autotools'
 		self._priority = 'optional'
 		self._authors = [u'Olivier Rolland <billl@users.sf.net>']
 		self._copyright = [u'2004-2008 Olivier Rolland']
@@ -57,8 +58,8 @@ class Shrip(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'shrip'
-		self._build_method = 'c library'
 		self._category = 'Applications/Video'
+		self._package_type = 'c application'
 		self._priority = 'optional'
 		self._install_requirements = ["ogmrip (>= 0.10.0)",
 									"mplayer",

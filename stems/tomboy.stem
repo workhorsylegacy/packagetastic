@@ -7,6 +7,7 @@ class Meta(BaseMeta):
 		BaseMeta.__init__(self)
 		self._name = 'tomboy'
 		self._category = 'Applications/Office'
+		self._build_method = 'autotools'
 		self._priority = 'optional'
 		self._authors = [
 			u'Alex Graveley <alex@beatniksoftware.com>', 
@@ -59,8 +60,8 @@ class Tomboy(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'tomboy'
-		self._build_method = 'mono application'
 		self._category = 'Applications/Office'
+		self._package_type = 'mono application'
 		self._priority = 'optional'
 		self._install_requirements = []
 

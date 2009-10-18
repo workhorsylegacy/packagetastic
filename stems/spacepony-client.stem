@@ -7,6 +7,7 @@ class Meta(BaseMeta):
 		BaseMeta.__init__(self)
 		self._name = 'spacepony-client'
 		self._category = 'Applications/Internet'
+		self._build_method = 'python'
 		self._priority = 'optional'
 		self._authors = [u'Matthew Brennan Jones <mattjones@workhorsy.org>']
 		self._copyright = [u'2009 Matthew Brennan Jones']
@@ -27,8 +28,8 @@ class Shrip(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'spacepony-client'
-		self._build_method = 'python application'
 		self._category = 'Applications/Internet'
+		self._package_type = 'python application'
 		self._priority = 'optional'
 		self._install_requirements = ['python-gobject', 'python-gconf', 'python-vte', 
 										'python-inotify', 'pyactiveresource']

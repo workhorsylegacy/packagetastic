@@ -7,6 +7,7 @@ class Meta(BaseMeta):
 		BaseMeta.__init__(self)
 		self._name = 'hello'
 		self._category = 'Development/Tools'
+		self._build_method = 'autotools'
 		self._priority = 'optional'
 		self._authors = [u'Free Software Foundation, Inc.']
 		self._copyright = [u'1992, 1995, 1996, 1997-1999, 2000-2002 Free Software Foundation, Inc.']
@@ -28,8 +29,8 @@ class Hello(BasePackage):
 	def __init__(self):
 		BasePackage.__init__(self)
 		self._name = 'hello'
-		self._build_method = 'c application'
 		self._category = 'Development/Tools'
+		self._package_type = 'c application'
 		self._priority = 'optional'
 		self._install_requirements = ["info"]
 

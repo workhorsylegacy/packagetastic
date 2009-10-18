@@ -25,7 +25,7 @@ Homepage: ${homepage}
 Package: ${package.name}
 Section: ${category_to_section[package.category]}
 Priority: ${package.priority}
-Architecture: ${build_method_to_architecture[package.build_method]}
+Architecture: ${package_type_to_architecture[package.package_type]}
 Depends: ${str.join(', ', package.install_requirements + additional_install_requirements)}
 % if uses_python:
 XB-Python-Version: @@{python:Versions}

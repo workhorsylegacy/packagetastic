@@ -48,7 +48,7 @@ class Builder(object):
 		'System/WebServers' : 'System Environment/Daemons'
 	}
 
-	build_method_to_build_arch = {
+	package_type_to_architecture = {
 		'c application' : 'i586', 
 		'c library' : 'i586', 
 		'mono application' : 'i586', 
@@ -81,7 +81,7 @@ class Builder(object):
 		params = meta.to_hash()
 		params['packages'] = packages
 		params['category_to_group'] = self.category_to_group
-		params['build_method_to_build_arch'] = self.build_method_to_build_arch
+		params['package_type_to_architecture'] = self.package_type_to_architecture
 		params['filter_requirement'] = self.filter_requirement
 
 		# Get the file structure of the package
@@ -214,12 +214,12 @@ class Builder(object):
 		os.chdir(packagetastic_dir)
 		if not os.path.isdir("packages"): os.mkdir("packages")
 		for package in packages:
-			build_arch = self.build_method_to_build_arch[package.build_method]
-			rpm = meta.name + "-" + meta.version + "-" + str(meta.release) + ".fc11." + build_arch + ".rpm"
+			architecture = self.package_type_to_architecture[package.package_type]
+			rpm = meta.name + "-" + meta.version + "-" + str(meta.release) + ".fc11." + architecture + ".rpm"
 			if use_chroot:
 				print commands.getoutput("cp /var/lib/mock/fedora-11-i386/result/" + rpm + " packages/" + rpm)
 			else:
-				print commands.getoutput("cp ~/rpmbuild/RPMS/" + build_arch + "/" + rpm + " packages/" + rpm)
+				print commands.getoutput("cp ~/rpmbuild/RPMS/" + architecture + "/" + rpm + " packages/" + rpm)
 		print "Done"
 
 
