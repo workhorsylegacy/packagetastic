@@ -284,7 +284,7 @@ class Changelog(object):
 	def get_text(self): return self._text
 	text = property(get_text)
 
-class BaseMeta(object):
+class MetaPackage(object):
 	def __init__(self):
 		self._name = None
 		self._priority = None
@@ -301,6 +301,12 @@ class BaseMeta(object):
 		self._short_description = None
 		self._long_description = None
 		self._changelog = None
+		self.reset_build_params()
+
+	def reset_build_params(self):
+		self._params_for_configure = None
+		self._params_for_make = None
+		self._params_for_install = None
 
 	def get_name(self): return self._name
 	name = property(get_name)
@@ -362,6 +368,18 @@ class BaseMeta(object):
 		return self._changelog[0].release
 	release = property(get_release)
 
+	def get_params_for_configure(self):
+		return self._params_for_configure
+	params_for_configure = property(get_params_for_configure)
+
+	def get_params_for_make(self):
+		return self._params_for_make
+	params_for_make = property(get_params_for_make)
+
+	def get_params_for_install(self):
+		return self._params_for_install
+	params_for_install = property(get_params_for_install)
+
 	def get_patches(self):
 		global packagetastic_dir
 		patches = []
@@ -378,6 +396,25 @@ class BaseMeta(object):
 	def before_install(self): pass
 	def after_uninstall(self): pass
 	def before_uninstall(self): pass
+
+	def build(self):
+		raise Exception("The build method must be overridden by the child class.")
+
+	def configure(self, flags=[]):
+		self._params_for_configure = ''
+
+		for entry in flags:
+			if isinstance(entry, str) or isinstance(entry, unicode):
+				self._params_for_configure += ' --' + entry
+			elif isinstance(entry, dict):
+				key, value = entry.items()[0]
+				self._params_for_configure += ' --' + key + '="' + value + '"'
+
+	def make(self):
+		self._params_for_make = ''
+
+	def install(self):
+		self._params_for_install = ''
 
 	def to_hash(self):
 		retval={ 'authors' : self.authors, 
@@ -412,7 +449,7 @@ class BaseMeta(object):
 
 		return retval
 
-class BasePackage(object):
+class BinaryPackage(object):
 	def __init__(self):
 		self._name = None
 		self._alternate_name = None
@@ -468,10 +505,10 @@ class BasePackage(object):
 def validate_package(distro_name, meta, packages):
 	# Make sure meta and packages were loaded
 	if not meta:
-		print "No BaseMeta class was found in the stem file. Exiting ..."
+		print "No MetaPackage class was found in the stem file. Exiting ..."
 		exit()
 	if len(packages) == 0:
-		print "No BasePackage classes were found in the stem file. Exiting ..."
+		print "No BinaryPackage classes were found in the stem file. Exiting ..."
 		exit()
 
 	# Make sure unicode is used for the correct fields
@@ -765,14 +802,14 @@ def build(distro_name, package_name, use_chroot, is_interactive):
 	# Get the package meta data
 	meta = None
 	for obj in gc.get_objects():
-		if type(obj) == type and issubclass(obj, BaseMeta) and obj().name == package_name:
+		if type(obj) == type and issubclass(obj, MetaPackage) and obj().name == package_name:
 			meta = obj()
 			break
 
 	# Get the packages to build
 	packages = []
 	for obj in gc.get_objects():
-		if type(obj) == type and obj != BasePackage and issubclass(obj, BasePackage):
+		if type(obj) == type and obj != BinaryPackage and issubclass(obj, BinaryPackage):
 			package = obj()
 			packages.append(package)
 

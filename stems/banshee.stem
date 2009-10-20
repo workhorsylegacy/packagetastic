@@ -2,9 +2,9 @@
 # -*- coding: UTF-8 -*-
 from lib_packagetastic import *
 
-class Meta(BaseMeta):
+class Meta(MetaPackage):
 	def __init__(self):
-		BaseMeta.__init__(self)
+		MetaPackage.__init__(self)
 		self._name = 'banshee'
 		self._category = 'Applications/Audio'
 		self._build_method = 'autotools'
@@ -88,9 +88,16 @@ class Meta(BaseMeta):
 
 		self._changelog = [Changelog(version="1.4.3", release=1, time="Sun, 23 Aug 2009 19:31:37 -0700", text=u"Initial release")]
 
-class Banshee(BasePackage):
+	def build(self):
+		self.configure(flags=['disable-docs', 'enable-mtp', 'enable-ipod', 
+								'enable-podcast', 'disable-boo', 
+								{'with-vendor-build-id' : '%{distro_id}'}])
+		self.make()
+		self.install()
+
+class Banshee(BinaryPackage):
 	def __init__(self):
-		BasePackage.__init__(self)
+		BinaryPackage.__init__(self)
 		self._name = 'banshee'
 		self._category = 'Applications/Audio'
 		self._package_type = 'mono application'
@@ -107,9 +114,9 @@ class Banshee(BasePackage):
 										'brasero', 
 										'avahi-daemon']
 
-class Documentation(BasePackage):
+class Documentation(BinaryPackage):
 	def __init__(self):
-		BasePackage.__init__(self)
+		BinaryPackage.__init__(self)
 		self._name = 'monodoc-banshee'
 		self._category = 'Documentation'
 		self._package_type = 'documentation'

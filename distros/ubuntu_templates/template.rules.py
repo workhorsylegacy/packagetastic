@@ -41,7 +41,7 @@ endif
 ifneq "@@(wildcard /usr/share/misc/config.guess)" ""
 	cp -f /usr/share/misc/config.guess config.guess
 endif
-	./configure @@(CROSS) --prefix=/usr --mandir=\@@@@{prefix}/share/man --infodir=\@@@@{prefix}/share/info CFLAGS="@@(CFLAGS)" LDFLAGS="-Wl,-z,defs"
+	./configure @@(CROSS) ${configure_params} --prefix=/usr --mandir=\@@@@{prefix}/share/man --infodir=\@@@@{prefix}/share/info CFLAGS="@@(CFLAGS)" LDFLAGS="-Wl,-z,defs"
 % endif
 
 build: build-stamp
@@ -55,7 +55,7 @@ build-stamp: configure-stamp
 	/usr/bin/python setup.py build
 % else:
 	# Add here commands to compile the package.
-	@@(MAKE)
+	@@(MAKE) ${make_params}
 	#docbook-to-man debian/${name}.sgml > ${name}.1
 	touch @@@
 % endif
@@ -86,7 +86,7 @@ install: build
 % if uses_python:
 	/usr/bin/python setup.py install --no-compile --root='debian/${name}' --install-lib=usr/share/python-support/${name}
 % else:
-	@@(MAKE) DESTDIR=@@(CURDIR)/debian/${name} install
+	@@(MAKE) DESTDIR=@@(CURDIR)/debian/${name} ${install_params} install
 % endif
 
 

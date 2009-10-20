@@ -181,6 +181,12 @@ class Builder(object):
 		if params['uses_mono']:
 			params['additional_install_requirements'] += ["${cli:Depends}"]
 
+		# Add the configure-make-install params
+		meta.build()
+		params['configure_params'] = meta.params_for_configure
+		params['make_params'] = meta.params_for_make
+		params['install_params'] = meta.params_for_install
+
 		# Make sure any python programs have a setup.py
 		if params['uses_python']:
 			if meta.build_method =='python':
