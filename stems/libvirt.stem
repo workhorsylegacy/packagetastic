@@ -2,9 +2,9 @@
 # -*- coding: UTF-8 -*-
 from lib_packagetastic import *
 
-class LibVirtPackage(BaseMeta):
+class LibVirtPackage(MetaPackage):
 	def __init__(self):
-		BaseMeta.__init__(self)
+		MetaPackage.__init__(self)
 		self._name = 'libvirt'
 		self._category = 'Development/Libraries'
 		self._build_method = 'autotools'
@@ -53,9 +53,14 @@ class LibVirtPackage(BaseMeta):
 
 		self._changelog = [Changelog(version="0.6.0", release=1, time="Wed, 16 Sep 2009 23:09:55 -0700", text=u"Initial release") ]
 
-class LibVirtBin(BasePackage):
+	def build(self):
+		self.configure()
+		self.make()
+		self.install()
+
+class LibVirtBin(BinaryPackage):
 	def __init__(self):
-		BasePackage.__init__(self)
+		BinaryPackage.__init__(self)
 		self._name = 'libvirt-bin'
 		self._package_type = 'c application'
 		self._category = 'Development/Libraries'
@@ -64,9 +69,9 @@ class LibVirtBin(BasePackage):
 		self._additional_description = \
 		u"This package contains the supporting binaries to use with libvirt"
 
-class LibVirtZero(BasePackage):
+class LibVirtZero(BinaryPackage):
 	def __init__(self):
-		BasePackage.__init__(self)
+		BinaryPackage.__init__(self)
 		self._name = 'libvirt0'
 		self._package_type = 'c application'
 		self._category = 'Development/Libraries'
@@ -74,9 +79,9 @@ class LibVirtZero(BasePackage):
 		self._install_requirements = ['lvm2']
 		self._additional_description = u""
 
-class LibVirtZeroDebug(BasePackage):
+class LibVirtZeroDebug(BinaryPackage):
 	def __init__(self):
-		BasePackage.__init__(self)
+		BinaryPackage.__init__(self)
 		self._name = 'libvirt0-dbg'
 		self._package_type = 'c application'
 		self._category = 'Development/Libraries'
@@ -85,9 +90,9 @@ class LibVirtZeroDebug(BasePackage):
 		self._additional_description = \
 		u"This package contains the debugging symbols."
 
-class LibVirtDocumentation(BasePackage):
+class LibVirtDocumentation(BinaryPackage):
 	def __init__(self):
-		BasePackage.__init__(self)
+		BinaryPackage.__init__(self)
 		self._name = 'libvirt-doc'
 		self._package_type = 'documentation'
 		self._category = 'Documentation'
@@ -96,9 +101,9 @@ class LibVirtDocumentation(BasePackage):
 		self._additional_description = \
 		u"This package contains the documentation."
 
-class LibVirtDev(BasePackage):
+class LibVirtDev(BinaryPackage):
 	def __init__(self):
-		BasePackage.__init__(self)
+		BinaryPackage.__init__(self)
 		self._name = 'libvirt-dev'
 		self._package_type = 'c application'
 		self._category = 'Development/Libraries'
@@ -110,9 +115,9 @@ class LibVirtDev(BasePackage):
 
 # FIXME: Make the python bindings work too
 '''
-class PythonLibVirt(BasePackage):
+class PythonLibVirt(BinaryPackage):
 	def __init__(self):
-		BasePackage.__init__(self)
+		BinaryPackage.__init__(self)
 		self._name = 'python-libvirt'
 		self._package_type = 'python library'
 		self._category = 'Development/Libraries'

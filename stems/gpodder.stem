@@ -2,9 +2,9 @@
 # -*- coding: UTF-8 -*-
 from lib_packagetastic import *
 
-class Meta(BaseMeta):
+class Meta(MetaPackage):
 	def __init__(self):
-		BaseMeta.__init__(self)
+		MetaPackage.__init__(self)
 		self._name = 'gpodder'
 		self._category = 'Applications/Audio'
 		self._build_method = 'python'
@@ -27,9 +27,14 @@ class Meta(BaseMeta):
 
 		self._changelog = [Changelog(version="0.14.0", release=1, time="Fri, 21 Aug 2009 20:24:17 -0700", text=u"Initial release") ]
 
-class GPodder(BasePackage):
+	def build(self):
+		self.configure()
+		self.make()
+		self.install()
+
+class GPodder(BinaryPackage):
 	def __init__(self):
-		BasePackage.__init__(self)
+		BinaryPackage.__init__(self)
 		self._name = 'gpodder'
 		self._category = 'Applications/Audio'
 		self._package_type = 'python application'

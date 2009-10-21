@@ -2,9 +2,9 @@
 # -*- coding: UTF-8 -*-
 from lib_packagetastic import *
 
-class Meta(BaseMeta):
+class Meta(MetaPackage):
 	def __init__(self):
-		BaseMeta.__init__(self)
+		MetaPackage.__init__(self)
 		self._name = 'ogmrip'
 		self._category = 'Applications/Video'
 		self._build_method = 'autotools'
@@ -53,9 +53,14 @@ class Meta(BaseMeta):
 
 		self._changelog = [ Changelog(version="0.13.1", release=1, time="Tue, 06 Oct 2009 19:42:43 -0700", text=u"Initial release") ]
 
-class Ogmrip(BasePackage):
+	def build(self):
+		self.configure()
+		self.make()
+		self.install()
+
+class Ogmrip(BinaryPackage):
 	def __init__(self):
-		BasePackage.__init__(self)
+		BinaryPackage.__init__(self)
 		self._name = 'ogmrip'
 		self._category = 'Applications/Video'
 		self._package_type = 'c application'
@@ -94,9 +99,9 @@ class Ogmrip(BasePackage):
 			'/usr/share/man/man1/*.1*'
 		]
 
-class OgmripDev(BasePackage):
+class OgmripDev(BinaryPackage):
 	def __init__(self):
-		BasePackage.__init__(self)
+		BinaryPackage.__init__(self)
 		self._name = 'ogmrip-dev'
 		self._category = 'Development/Libraries'
 		self._package_type = 'c library'

@@ -2,9 +2,9 @@
 # -*- coding: UTF-8 -*-
 from lib_packagetastic import *
 
-class Meta(BaseMeta):
+class Meta(MetaPackage):
 	def __init__(self):
-		BaseMeta.__init__(self)
+		MetaPackage.__init__(self)
 		self._name = 'gwibber'
 		self._category = 'Applications/Communications'
 		self._build_method = 'python'
@@ -24,9 +24,14 @@ class Meta(BaseMeta):
 
 		self._changelog = [Changelog(version="0.8", release=1, time="Mon, 24 Aug 2009 15:28:47 -0700", text=u"Initial release") ]
 
-class Gwibber(BasePackage):
+	def build(self):
+		self.configure()
+		self.make()
+		self.install()
+
+class Gwibber(BinaryPackage):
 	def __init__(self):
-		BasePackage.__init__(self)
+		BinaryPackage.__init__(self)
 		self._name = 'gwibber'
 		self._category = 'Applications/Communications'
 		self._package_type = 'python application'

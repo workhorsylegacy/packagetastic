@@ -2,9 +2,9 @@
 # -*- coding: UTF-8 -*-
 from lib_packagetastic import *
 
-class Meta(BaseMeta):
+class Meta(MetaPackage):
 	def __init__(self):
-		BaseMeta.__init__(self)
+		MetaPackage.__init__(self)
 		self._name = 'shrip'
 		self._category = 'Applications/Video'
 		self._build_method = 'autotools'
@@ -54,9 +54,14 @@ class Meta(BaseMeta):
 		self._changelog = [ Changelog(version="0.5.0", release=2, time="Sun, 17 May 2009 05:49:14 +0000", text=u"No changes. Rebuilt for fun."), 
 							Changelog(version="0.5.0", release=1, time="Sat, 16 May 2009 05:49:14 +0000", text=u"Initial release") ]
 
-class Shrip(BasePackage):
+	def build(self):
+		self.configure()
+		self.make()
+		self.install()
+
+class Shrip(BinaryPackage):
 	def __init__(self):
-		BasePackage.__init__(self)
+		BinaryPackage.__init__(self)
 		self._name = 'shrip'
 		self._category = 'Applications/Video'
 		self._package_type = 'c application'
