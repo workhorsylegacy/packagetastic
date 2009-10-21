@@ -65,6 +65,14 @@ class Builder(object):
 		'documentation' : 'all'
 	}
 
+	def expand_macro(self, string):
+		macro_map = { "%{distro_id}" : commands.getoutput("lsb_release -ds") }
+
+		for key, value in macro_map.iteritems():
+			string = string.replace(key, value)
+
+		return string
+
 	def build(self, meta, packages, packager_sudo, packager_gpg, use_chroot, is_interactive):
 		if not use_chroot:
 			print "Warning: Using pbuilder as the chroot anyway."
@@ -183,9 +191,9 @@ class Builder(object):
 
 		# Add the configure-make-install params
 		meta.build()
-		params['configure_params'] = meta.params_for_configure
-		params['make_params'] = meta.params_for_make
-		params['install_params'] = meta.params_for_install
+		params['configure_params'] = self.expand_macro(meta.params_for_configure)
+		params['make_params'] = self.expand_macro(meta.params_for_make)
+		params['install_params'] = self.expand_macro(meta.params_for_install)
 
 		# Make sure any python programs have a setup.py
 		if params['uses_python']:
