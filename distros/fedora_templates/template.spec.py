@@ -55,8 +55,8 @@ ${long_description}
 
 @@build
 % if builds_with_autotools:
-@@configure
-make @@{?_smp_mflags}
+@@configure ${configure_params}
+make @@{?_smp_mflags} ${make_params}
 % elif builds_with_python:
 @@{__python} setup.py build
 % endif
@@ -65,7 +65,7 @@ make @@{?_smp_mflags}
 @@install
 rm -rf @@{buildroot}
 % if builds_with_autotools:
-make install DESTDIR=@@{buildroot}
+make install DESTDIR=@@{buildroot} ${install_params}
 rm -f @@{buildroot}@@{_infodir}/dir
 % elif builds_with_python:
 @@{__python} setup.py install -O1 --skip-build --root @@{buildroot}

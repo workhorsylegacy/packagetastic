@@ -20,7 +20,7 @@ Getting started on Debian:
 	# install requirements:
 	sudo apt-get install build-essential cdbs dh-make pbuilder fakeroot \
 	debhelper devscripts gnupg python-dev python-distutils-extra \
-	python-pexpect python-mako bzr
+	python-pexpect python-mako bzr lsb-release
 
 	# setup pbuilder:
 	cd ~
@@ -35,7 +35,7 @@ Getting started on Ubuntu:
 	# install requirements:
 	sudo apt-get install build-essential cdbs dh-make pbuilder fakeroot \
 	debhelper devscripts gnupg python-dev python-distutils-extra \
-	python-pexpect python-mako bzr
+	python-pexpect python-mako bzr lsb-release
 
 	# setup pbuilder:
 	cd ~
@@ -58,7 +58,7 @@ Getting started on Fedora:
 	# install requirements:
 	sudo yum groupinstall "Development Tools"
 	sudo yum install mock rpmdevtools pexpect python-mako python-devel \
-	python-distutils-extra
+	python-distutils-extra redhat-lsb
 
 	# setup mock
 	sudo usermod -a -G mock username

@@ -62,6 +62,14 @@ class Builder(object):
 	def filter_requirement(self, value):
 		return value.replace('(', '').replace(')', '').split(' | ')[0]
 
+	def expand_macro(self, string):
+		macro_map = { "%{distro_id}" : commands.getoutput("lsb_release -ds").replace('"', '') }
+
+		for key, value in macro_map.iteritems():
+			string = string.replace(key, value)
+
+		return string
+
 	def build(self, meta, packages, packager_sudo, packager_gpg, use_chroot, is_interactive):
 		# Setup the directories
 		print "Setting up the rpmdev directories ..."
@@ -95,6 +103,12 @@ class Builder(object):
 			params['build_requirements'] += ['python-devel']
 		if params['has_desktop_file'] and meta.build_requirements.count('desktop-file-utils') == 0:
 			params['build_requirements'] += ['desktop-file-utils']
+
+		# Add the configure-make-install params
+		meta.build()
+		params['configure_params'] = self.expand_macro(meta.params_for_configure)
+		params['make_params'] = self.expand_macro(meta.params_for_make)
+		params['install_params'] = self.expand_macro(meta.params_for_install)
 
 		# Create the spec file
 		os.chdir('../..')
