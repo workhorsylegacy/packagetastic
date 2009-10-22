@@ -798,6 +798,12 @@ def build(distro_name, package_name, use_chroot, is_interactive):
 		print "Packagetastic does not have a stem file for the package '" + package_name + "'. Exiting ..."
 		exit()
 
+	# Find any junk MetaPackage and BinaryPackage already in memory
+	junk_objects = []
+	for obj in gc.get_objects():
+		if type(obj) == type and (issubclass(obj, MetaPackage) or issubclass(obj, BinaryPackage)):
+			junk_objects.append(obj)
+
 	# Load the distro and stem files
 	execfile('distros/' + distro_name + '.py')
 	execfile('stems/' + package_name + '.stem')
@@ -806,15 +812,17 @@ def build(distro_name, package_name, use_chroot, is_interactive):
 	meta = None
 	for obj in gc.get_objects():
 		if type(obj) == type and issubclass(obj, MetaPackage) and obj().name == package_name:
-			meta = obj()
-			break
+			if junk_objects.count(obj) == 0:
+				meta = obj()
+				break
 
 	# Get the packages to build
 	packages = []
 	for obj in gc.get_objects():
 		if type(obj) == type and obj != BinaryPackage and issubclass(obj, BinaryPackage):
-			package = obj()
-			packages.append(package)
+			if junk_objects.count(obj) == 0:
+				package = obj()
+				packages.append(package)
 
 	# Validate the meta and packages
 	validate_package(distro_name, meta, packages)
