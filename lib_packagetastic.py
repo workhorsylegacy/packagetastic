@@ -95,20 +95,10 @@ def download_file(file_url, file_name):
 	sys.stdout.write("\n")
 
 packagetastic_dir = None
-def init_packagetastic(distro_name, package_name):
+def init_packagetastic(distro_name):
 	# Make sure we are on linux
 	if platform.system() != 'Linux':
 		print "Packagetastic only works on Linux, not '" + platform.system() + "'. Exiting ..."
-		exit()
-
-	# Make sure we have a distro file that matches the name
-	if not os.path.isfile('distros/' + distro_name + '.py'):
-		print "Packagetastic does not know how to build for the distro '" + distro_name + "'. Exiting ..."
-		exit()
-
-	# Make sure we have a stem file that matches the name
-	if not os.path.isfile('stems/' + package_name + '.stem'):
-		print "Packagetastic does not have a stem file for the package '" + package_name + "'. Exiting ..."
 		exit()
 
 	# Try to get the OS name
@@ -795,6 +785,16 @@ def build(distro_name, package_name, use_chroot, is_interactive):
 	packager_gpg = f.read()[0:-1]
 	f.close()
 
+	# Make sure we have a distro file that matches the name
+	if not os.path.isfile('distros/' + distro_name + '.py'):
+		print "Packagetastic does not know how to build for the distro '" + distro_name + "'. Exiting ..."
+		exit()
+
+	# Make sure we have a stem file that matches the name
+	if not os.path.isfile('stems/' + package_name + '.stem'):
+		print "Packagetastic does not have a stem file for the package '" + package_name + "'. Exiting ..."
+		exit()
+
 	# Load the distro and stem files
 	execfile('distros/' + distro_name + '.py')
 	execfile('stems/' + package_name + '.stem')
@@ -838,6 +838,7 @@ def build(distro_name, package_name, use_chroot, is_interactive):
 			requirements_to_distro_specific(distro_name, package.install_requirements)
 
 	# Build the package for that distro
+	print "\nBuilding " + package_name + " ..."
 	meta.packager_name = packager_name
 	meta.packager_email = packager_email
 	builder = eval('Builder()')
