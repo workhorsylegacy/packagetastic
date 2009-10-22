@@ -749,6 +749,9 @@ def gen_stem(name, version, source):
 		spec_file.write(template.render(**params).replace("@@", "%").replace("\\\\\\", "\\\n"))
 
 def build(distro_name, package_name, use_chroot, is_interactive):
+	global packagetastic_dir
+	os.chdir(packagetastic_dir)
+
 	# Make sure the packager_name file exists
 	if not os.path.isfile('packager_name'):
 		print "Add the packager name to the 'packager_name' file."

@@ -105,7 +105,12 @@ if mode == "build_all":
 
 	# Build all the packages
 	for package_name in stem_names:
-		lib_packagetastic.build(distro_name, package_name, use_chroot, is_interactive)
+		try:
+			lib_packagetastic.build(distro_name, package_name, use_chroot, is_interactive)
+		except KeyboardInterrupt:
+			raise
+		except:
+			pass
 
 # Generate a stem file
 if mode == "gen_stem":
