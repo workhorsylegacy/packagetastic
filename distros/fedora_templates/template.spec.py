@@ -75,7 +75,7 @@ rm -f @@{buildroot}/@@{_datadir}/icons/hicolor/icon-theme.cache
 % endif
 
 % if has_desktop_file:
-desktop-file-install --vendor=""                 \\\\
+desktop-file-install --vendor=fedora                 \\\\
   --delete-original                              \\\\
   --dir=@@{buildroot}@@{_datadir}/applications     \\\\
   @@{buildroot}@@{_datadir}/${desktop_file_name}
@@ -137,7 +137,11 @@ gtk-update-icon-cache -qf @@{_datadir}/icons/hicolor &>/dev/null || :
 % endif
 
 %for entry in packages[0].files:
+% if entry.endswith(name + '.desktop'):
+${entry.replace(name + '.desktop', 'fedora-' + name + '.desktop')}
+% else:
 ${entry}
+%endif
 %endfor
 
 
