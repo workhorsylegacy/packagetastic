@@ -186,7 +186,8 @@ def get_file_structure_for_package(meta, packages, params):
 	params['desktop_file_name'] = None
 
 	# Find out which build methods are used
-	params['builds_with_autotools'] = os.path.isfile('Makefile.in')
+	params['builds_with_autotools'] = \
+		os.path.isfile('Makefile.in') or os.path.isfile('GNUmakefile')
 	params['builds_with_python'] = os.path.isfile('setup.py')
 
 	if meta.build_method.count('python') > 0 and params['builds_with_python']:

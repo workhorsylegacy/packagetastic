@@ -10,6 +10,10 @@ package_names = {
 	#	'fedora' : [], 
 	#	'ubuntu' : ['gstreamer0.10-gnomevfs']
 	#}, 
+	'meld' : { 
+		'fedora' : ['meld'], 
+		'ubuntu' : ['meld']
+	}, 
 	'pkgconfig' : { 
 		'fedora' : ['pkgconfig'], 
 		'ubuntu' : ['pkg-config']
@@ -117,6 +121,10 @@ package_names = {
 	'python-gtk2' : { 
 		'fedora' : ['pygtk2'], 
 		'ubuntu' : ['python-gtk2']
+	}, 
+	'python-glade2' : { 
+		'fedora' : ['pygtk2-libglade'], 
+		'ubuntu' : ['python-glade2']
 	}, 
 	'libglib2.0-dev' : { 
 		'fedora' : ['glib2-devel'], 
@@ -422,10 +430,6 @@ package_names = {
 		'fedora' : ['dbus-python'], 
 		'ubuntu' : ['python-dbus']
 	}, 
-	'python-glade2' : { 
-		'fedora' : ['pygtk2-libglade'], 
-		'ubuntu' : ['python-glade2']
-	}, 
 	'python-gstreamer' : { 
 		'fedora' : ['gstreamer-python'], 
 		'ubuntu' : ['python-gst0.10']
@@ -539,7 +543,7 @@ package_names = {
 		'ubuntu' : ['python-xdg']
 	}, 
 	'libxml-parser-perl' : { 
-		'fedora' : ['perl-libxml-perl'], 
+		'fedora' : ['perl(XML::Parser)'], 
 		'ubuntu' : ['libxml-parser-perl']
 	}, 
 	'intltool' : { 

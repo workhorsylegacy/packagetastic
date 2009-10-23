@@ -1,0 +1,54 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+from lib_packagetastic import *
+
+class Meta(MetaPackage):
+	def __init__(self):
+		MetaPackage.__init__(self)
+		self._name = 'meld'
+		self._category = 'Development/Tools'
+		self._build_method = 'autotools'
+		self._priority = 'optional'
+		self._authors = [u'Stephen Kennedy <stevek@gnome.org>']
+		self._copyright = [u'Stephen Kennedy']
+		self._homepage = 'http://meld.sourceforge.net'
+		self._license = 'GPL2+'
+		self._source = 'http://ftp.gnome.org/pub/gnome/sources/meld/1.3/meld-1.3.0.tar.gz'
+
+		self._build_requirements = ['desktop-file-utils', 
+									'gettext', 
+									'intltool', 
+									'scrollkeeper', 
+									'libxml-parser-perl']
+
+		self._short_description = u"graphical tool to diff and merge files"
+
+		self._long_description = u"Meld is a tool which allows the user to see the changes in, and merge between, \n" + \
+								u"either two files, two directories, or two files with a common ancestor."
+
+		self._changelog = [Changelog(version="1.3.0", release=1, time="Thu, 22 Oct 2009 11:13:31 -0700", text=u"Initial release") ]
+
+	def build(self):
+		self.configure()
+		self.make()
+		self.install()
+
+class Meld(BinaryPackage):
+	def __init__(self):
+		BinaryPackage.__init__(self)
+		self._name = 'meld'
+		self._category = 'Development/Tools'
+		self._package_type = 'python application'
+		self._priority = 'optional'
+		self._install_requirements = ['python-gtk2 (>= 2.8.0)', 
+										'python-glade2', 
+										'python-gobject (>= 2.8.0)']
+
+		self._files = ['/usr/bin/meld', 
+						'/usr/share/meld/', 
+						'/usr/share/applications/meld.desktop', 
+						'/usr/share/application-registry/meld*', 
+						'/usr/share/pixmaps/meld.png', 
+						'/usr/share/gnome/help/meld/', 
+						'/usr/share/omf/meld/']
+

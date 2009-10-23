@@ -60,7 +60,9 @@ class Builder(object):
 
 	# FIXME: Figure out how to do "one or two or three"
 	def filter_requirement(self, value):
-		return value.replace('(', '').replace(')', '').split(' | ')[0]
+		if value.count('>') > 0 or value.count('<') > 0 or value.count('>=') > 0 or value.count('<=') > 0:
+			value = value.replace('(', '').replace(')', '')
+		return value.split(' | ')[0]
 
 	def expand_macro(self, string):
 		macro_map = { "%{distro_id}" : commands.getoutput("lsb_release -ds").replace('"', '') }
