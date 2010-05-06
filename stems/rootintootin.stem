@@ -1,0 +1,56 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+from lib_packagetastic import *
+
+class Meta(MetaPackage):
+	def __init__(self):
+		MetaPackage.__init__(self)
+		self._name = 'rootintootin'
+		self._category = 'Development/Tools'
+		self._build_method = 'autotools'
+		self._priority = 'optional'
+		self._authors = [u'Matthew Brennan Jones <mattjones@workhorsy.org>']
+		self._copyright = [u'Matthew Brennan Jones']
+		self._homepage = 'http://rootin.toot.in'
+		self._license = 'GPL2+'
+		self._source = 'http://launchpad.net/rester/trunk/0.1.0/+download/rootintootin-0.1.0.tar.gz'
+
+		self._build_requirements = ['gettext', 
+									'intltool', 
+									'scrollkeeper']
+
+		self._short_description = u"web development framework and server"
+
+		self._long_description = u"A fast RESTful web server and framework written in D. It is designed to \n" + \
+									u"scale well by default, while still providing a developer experience \n" + \
+									u"similar to Ruby on Rails."
+
+		self._changelog = [Changelog(version="0.1.0", release=1, time="Wed, 09 Dec 2009 19:06:48 -0800", text=u"Initial release") ]
+
+	def build(self):
+		self.configure()
+		self.make()
+		self.install()
+
+class Meld(BinaryPackage):
+	def __init__(self):
+		BinaryPackage.__init__(self)
+		self._name = 'rootintootin'
+		self._category = 'Development/Tools'
+		self._package_type = 'c application'
+		self._priority = 'optional'
+		self._install_requirements = ['build-essential', 
+										'ldc', 
+										'libtango-ldc-dev', 
+										'mysql-client', 
+										'mysql-server', 
+										'libmysqlclient15-dev', 
+										'python-mysqldb', 
+										'pexpect', 
+										'python-mako']
+
+		self._files = ['/usr/bin/rootintootin', 
+						'/usr/bin/rootintootin_build', 
+						'/usr/bin/rootintootin_gen', 
+						'/usr/share/rootintootin/*']
+

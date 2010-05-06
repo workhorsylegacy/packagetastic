@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+from lib_packagetastic import *
+
+class Meta(MetaPackage):
+	def __init__(self):
+		MetaPackage.__init__(self)
+		self._name = 'ldc'
+		self._category = 'Development/Languages'
+		self._build_method = 'autotools'
+		self._priority = 'optional'
+		self._authors = [u'LDC Team']
+		self._copyright = [u'2007-2009 LDC Team']
+		self._homepage = 'http://www.dsource.org/projects/ldc'
+		self._license = 'BSD-C3'
+		self._source = ''
+
+		self._build_requirements = ["gettext"]
+
+		self._short_description = u'The classic greeting, and a good example'
+
+		self._long_description = u"The GNU hello program produces a familiar, friendly greeting.  It\n" + \
+								u"allows non-programmers to use a classic computer science tool which\n" + \
+								u"would otherwise be unavailable to them."
+
+		self._changelog = [Changelog(version="2.1.1", release=1, time="Fri, 07 Aug 2009 18:32:26 -0700", text=u"Initial release") ]
+
+	def build(self):
+		self.configure()
+		self.make()
+		self.install()
+
+class Ldc(BinaryPackage):
+	def __init__(self):
+		BinaryPackage.__init__(self)
+		self._name = 'ldc'
+		self._category = 'Development/Tools'
+		self._package_type = 'c application'
+		self._priority = 'optional'
+		self._install_requirements = ["info"]
+
+		self._files = ['/usr/share/man/man1/hello.1*', 
+						'/usr/bin/hello', 
+						'/usr/share/info/hello.info*']
+
+
