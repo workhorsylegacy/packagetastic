@@ -18,7 +18,7 @@ Build-Depends-Indep: python-support (>= 0.3)
 % else:
 Build-Depends: ${str.join(', ', build_requirements)}
 % endif
-Standards-Version: 3.8.0
+Standards-Version: 3.8.3
 Homepage: ${homepage}
 
 % for package in packages:

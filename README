@@ -3,7 +3,7 @@
 Packagetastic is a meta packaging system for Linux. It generates RPM 
 and Dpkg packages from one simple file.
 
-Right now it only works on 32 bit Fedora 11, Ubuntu 9.04, and Debian Lenny.
+Right now it only works on 32 bit Fedora 12, Ubuntu 9.10, and Debian Lenny.
 
 Development happens at:
 http://launchpad.net/packagetastic
@@ -12,7 +12,7 @@ The mailing list is located at:
 http://lists.launchpad.net/packagetastic-developers
 
 
-Getting started on Debian:
+Step #1 on Debian:
 
 	# add your user to the sudo group
 	echo 'username ALL=(ALL) ALL' >> /etc/sudoers
@@ -30,7 +30,7 @@ Getting started on Debian:
 	# create gpg key:
 	gpg --no-use-agent --gen-key
 
-Getting started on Ubuntu:
+Step #1 on Ubuntu:
 
 	# install requirements:
 	sudo apt-get install build-essential cdbs dh-make pbuilder fakeroot \
@@ -50,7 +50,7 @@ Getting started on Ubuntu:
 	# the popup dialog box.
 	sed -i 's/^use-agent$/#use-agent/' ~/.gnupg/gpg.conf
 
-Getting started on Fedora:
+Step #1 on Fedora:
 
 	# add your user to the sudo group
 	echo 'username ALL=(ALL) ALL' >> /etc/sudoers
@@ -62,12 +62,12 @@ Getting started on Fedora:
 
 	# setup mock
 	sudo usermod -a -G mock username
-	mock -r fedora-11-i386 --init
+	mock -r fedora-12-i386 --init
 
 	# create gpg key:
 	gpg --no-use-agent --gen-key
 
-Packagetastic one time setup:
+Step #2 - One time setup:
 	# Get the code if you have not
 	bzr branch lp:packagetastic
 	cd packagetastic
@@ -79,7 +79,7 @@ Packagetastic one time setup:
 	echo "password" > packager_sudo
 	echo "this is a secret" > packager_gpg
 
-Building packages:
+Step #3 - Building packages:
 	# Make sure you have a stem file for the package you want
 	ls stems/hello.stem
 

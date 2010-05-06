@@ -179,7 +179,7 @@ class Builder(object):
 		if use_chroot:
 			print "Running mock ..."
 			os.chdir("rpmbuild/SRPMS/")
-			command = "mock -r fedora-11-i386 --verbose --rebuild " + meta.name + "-" + meta.version + "-" + str(meta.release) + ".fc11.src.rpm"
+			command = "mock -r fedora-12-i386 --verbose --rebuild " + meta.name + "-" + meta.version + "-" + str(meta.release) + ".fc12.src.rpm"
 			if is_interactive:
 				print commands.getoutput(command)
 			else:
@@ -231,9 +231,9 @@ class Builder(object):
 		if not os.path.isdir("packages"): os.mkdir("packages")
 		for package in packages:
 			architecture = self.package_type_to_architecture[package.package_type]
-			rpm = meta.name + "-" + meta.version + "-" + str(meta.release) + ".fc11." + architecture + ".rpm"
+			rpm = meta.name + "-" + meta.version + "-" + str(meta.release) + ".fc12." + architecture + ".rpm"
 			if use_chroot:
-				print commands.getoutput("cp /var/lib/mock/fedora-11-i386/result/" + rpm + " packages/" + rpm)
+				print commands.getoutput("cp /var/lib/mock/fedora-12-i386/result/" + rpm + " packages/" + rpm)
 			else:
 				print commands.getoutput("cp ~/rpmbuild/RPMS/" + architecture + "/" + rpm + " packages/" + rpm)
 		print "Done"

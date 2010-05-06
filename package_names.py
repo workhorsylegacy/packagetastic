@@ -10,6 +10,42 @@ package_names = {
 	#	'fedora' : [], 
 	#	'ubuntu' : ['gstreamer0.10-gnomevfs']
 	#}, 
+	'ldc' : {
+		'fedora' : ['ldc'], 
+		'ubuntu' : ['ldc']
+	}, 
+	'libtango-ldc-dev' : {
+		'fedora' : ['libtango-ldc-dev'], 
+		'ubuntu' : ['libtango-ldc-dev']
+	}, 
+	'mysql-client' : {
+		'fedora' : ['mysql-client'], 
+		'ubuntu' : ['mysql-client']
+	}, 
+	'mysql-server' : {
+		'fedora' : ['mysql-server'], 
+		'ubuntu' : ['mysql-server']
+	}, 
+	'libmysqlclient15-dev' : {
+		'fedora' : ['libmysqlclient15-dev'], 
+		'ubuntu' : ['libmysqlclient15-dev']
+	}, 
+	'python-mysqldb' : {
+		'fedora' : ['python-mysqldb'], 
+		'ubuntu' : ['python-mysqldb']
+	}, 
+	'python-mako' : {
+		'fedora' : ['python-mako'], 
+		'ubuntu' : ['python-mako']
+	}, 
+	'build-essential' : {
+		'fedora' : [''], 
+		'ubuntu' : ['build-essential']
+	}, 
+	'rootintootin' : {
+		'fedora' : ['rootintootin'], 
+		'ubuntu' : ['rootintootin']
+	}, 
 	'meld' : { 
 		'fedora' : ['meld'], 
 		'ubuntu' : ['meld']
@@ -346,9 +382,13 @@ package_names = {
 		'fedora' : ['gtkspell-devel'], 
 		'ubuntu' : ['libgtkspell-dev']
 	}, 
-	'libgconf2.24-cil' : { 
+	'libgconf2.0-cil' : { 
 		'fedora' : ['gnome-sharp-devel'], 
-		'ubuntu' : ['libgconf2.24-cil']
+		'ubuntu' : ['libgconf2.0-cil']
+	}, 
+	'libgconf2-dev' : { 
+		'fedora' : ['GConf2-devel'], 
+		'ubuntu' : ['libgconf2-dev']
 	}, 
 	'libgnome2.24-cil' : { 
 		'fedora' : ['gnome-sharp-devel'], 
@@ -609,10 +649,6 @@ package_names = {
 	'lame' : { 
 		'fedora' : ['lame'], 
 		'ubuntu' : ['lame']
-	}, 
-	'libgconf2-dev' : { 
-		'fedora' : ['GConf2-devel'], 
-		'ubuntu' : ['libgconf2-dev']
 	}, 
 	'gconf2' : { 
 		'fedora' : ['GConf2'], 

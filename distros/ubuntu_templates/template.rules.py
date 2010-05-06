@@ -51,9 +51,9 @@ build-stamp: configure-stamp
 % for patch in patches:
 	patch -p0 < debian/patches/${patch}
 % endfor
-% if uses_python:
+% if build_method == 'python':
 	/usr/bin/python setup.py build
-% else:
+% elif build_method == 'autotools':
 	# Add here commands to compile the package.
 	@@(MAKE) ${make_params}
 	#docbook-to-man debian/${name}.sgml > ${name}.1
@@ -65,9 +65,9 @@ clean:
 	dh_testroot
 	rm -f build-stamp configure-stamp
 
-% if uses_python:
+% if build_method == 'python':
 	/usr/bin/python setup.py clean --all
-% else:
+% elif build_method == 'autotools':
 	# Add here commands to clean up after the build process.
 	[ ! -f Makefile ] || @@(MAKE) distclean
 	rm -f config.sub config.guess
@@ -83,9 +83,9 @@ install: build
 	#make generators
 
 	# Add here commands to install the package into debian/${name}.
-% if uses_python:
+% if build_method == 'python':
 	/usr/bin/python setup.py install --no-compile --root='debian/${name}' --install-lib=usr/share/python-support/${name}
-% else:
+% elif build_method == 'autotools':
 	@@(MAKE) DESTDIR=@@(CURDIR)/debian/${name} ${install_params} install
 % endif
 

@@ -195,7 +195,7 @@ class Builder(object):
 		params['make_params'] = self.expand_macro(meta.params_for_make)
 		params['install_params'] = self.expand_macro(meta.params_for_install)
 
-		# Make sure any python programs have a setup.py
+		# Make sure any python built programs have a setup.py
 		if params['uses_python']:
 			if meta.build_method =='python':
 				if not os.path.isfile('../setup.py'):
