@@ -292,12 +292,6 @@ class MetaPackage(object):
 		self._short_description = None
 		self._long_description = None
 		self._changelog = None
-		self.reset_build_params()
-
-	def reset_build_params(self):
-		self._params_for_configure = None
-		self._params_for_make = None
-		self._params_for_install = None
 
 	def get_name(self): return self._name
 	name = property(get_name)
@@ -359,18 +353,6 @@ class MetaPackage(object):
 		return self._changelog[0].release
 	release = property(get_release)
 
-	def get_params_for_configure(self):
-		return self._params_for_configure
-	params_for_configure = property(get_params_for_configure)
-
-	def get_params_for_make(self):
-		return self._params_for_make
-	params_for_make = property(get_params_for_make)
-
-	def get_params_for_install(self):
-		return self._params_for_install
-	params_for_install = property(get_params_for_install)
-
 	def get_patches(self):
 		global packagetastic_dir
 		patches = []
@@ -391,21 +373,57 @@ class MetaPackage(object):
 	def build(self):
 		raise Exception("The build method must be overridden by the child class.")
 
-	def configure(self, flags=[]):
-		self._params_for_configure = ''
+	def configure(self):
+		child = pexpect.spawn('bash -c "./configure --prefix=/usr"', timeout=5)
+		expected_lines = ["[\w|\s]*\n", 
+							pexpect.EOF]
 
-		for entry in flags:
-			if isinstance(entry, str) or isinstance(entry, unicode):
-				self._params_for_configure += ' --' + entry
-			elif isinstance(entry, dict):
-				key, value = entry.items()[0]
-				self._params_for_configure += ' --' + key + '="' + value + '"'
+		still_reading = True
+		while still_reading:
+			result = child.expect(expected_lines)
+
+			if result == 0:
+				print child.before
+			elif result == len(expected_lines)-1:
+				still_reading = False
+
+		child.close()
 
 	def make(self):
-		self._params_for_make = ''
+		child = pexpect.spawn('bash -c "make"', timeout=5)
+		expected_lines = ["[\w|\s]*\n", 
+							pexpect.EOF]
+
+		still_reading = True
+		while still_reading:
+			result = child.expect(expected_lines)
+
+			if result == 0:
+				print child.before
+			elif result == len(expected_lines)-1:
+				still_reading = False
+
+		child.close()
 
 	def install(self):
-		self._params_for_install = ''
+		child = pexpect.spawn('bash -c "sudo make install"', timeout=5)
+		expected_lines = ["\[sudo\] password for [\w|\s]*: ", 
+							"[\w|\s]*\n", 
+							pexpect.EOF]
+
+		still_reading = True
+		while still_reading:
+			result = child.expect(expected_lines)
+
+			if result == 0:
+				print child.before
+				child.sendline(packager_sudo)
+			elif result == 1:
+				print child.before
+			elif result == len(expected_lines)-1:
+				still_reading = False
+
+		child.close()
 
 	def to_hash(self):
 		retval={ 'authors' : self.authors, 
