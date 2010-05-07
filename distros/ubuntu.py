@@ -123,5 +123,19 @@ class Builder(object):
 
 		f.write("\n")
 		f.close()
+
+		# Generate the *.md5sums file
+		f = open('/home/matt/Desktop/hello.md5sums', 'w')
+		existing_paths = []
+		for package in packages:
+			for entry in package.files:
+				if not os.path.isfile(entry): continue
+
+				md5sum = commands.getoutput("md5sum " + entry)
+				f.write(md5sum + "\n")
+
+		f.write("\n")
+		f.close()
+
 		print "Done"
 
