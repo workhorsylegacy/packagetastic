@@ -106,6 +106,21 @@ class Builder(object):
 		setup_source_code(meta)
 		meta.build()
 
+		# Get the parameters
+		params = meta.to_hash()
+		params['packages'] = packages
+		params['section'] = self.category_to_section[meta.category]
+		params['build_requirements'] += ["debhelper (>= 7)", "autotools-dev"]
+		params['category_to_section'] = self.category_to_section
+		params['package_type_to_architecture'] = self.package_type_to_architecture
+
+		# Add custom parameters
+		for package in packages:
+			package.custom['size'] = 0
+			for entry in package.files:
+				if not os.path.isfile(entry): continue
+				package.custom['size'] += os.path.getsize(entry)
+
 		# Generate the *.list file
 		f = open('/home/matt/Desktop/hello.list', 'w')
 		f.write("/.\n")
@@ -136,6 +151,14 @@ class Builder(object):
 
 		f.write("\n")
 		f.close()
+
+		# Generate the status file
+		with open('/home/matt/Desktop/status', 'w') as f:
+			from mako.template import Template
+			from mako.lookup import TemplateLookup
+			lookup = TemplateLookup(directories=['../../distros/ubuntu_templates/'], output_encoding='utf-8')
+			template = lookup.get_template("template.status.py")
+			f.write(template.render(**params).replace("@@", "$"))
 
 		print "Done"
 

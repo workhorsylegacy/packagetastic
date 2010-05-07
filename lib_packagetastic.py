@@ -468,6 +468,7 @@ class BinaryPackage(object):
 		self._install_requirements = []
 		self._files = []
 		self._additional_description = u""
+		self._custom = {}
 
 	def get_name(self): return self._name
 	name = property(get_name)
@@ -492,6 +493,9 @@ class BinaryPackage(object):
 
 	def get_additional_description(self): return self._additional_description
 	additional_description = property(get_additional_description)
+
+	def get_custom(self): return self._custom
+	custom = property(get_custom)
 
 	def to_hash(self):
 		retval={'additional_description' : self.additional_description, 

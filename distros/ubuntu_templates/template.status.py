@@ -5,37 +5,22 @@
     mako is run, these symbols are replaced with others: \
     @@ is replaced with $ \
 </%doc>\
-Source: ${name}
-Section: ${category_to_section[category]}
-Priority: ${priority}
-% if uses_python:
-XS-Python-Version: all
-% endif
-Maintainer: ${packager_name} <${packager_email}>
-% if uses_python:
-Build-Depends: debhelper (>= 5.0.62), python, ${str.join(', ', build_requirements)}
-Build-Depends-Indep: python-support (>= 0.3)
-% else:
-Build-Depends: ${str.join(', ', build_requirements)}
-% endif
-Standards-Version: 3.8.3
-Homepage: ${homepage}
-
 % for package in packages:
 Package: ${package.name}
-Section: ${category_to_section[package.category]}
+Status: install ok installed
 Priority: ${package.priority}
+Section: ${category_to_section[package.category]}
+Installed-Size: ${str(package.custom['size'])}
+Maintainer: ${packager_name} <${packager_email}>
 Architecture: ${package_type_to_architecture[package.package_type]}
-Depends: ${str.join(', ', package.install_requirements + additional_install_requirements)}
-% if uses_python:
-XB-Python-Version: @@{python:Versions}
-% endif
+Version: ${changelog[0].version}-${changelog[0].release}
+Depends: ${str.join(', ', package.install_requirements)}
 Description: ${short_description}
 % if len(package.additional_description) == 0:
 ${' ' + long_description.replace("\n", "\n ").replace("\n \n", "\n .\n")}
 % else:
 ${' ' + (long_description + '\n\n' + package.additional_description).replace("\n", "\n ").replace("\n \n", "\n .\n")}
 % endif
-
+Homepage: ${homepage}
 
 % endfor
