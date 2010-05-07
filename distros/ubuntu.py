@@ -122,7 +122,7 @@ class Builder(object):
 				package.custom['size'] += os.path.getsize(entry)
 
 		# Generate the *.list file
-		f = open('/home/matt/Desktop/hello.list', 'w')
+		f = open('/home/matt/Desktop/dpkg/info/hello.list', 'w')
 		f.write("/.\n")
 		existing_paths = []
 		for package in packages:
@@ -140,7 +140,7 @@ class Builder(object):
 		f.close()
 
 		# Generate the *.md5sums file
-		f = open('/home/matt/Desktop/hello.md5sums', 'w')
+		f = open('/home/matt/Desktop/dpkg/info/hello.md5sums', 'w')
 		existing_paths = []
 		for package in packages:
 			for entry in package.files:
@@ -152,13 +152,24 @@ class Builder(object):
 		f.write("\n")
 		f.close()
 
-		# Generate the status file
-		with open('/home/matt/Desktop/status', 'w') as f:
+		# Copy status to status-old
+		if os.path.isfile('/home/matt/Desktop/dpkg/status-old'):
+			os.remove('/home/matt/Desktop/dpkg/status-old')
+		shutil.copy2('/home/matt/Desktop/dpkg/status', '/home/matt/Desktop/dpkg/status-old')
+
+		# Generate the temp status file
+		with open('/home/matt/Desktop/dpkg/temp-status', 'w') as f:
 			from mako.template import Template
 			from mako.lookup import TemplateLookup
 			lookup = TemplateLookup(directories=['../../distros/ubuntu_templates/'], output_encoding='utf-8')
 			template = lookup.get_template("template.status.py")
 			f.write(template.render(**params).replace("@@", "$"))
+
+		# Append the new status to the existing status
+		with open('/home/matt/Desktop/dpkg/status', 'a') as status:
+			with open('/home/matt/Desktop/dpkg/temp-status', 'r') as temp_status:
+				status.write(temp_status.read())
+		os.remove('/home/matt/Desktop/dpkg/temp-status')
 
 		print "Done"
 

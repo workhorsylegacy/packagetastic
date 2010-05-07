@@ -9,6 +9,7 @@ import base64
 import gc
 import distutils
 import urllib2
+import shutil
 from helper import *
 
 exec_file("package_names.py", globals(), locals())
