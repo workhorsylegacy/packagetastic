@@ -309,7 +309,7 @@ class Builder(object):
 
 								"You need a passphrase to unlock the secret key for\r\n" +
 								"user: \"" + meta.packager_name + " <" + meta.packager_email + ">" + "\"\r\n" +
-								"1024-bit DSA key, ID [\w]*, created \d*-\d*-\d*\r\n" +
+								"\d+-bit \w+ key, ID \w+, created \d+-\d+-\d+\r\n" +
 								"\r\n" +
 								"Enter passphrase: [\w|\s\W]*",
 
