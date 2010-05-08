@@ -71,6 +71,26 @@ packagetastic_categories = [
 	'System/WebServers'
 ]
 
+def run_as_root(command, password, print_output=False):
+	child = pexpect.spawn('sudo bash -c "' + command + '"', timeout=5)
+	expected_lines = ["\[sudo\] password for [\w|\s]*: ", 
+							"[\w|\s]*\n", 
+							pexpect.EOF]
+
+	still_reading = True
+	while still_reading:
+		result = child.expect(expected_lines)
+
+		if result == 0:
+			if print_output: print child.before
+			child.sendline(password)
+		elif result == 1:
+			if print_output: print child.before
+		elif result == len(expected_lines)-1:
+			still_reading = False
+
+	child.close()
+
 def download_file(file_url, file_name):
 	opener1 = urllib2.build_opener()
 	page1 = opener1.open(file_url)

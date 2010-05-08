@@ -121,8 +121,12 @@ class Builder(object):
 				if not os.path.isfile(entry): continue
 				package.custom['size'] += os.path.getsize(entry)
 
+		home = os.path.expanduser('~')
+		if not os.path.isdir(home + '/.packagetastic'):
+			os.mkdir(home + '/.packagetastic')
+
 		# Generate the *.list file
-		f = open('/home/matt/Desktop/dpkg/info/hello.list', 'w')
+		f = open(home + '/.packagetastic/hello.list', 'w')
 		f.write("/.\n")
 		existing_paths = []
 		for package in packages:
@@ -140,7 +144,7 @@ class Builder(object):
 		f.close()
 
 		# Generate the *.md5sums file
-		f = open('/home/matt/Desktop/dpkg/info/hello.md5sums', 'w')
+		f = open(home + '/.packagetastic/hello.md5sums', 'w')
 		existing_paths = []
 		for package in packages:
 			for entry in package.files:
@@ -152,24 +156,26 @@ class Builder(object):
 		f.write("\n")
 		f.close()
 
-		# Copy status to status-old
-		if os.path.isfile('/home/matt/Desktop/dpkg/status-old'):
-			os.remove('/home/matt/Desktop/dpkg/status-old')
-		shutil.copy2('/home/matt/Desktop/dpkg/status', '/home/matt/Desktop/dpkg/status-old')
-
 		# Generate the temp status file
-		with open('/home/matt/Desktop/dpkg/temp-status', 'w') as f:
+		with open(home + '/.packagetastic/temp-status', 'w') as f:
 			from mako.template import Template
 			from mako.lookup import TemplateLookup
 			lookup = TemplateLookup(directories=['../../distros/ubuntu_templates/'], output_encoding='utf-8')
 			template = lookup.get_template("template.status.py")
 			f.write(template.render(**params).replace("@@", "$"))
 
+		# Copy the *.list and *.md5sums
+		run_as_root("cp " + home + '/.packagetastic/hello.list /var/lib/dpkg/info/hello.list' , packager_sudo)
+		run_as_root("cp " + home + '/.packagetastic/hello.md5sums /var/lib/dpkg/info/hello.md5sums' , packager_sudo)
+
+		# Rename status to status-old, and create the new status
+		if os.path.isfile('/var/lib/dpkg/status-old'):
+			run_as_root("rm /var/lib/dpkg/status-old" , packager_sudo)
+		run_as_root("mv /var/lib/dpkg/status /var/lib/dpkg/status-old" , packager_sudo)
+		run_as_root("cp /var/lib/dpkg/status-old /var/lib/dpkg/status" , packager_sudo)
+
 		# Append the new status to the existing status
-		with open('/home/matt/Desktop/dpkg/status', 'a') as status:
-			with open('/home/matt/Desktop/dpkg/temp-status', 'r') as temp_status:
-				status.write(temp_status.read())
-		os.remove('/home/matt/Desktop/dpkg/temp-status')
+		run_as_root("cat " + home + "/.packagetastic/temp-status" + " >> /var/lib/dpkg/status", packager_sudo)
 
 		print "Done"
 
