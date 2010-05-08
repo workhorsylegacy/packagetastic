@@ -177,5 +177,7 @@ class Builder(object):
 		# Append the new status to the existing status
 		run_as_root("cat " + home + "/.packagetastic/temp-status" + " >> /var/lib/dpkg/status", packager_sudo)
 
+		run_as_root("touch /var/lib/dpkg/lock", packager_sudo)
+
 		print "Done"
 
