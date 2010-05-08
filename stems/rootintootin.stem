@@ -32,7 +32,7 @@ class Meta(MetaPackage):
 		self.make()
 		self.install()
 
-class Meld(BinaryPackage):
+class RootinTootin(BinaryPackage):
 	def __init__(self):
 		BinaryPackage.__init__(self)
 		self._name = 'rootintootin'

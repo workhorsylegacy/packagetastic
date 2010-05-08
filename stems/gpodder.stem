@@ -32,7 +32,7 @@ class Meta(MetaPackage):
 		self.make()
 		self.install()
 
-class GPodder(BinaryPackage):
+class GParted(BinaryPackage):
 	def __init__(self):
 		BinaryPackage.__init__(self)
 		self._name = 'gpodder'
