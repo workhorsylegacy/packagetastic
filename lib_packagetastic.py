@@ -72,7 +72,7 @@ packagetastic_categories = [
 ]
 
 def run_as_root(command, password, print_output=False):
-	child = pexpect.spawn('sudo bash -c "' + command + '"', timeout=5)
+	child = pexpect.spawn('sudo bash -c "' + command + '"', timeout=60)
 	expected_lines = ["\[sudo\] password for [\w|\s]*: ", 
 							"[\w|\s]*\n", 
 							pexpect.EOF]
@@ -395,7 +395,7 @@ class MetaPackage(object):
 		raise Exception("The build method must be overridden by the child class.")
 
 	def configure(self):
-		child = pexpect.spawn('bash -c "./configure --prefix=/usr"', timeout=5)
+		child = pexpect.spawn('bash -c "./configure --prefix=/usr"', timeout=60)
 		expected_lines = ["[\w|\s]*\n", 
 							pexpect.EOF]
 
@@ -411,7 +411,7 @@ class MetaPackage(object):
 		child.close()
 
 	def make(self):
-		child = pexpect.spawn('bash -c "make"', timeout=5)
+		child = pexpect.spawn('bash -c "make"', timeout=60)
 		expected_lines = ["[\w|\s]*\n", 
 							pexpect.EOF]
 
@@ -427,7 +427,7 @@ class MetaPackage(object):
 		child.close()
 
 	def install(self):
-		child = pexpect.spawn('bash -c "sudo make install"', timeout=5)
+		child = pexpect.spawn('bash -c "sudo make install"', timeout=60)
 		expected_lines = ["\[sudo\] password for [\w|\s]*: ", 
 							"[\w|\s]*\n", 
 							pexpect.EOF]

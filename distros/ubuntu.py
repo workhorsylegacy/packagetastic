@@ -126,7 +126,7 @@ class Builder(object):
 			os.mkdir(home + '/.packagetastic')
 
 		# Generate the *.list file
-		f = open(home + '/.packagetastic/hello.list', 'w')
+		f = open(home + '/.packagetastic/' + meta.name + '.list', 'w')
 		f.write("/.\n")
 		existing_paths = []
 		for package in packages:
@@ -144,7 +144,7 @@ class Builder(object):
 		f.close()
 
 		# Generate the *.md5sums file
-		f = open(home + '/.packagetastic/hello.md5sums', 'w')
+		f = open(home + '/.packagetastic/' + meta.name + '.md5sums', 'w')
 		existing_paths = []
 		for package in packages:
 			for entry in package.files:
@@ -165,8 +165,8 @@ class Builder(object):
 			f.write(template.render(**params).replace("@@", "$"))
 
 		# Copy the *.list and *.md5sums
-		run_as_root("cp " + home + '/.packagetastic/hello.list /var/lib/dpkg/info/hello.list' , packager_sudo)
-		run_as_root("cp " + home + '/.packagetastic/hello.md5sums /var/lib/dpkg/info/hello.md5sums' , packager_sudo)
+		run_as_root("cp " + home + '/.packagetastic/' + meta.name + '.list /var/lib/dpkg/info/' + meta.name + '.list' , packager_sudo)
+		run_as_root("cp " + home + '/.packagetastic/' + meta.name + '.md5sums /var/lib/dpkg/info/' + meta.name + '.md5sums' , packager_sudo)
 
 		# Rename status to status-old, and create the new status
 		if os.path.isfile('/var/lib/dpkg/status-old'):

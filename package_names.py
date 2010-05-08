@@ -102,6 +102,30 @@ package_names = {
 		'fedora' : ['hal-libs'], 
 		'ubuntu' : ['libhal1', 'libhal-dev']
 	}, 
+	'gparted' : {
+		'fedora' : ['gparted'],
+		'ubuntu' : ['gparted']
+	}, 
+	'parted' : {
+		'fedora' : ['parted'],
+		'ubuntu' : ['parted']
+	}, 
+	'pkg-config' : {
+		'fedora' : ['pkg-config'],
+		'ubuntu' : ['pkg-config']
+	}, 
+	'libgtkmm-2.4-dev' : {
+		'fedora' : ['libgtkmm-2.4-dev'],
+		'ubuntu' : ['libgtkmm-2.4-dev']
+	}, 
+	'libparted0-dev' : {
+		'fedora' : ['libparted0-dev'],
+		'ubuntu' : ['libparted0-dev']
+	}, 
+	'rarian-compat' : {
+		'fedora' : ['rarian-compat'],
+		'ubuntu' : ['rarian-compat']
+	}, 
 	'gstreamer0.10-ffmpeg' : { 
 		'fedora' : ['gstreamer-ffmpeg'], 
 		'ubuntu' : ['gstreamer0.10-ffmpeg']
