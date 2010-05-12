@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+from lib_packagetastic import *
+
+class Meta(MetaPackage):
+	def __init__(self):
+		MetaPackage.__init__(self)
+		self._name = 'lxdream'
+		self._category = 'Applications/Emulators'
+		self._build_method = 'autotools'
+		self._priority = 'optional'
+		self._authors = [u'Nathan Keynes <nkeynes@lxdream.org>']
+		self._copyright = [u'2004-2008 Nathan Keynes']
+		self._homepage = 'http://www.lxdream.org'
+		self._license = 'GPL2+'
+		self._source = 'http://www.lxdream.org/count.php?file=lxdream-0.9.1.tar.gz'
+		"""
+		libatk1.0-0 (>= 1.20.0), libc6 (>= 2.3), libcairo2 (>= 1.2.4), 
+		libfontconfig1 (>= 2.4.0), libfreetype6 (>= 2.3.5), 
+		libgcc1 (>= 1:4.1.1), libgl1-mesa-glx | libgl1, 
+		libglib2.0-0 (>= 2.16.0), libgtk2.0-0 (>= 2.8.0), 
+		libpango1.0-0 (>= 1.14.0), libpng12-0 (>= 1.2.13-4), 
+		libx11-6, zlib1g (>= 1:1.1.4)
+		"""
+		self._build_requirements = ["gettext"]
+
+		self._short_description = u'Emulator for the Sega Dreamcast (TM) system'
+
+		self._long_description = u"An emulator for the Sega Dreamcast game console.\n"
+
+		self._changelog = [Changelog(version="0.9.1", release=1, time="Tue, 11 May 2010 19:46:16 -0700", text=u"Initial release") ]
+
+	def build(self):
+		self.configure()
+		self.make()
+		self.install()
+
+class Lxdream(BinaryPackage):
+	def __init__(self):
+		BinaryPackage.__init__(self)
+		self._name = 'lxdream'
+		self._category = 'Development/Tools'
+		self._package_type = 'c application'
+		self._priority = 'optional'
+		self._install_requirements = ["info"]
+
+		self._files = ['/usr/bin/lxdream', 
+						'/usr/etc/lxdreamrc', 
+						'/usr/lib/lxdream/lxdream_dummy.so', 
+						'/usr/share/applications/lxdream.desktop', 
+						'/usr/share/locale/de/LC_MESSAGES/lxdream.mo', 
+						'/usr/share/locale/es/LC_MESSAGES/lxdream.mo', 
+						'/usr/share/locale/it/LC_MESSAGES/lxdream.mo', 
+						'/usr/share/locale/pt_BR/LC_MESSAGES/lxdream.mo', 
+						'/usr/share/man/man1/lxdream.1', 
+						'/usr/share/pixmaps/lxdream/lxdream.png', 
+						'/usr/share/pixmaps/lxdream/tb-breakpoint.png', 
+						'/usr/share/pixmaps/lxdream/tb-cdrom.png', 
+						'/usr/share/pixmaps/lxdream/tb-ctrls.png', 
+						'/usr/share/pixmaps/lxdream/tb-load.png', 
+						'/usr/share/pixmaps/lxdream/tb-paths.png', 
+						'/usr/share/pixmaps/lxdream/tb-pause.png', 
+						'/usr/share/pixmaps/lxdream/tb-preferences.png', 
+						'/usr/share/pixmaps/lxdream/tb-reset.png', 
+						'/usr/share/pixmaps/lxdream/tb-run.png', 
+						'/usr/share/pixmaps/lxdream/tb-run-to.png', 
+						'/usr/share/pixmaps/lxdream/tb-save.png', 
+						'/usr/share/pixmaps/lxdream/tb-single-step.png', 
+						'/usr/share/pixmaps/lxdream.png', 
+					]
+
+

@@ -10,6 +10,10 @@ package_names = {
 	#	'fedora' : [], 
 	#	'ubuntu' : ['gstreamer0.10-gnomevfs']
 	#}, 
+	'lxdream' : {
+		'fedora' : ['lxdream'], 
+		'ubuntu' : ['lxdream']
+	}, 
 	'ldc' : {
 		'fedora' : ['ldc'], 
 		'ubuntu' : ['ldc']
