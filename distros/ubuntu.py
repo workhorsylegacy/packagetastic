@@ -46,10 +46,10 @@ class Builder(object):
 	}
 
 	package_type_to_architecture = {
-		'c application' : 'any', 
-		'c library' : 'any', 
-		'mono application' : 'any', 
-		'mono library' : 'any', 
+		'c application' : 'i386', 
+		'c library' : 'i386', 
+		'mono application' : 'i386', 
+		'mono library' : 'i386', 
 		'python application' : 'all', 
 		'python library' : 'all', 
 		'documentation' : 'all'
