@@ -96,6 +96,19 @@ class Builder(object):
 		setup_source_code(meta)
 		meta.build()
 
+		# Make sure all the listed files exist
+		unknown_files = []
+		for package in packages:
+			for entry in package.files:
+				if not os.path.isfile(entry):
+					unknown_files.append(entry)
+
+		if unknown_files:
+			print "Files that were listed in the stem file were not found:"
+			for entry in unknown_files:
+				print entry
+			exit()
+
 		# Get the parameters
 		params = meta.to_hash()
 		params['packages'] = packages
