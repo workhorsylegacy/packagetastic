@@ -55,16 +55,6 @@ class Builder(object):
 		'documentation' : 'all'
 	}
 
-	package_type_to_file_thing = {
-		'c application' : 'i386', 
-		'c library' : 'i386', 
-		'mono application' : 'i386', 
-		'mono library' : 'i386', 
-		'python application' : 'all', 
-		'python library' : 'all', 
-		'documentation' : 'all'
-	}
-
 	def build(self, meta, packages, packager_sudo, packager_gpg, use_chroot, is_interactive):
 		if not use_chroot:
 			print "Warning: Using pbuilder as the chroot anyway."
