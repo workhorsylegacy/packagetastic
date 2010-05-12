@@ -26,7 +26,7 @@ class Meta(MetaPackage):
 
 		self._short_description = u'Emulator for the Sega Dreamcast (TM) system'
 
-		self._long_description = u"An emulator for the Sega Dreamcast game console.\n"
+		self._long_description = u"An emulator for the Sega Dreamcast game console."
 
 		self._changelog = [Changelog(version="0.9.1", release=1, time="Tue, 11 May 2010 19:46:16 -0700", text=u"Initial release") ]
 

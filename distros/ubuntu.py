@@ -130,7 +130,6 @@ class Builder(object):
 						existing_paths.append(path)
 						f.write(path + "\n")
 
-		f.write("\n")
 		f.close()
 
 		# Generate the *.md5sums file
