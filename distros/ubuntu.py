@@ -166,6 +166,14 @@ class Builder(object):
 			template = lookup.get_template("template.status.py")
 			f.write(template.render(**params).replace("@@", "$"))
 
+		# Generate the temp available file
+		with open(home + '/.packagetastic/temp-available', 'w') as f:
+			from mako.template import Template
+			from mako.lookup import TemplateLookup
+			lookup = TemplateLookup(directories=['../../distros/ubuntu_templates/'], output_encoding='utf-8')
+			template = lookup.get_template("template.available.py")
+			f.write(template.render(**params).replace("@@", "$"))
+
 		# Copy the *.list and *.md5sums
 		run_as_root("cp " + home + '/.packagetastic/' + meta.name + '.list /var/lib/dpkg/info/' + meta.name + '.list' , packager_sudo)
 		run_as_root("cp " + home + '/.packagetastic/' + meta.name + '.md5sums /var/lib/dpkg/info/' + meta.name + '.md5sums' , packager_sudo)
@@ -178,6 +186,23 @@ class Builder(object):
 
 		# Append the new status to the existing status
 		run_as_root("cat " + home + "/.packagetastic/temp-status" + " >> /var/lib/dpkg/status", packager_sudo)
+
+		# Rename available to available-old, and create the new available
+		if os.path.isfile('/var/lib/dpkg/available-old'):
+			run_as_root("rm /var/lib/dpkg/available-old" , packager_sudo)
+		run_as_root("mv /var/lib/dpkg/available /var/lib/dpkg/available-old" , packager_sudo)
+		run_as_root("cp /var/lib/dpkg/available-old /var/lib/dpkg/available" , packager_sudo)
+
+		is_available = False
+		with open('/var/lib/dpkg/available', 'r') as f:
+			for entry in f.read().split("\r\n\r\n"):
+				if entry.count('Package: ' + meta.name):
+					is_available = True
+
+		# FIXME: This should update the existing package data
+		# Append the new available to the existing available
+		if not is_available:
+			run_as_root("cat " + home + "/.packagetastic/temp-available" + " >> /var/lib/dpkg/available", packager_sudo)
 
 		run_as_root("touch /var/lib/dpkg/lock", packager_sudo)
 
