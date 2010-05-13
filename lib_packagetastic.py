@@ -446,6 +446,26 @@ class MetaPackage(object):
 
 		child.close()
 
+	def setup_py_install(self):
+		child = pexpect.spawn('bash -c "sudo python setup.py install --record=install-files.txt"', timeout=60)
+		expected_lines = ["\[sudo\] password for [\w|\s]*: ", 
+							"[\w|\s]*\n", 
+							pexpect.EOF]
+
+		still_reading = True
+		while still_reading:
+			result = child.expect(expected_lines)
+
+			if result == 0:
+				print child.before
+				child.sendline(packager_sudo)
+			elif result == 1:
+				print child.before
+			elif result == len(expected_lines)-1:
+				still_reading = False
+
+		child.close()
+
 	def to_hash(self):
 		retval={ 'authors' : self.authors, 
 				'after_install' : self.after_install(), 

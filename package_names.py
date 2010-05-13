@@ -526,6 +526,10 @@ package_names = {
 		'fedora' : ['info'], 
 		'ubuntu' : ['info']
 	}, 
+	'python' : { 
+		'fedora' : ['python'], 
+		'ubuntu' : ['python']
+	}, 
 	'python-vte' : { 
 		'fedora' : ['vte'], 
 		'ubuntu' : ['python-vte']

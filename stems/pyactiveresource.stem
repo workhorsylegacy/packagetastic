@@ -15,7 +15,7 @@ class Meta(MetaPackage):
 		self._license = 'MIT'
 		self._source = 'http://pypi.python.org/packages/source/p/pyactiveresource/pyactiveresource-1.0.1.tar.gz'
 
-		self._build_requirements = []
+		self._build_requirements = ['python-dev']
 
 		self._short_description = u"ActiveResource for Python."
 
@@ -28,9 +28,7 @@ class Meta(MetaPackage):
 							Changelog(version="1.0.0", release=1, time="Fri, 07 Aug 2009 18:32:26 -0700", text=u"Initial release") ]
 
 	def build(self):
-		self.configure()
-		self.make()
-		self.install()
+		self.setup_py_install()
 
 class Pyactiveresource(BinaryPackage):
 	def __init__(self):
@@ -39,7 +37,21 @@ class Pyactiveresource(BinaryPackage):
 		self._category = 'Development/Libraries'
 		self._package_type = 'python library'
 		self._priority = 'optional'
-		self._install_requirements = []
+		self._install_requirements = ['python']
 
-		self._files = ['/usr/lib/python2.6/site-packages/*']
+		self._files = [
+"/usr/local/lib/python2.6/dist-packages/pyactiveresource/activeresource.py", 
+"/usr/local/lib/python2.6/dist-packages/pyactiveresource/util.py", 
+"/usr/local/lib/python2.6/dist-packages/pyactiveresource/fake_connection.py", 
+"/usr/local/lib/python2.6/dist-packages/pyactiveresource/connection.py", 
+"/usr/local/lib/python2.6/dist-packages/pyactiveresource/formats.py", 
+"/usr/local/lib/python2.6/dist-packages/pyactiveresource/__init__.py", 
+"/usr/local/lib/python2.6/dist-packages/pyactiveresource/activeresource.pyc", 
+"/usr/local/lib/python2.6/dist-packages/pyactiveresource/util.pyc", 
+"/usr/local/lib/python2.6/dist-packages/pyactiveresource/fake_connection.pyc", 
+"/usr/local/lib/python2.6/dist-packages/pyactiveresource/connection.pyc", 
+"/usr/local/lib/python2.6/dist-packages/pyactiveresource/formats.pyc", 
+"/usr/local/lib/python2.6/dist-packages/pyactiveresource/__init__.pyc", 
+"/usr/local/lib/python2.6/dist-packages/pyactiveresource-1.0.1.egg-info"
+		]
 
