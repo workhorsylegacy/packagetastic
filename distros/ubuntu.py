@@ -122,7 +122,7 @@ class Builder(object):
 			package.custom['size'] = 0
 			for entry in package.files:
 				if not os.path.isfile(entry): continue
-				package.custom['size'] += os.path.getsize(entry)
+				package.custom['size'] += os.path.getsize(entry) / 1024
 
 		home = os.path.expanduser('~')
 		if not os.path.isdir(home + '/.packagetastic'):
