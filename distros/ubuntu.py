@@ -183,7 +183,7 @@ class Builder(object):
 		user_name = commands.getoutput('whoami')
 		run_as_root('chown -R ' + user_name + ' ' + home + '/.packagetastic/' + meta.name, meta.packager_sudo)
 		package = home + '/.packagetastic/' + meta.name
-		commands.getoutput('tar --force-local --no-wildcards -v -p -cf ' + package + '_ubuntu-10.04_i386.pkg --use-compress-program=gzip ' + package)
+		commands.getoutput('tar --force-local --no-wildcards -v -p -cf ' + package + '_' + meta.version + '_ubuntu-10.04_i386.pkg --use-compress-program=gzip ' + package)
 
 	def install(self, meta, packages):
 		home = os.path.expanduser('~')
