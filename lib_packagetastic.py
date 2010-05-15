@@ -306,6 +306,7 @@ class MetaPackage(object):
 		self._copyright = []
 		self._packager_name = None
 		self._packager_email = None
+		self._packager_sudo = None
 		self._homepage = None
 		self._license = None
 		self._source = None
@@ -313,10 +314,6 @@ class MetaPackage(object):
 		self._short_description = None
 		self._long_description = None
 		self._changelog = None
-		self._packager_sudo = None
-
-	def set_packager_sudo(self, value):
-		self._packager_sudo = value
 
 	def get_name(self): return self._name
 	name = property(get_name)
@@ -343,6 +340,10 @@ class MetaPackage(object):
 	def get_packager_email(self): return self._packager_email
 	def set_packager_email(self, value): self._packager_email = value
 	packager_email = property(get_packager_email, set_packager_email)
+
+	def get_packager_sudo(self): return self._packager_sudo
+	def set_packager_sudo(self, value): self._packager_sudo = value
+	packager_sudo = property(get_packager_sudo, set_packager_sudo)
 
 	def get_homepage(self): return self._homepage
 	homepage = property(get_homepage)
@@ -816,7 +817,7 @@ def gen_stem(name, version, source):
 		template = lookup.get_template("template.stem.py")
 		spec_file.write(template.render(**params).replace("@@", "%").replace("\\\\\\", "\\\n"))
 
-def build(distro_name, package_name):
+def _get_packager_data():
 	global packagetastic_dir
 	os.chdir(packagetastic_dir)
 
@@ -856,16 +857,9 @@ def build(distro_name, package_name):
 	packager_gpg = f.read()[0:-1]
 	f.close()
 
-	# Make sure we have a distro file that matches the name
-	if not os.path.isfile('distros/' + distro_name + '.py'):
-		print "Packagetastic does not know how to build for the distro '" + distro_name + "'. Exiting ..."
-		exit()
+	return (packager_name, packager_email, packager_sudo, packager_gpg)
 
-	# Make sure we have a stem file that matches the name
-	if not os.path.isfile('stems/' + package_name + '.stem'):
-		print "Packagetastic does not have a stem file for the package '" + package_name + "'. Exiting ..."
-		exit()
-
+def _get_package_data(distro_name, package_name):
 	# Find any junk MetaPackage and BinaryPackage already in memory
 	junk_objects = []
 	for obj in gc.get_objects():
@@ -884,7 +878,7 @@ def build(distro_name, package_name):
 				meta = obj()
 				break
 
-	# Get the packages to build
+	# Get the packages that are loaded
 	packages = []
 	for obj in gc.get_objects():
 		if type(obj) == type and obj != BinaryPackage and issubclass(obj, BinaryPackage):
@@ -894,6 +888,24 @@ def build(distro_name, package_name):
 
 	# Validate the meta and packages
 	validate_package(distro_name, meta, packages)
+	builder = eval('Builder()')
+
+	return (meta, packages, builder)
+
+def build(distro_name, package_name):
+	packager_name, packager_email, packager_sudo, packager_gpg = _get_packager_data()
+
+	# Make sure we have a distro file that matches the name
+	if not os.path.isfile('distros/' + distro_name + '.py'):
+		print "Packagetastic does not know how to build for the distro '" + distro_name + "'. Exiting ..."
+		exit()
+
+	# Make sure we have a stem file that matches the name
+	if not os.path.isfile('stems/' + package_name + '.stem'):
+		print "Packagetastic does not have a stem file for the package '" + package_name + "'. Exiting ..."
+		exit()
+
+	meta, packages, builder = _get_package_data(distro_name, package_name)
 
 	# Download the source code
 	try:
@@ -918,87 +930,20 @@ def build(distro_name, package_name):
 
 	# Build the package for that distro
 	print "\nBuilding " + package_name + " ..."
-	meta.set_packager_sudo(packager_sudo)
+	meta.packager_sudo = packager_sudo
 	meta.packager_name = packager_name
 	meta.packager_email = packager_email
-	builder = eval('Builder()')
 	builder.build(meta, packages, packager_sudo, packager_gpg)
 
 def install(distro_name, package_name):
-	global packagetastic_dir
-	os.chdir(packagetastic_dir)
+	packager_name, packager_email, packager_sudo, packager_gpg = _get_packager_data()
 
-	# Make sure the packager_name file exists
-	if not os.path.isfile('packager_name'):
-		print "Add the packager name to the 'packager_name' file."
-		exit()
-
-	# Make sure the packager_email file exists
-	if not os.path.isfile('packager_email'):
-		print "Add the packager email address to the 'packager_email' file."
-		exit()
-
-	# Make sure the packager_sudo file exists
-	if not os.path.isfile('packager_sudo'):
-		print "Add the sudo password to the 'packager_sudo' file."
-		exit()
-
-	# Make sure the packager_gpg file exists
-	if not os.path.isfile('packager_gpg'):
-		print "Add the gpg password to the 'packager_gpg' file."
-		exit()
-
-	f = open('packager_name')
-	packager_name = f.read()[0:-1]
-	f.close()
-
-	f = open('packager_email')
-	packager_email = f.read()[0:-1]
-	f.close()
-
-	f = open('packager_sudo')
-	packager_sudo = f.read()[0:-1]
-	f.close()
-
-	f = open('packager_gpg')
-	packager_gpg = f.read()[0:-1]
-	f.close()
-
-	# Load the distro and stem files
-	execfile('distros/' + distro_name + '.py')
-	execfile('stems/' + package_name + '.stem')
-
-	# Find any junk MetaPackage and BinaryPackage already in memory
-	junk_objects = []
-	for obj in gc.get_objects():
-		if type(obj) == type and (issubclass(obj, MetaPackage) or issubclass(obj, BinaryPackage)):
-			junk_objects.append(obj)
-
-	# Load the distro and stem files
-	execfile('distros/' + distro_name + '.py')
-	execfile('stems/' + package_name + '.stem')
-
-	# Get the package meta data
-	meta = None
-	for obj in gc.get_objects():
-		if type(obj) == type and issubclass(obj, MetaPackage) and obj().name == package_name:
-			if junk_objects.count(obj) == 0:
-				meta = obj()
-				break
-
-	# Get the packages to install
-	packages = []
-	for obj in gc.get_objects():
-		if type(obj) == type and obj != BinaryPackage and issubclass(obj, BinaryPackage):
-			if junk_objects.count(obj) == 0:
-				package = obj()
-				packages.append(package)
+	meta, packages, builder = _get_package_data(distro_name, package_name)
 
 	# Install the package for that distro
 	print "\nInstalling " + package_name + " ..."
-	meta.set_packager_sudo(packager_sudo)
+	meta.packager_sudo = packager_sudo
 	meta.packager_name = packager_name
 	meta.packager_email = packager_email
-	builder = eval('Builder()')
 	builder.install(meta, packages, packager_sudo, packager_gpg)
 
