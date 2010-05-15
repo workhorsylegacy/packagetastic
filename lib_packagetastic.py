@@ -71,7 +71,7 @@ packagetastic_categories = [
 	'System/WebServers'
 ]
 
-def run_as_root(command, password, print_output=False):
+def run_as_root(command, password, print_output=True):
 	child = pexpect.spawn('sudo bash -c "' + command + '"', timeout=60)
 	expected_lines = ["\[sudo\] password for [\w|\s]*: ", 
 							"[\w|\s]*\n", 
@@ -82,10 +82,10 @@ def run_as_root(command, password, print_output=False):
 		result = child.expect(expected_lines)
 
 		if result == 0:
-			if print_output: print child.before
+			print child.before
 			child.sendline(password)
 		elif result == 1:
-			if print_output: print child.before
+			print child.before
 		elif result == len(expected_lines)-1:
 			still_reading = False
 
@@ -882,7 +882,6 @@ def build(distro_name, package_name):
 		if type(obj) == type and issubclass(obj, MetaPackage) and obj().name == package_name:
 			if junk_objects.count(obj) == 0:
 				meta = obj()
-				meta.set_packager_sudo(packager_sudo)
 				break
 
 	# Get the packages to build
@@ -919,9 +918,87 @@ def build(distro_name, package_name):
 
 	# Build the package for that distro
 	print "\nBuilding " + package_name + " ..."
+	meta.set_packager_sudo(packager_sudo)
 	meta.packager_name = packager_name
 	meta.packager_email = packager_email
 	builder = eval('Builder()')
 	builder.build(meta, packages, packager_sudo, packager_gpg)
 
+def install(distro_name, package_name):
+	global packagetastic_dir
+	os.chdir(packagetastic_dir)
+
+	# Make sure the packager_name file exists
+	if not os.path.isfile('packager_name'):
+		print "Add the packager name to the 'packager_name' file."
+		exit()
+
+	# Make sure the packager_email file exists
+	if not os.path.isfile('packager_email'):
+		print "Add the packager email address to the 'packager_email' file."
+		exit()
+
+	# Make sure the packager_sudo file exists
+	if not os.path.isfile('packager_sudo'):
+		print "Add the sudo password to the 'packager_sudo' file."
+		exit()
+
+	# Make sure the packager_gpg file exists
+	if not os.path.isfile('packager_gpg'):
+		print "Add the gpg password to the 'packager_gpg' file."
+		exit()
+
+	f = open('packager_name')
+	packager_name = f.read()[0:-1]
+	f.close()
+
+	f = open('packager_email')
+	packager_email = f.read()[0:-1]
+	f.close()
+
+	f = open('packager_sudo')
+	packager_sudo = f.read()[0:-1]
+	f.close()
+
+	f = open('packager_gpg')
+	packager_gpg = f.read()[0:-1]
+	f.close()
+
+	# Load the distro and stem files
+	execfile('distros/' + distro_name + '.py')
+	execfile('stems/' + package_name + '.stem')
+
+	# Find any junk MetaPackage and BinaryPackage already in memory
+	junk_objects = []
+	for obj in gc.get_objects():
+		if type(obj) == type and (issubclass(obj, MetaPackage) or issubclass(obj, BinaryPackage)):
+			junk_objects.append(obj)
+
+	# Load the distro and stem files
+	execfile('distros/' + distro_name + '.py')
+	execfile('stems/' + package_name + '.stem')
+
+	# Get the package meta data
+	meta = None
+	for obj in gc.get_objects():
+		if type(obj) == type and issubclass(obj, MetaPackage) and obj().name == package_name:
+			if junk_objects.count(obj) == 0:
+				meta = obj()
+				break
+
+	# Get the packages to install
+	packages = []
+	for obj in gc.get_objects():
+		if type(obj) == type and obj != BinaryPackage and issubclass(obj, BinaryPackage):
+			if junk_objects.count(obj) == 0:
+				package = obj()
+				packages.append(package)
+
+	# Install the package for that distro
+	print "\nInstalling " + package_name + " ..."
+	meta.set_packager_sudo(packager_sudo)
+	meta.packager_name = packager_name
+	meta.packager_email = packager_email
+	builder = eval('Builder()')
+	builder.install(meta, packages, packager_sudo, packager_gpg)
 

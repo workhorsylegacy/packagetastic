@@ -11,6 +11,8 @@ os.chdir(os.sys.path[0])
 mode = ""
 if len(sys.argv) >= 4 and sys.argv[1] == "build":
 	mode = "build"
+elif len(sys.argv) >= 4 and sys.argv[1] == "install":
+	mode = "install"
 elif len(sys.argv) >= 3 and sys.argv[1] == "build_all":
 	mode = "build_all"
 elif len(sys.argv) == 5 and sys.argv[1] == "gen_stem":
@@ -22,6 +24,7 @@ else:
 if mode == "help":
 	print "usage:"
 	print "./packagetastic build distro:=name package:=name"
+	print "./packagetastic install distro:=name package:=name"
 	print "./packagetastic build_all distro:=name"
 	print "./packagetastic gen_stem name:=name version:=version source:=url"
 	print ""
@@ -58,6 +61,30 @@ if mode == "build":
 
 	# Build the package
 	lib_packagetastic.build(distro_name, package_name)
+
+# Install a package
+if mode == "install":
+	package_name, distro_name = None, None
+
+	# Get the arguments
+	for arg in sys.argv[2:]:
+		if arg.startswith('package:='):
+			package_name = arg.lower().split(':=')[1]
+		elif arg.startswith('distro:='):
+			distro_name = arg.lower().split(':=')[1]
+
+	# Make sure we got something
+	pairs = {'package' : package_name, 'distro' : distro_name}
+	for key, value in pairs.iteritems():
+		if value == None:
+			print "No argument for " + key + " was found. Exiting ..."
+			exit()
+
+	# Setup packagetastic
+	lib_packagetastic.init_packagetastic(distro_name)
+
+	# Build the package
+	lib_packagetastic.install(distro_name, package_name)
 
 # Build all packages
 if mode == "build_all":

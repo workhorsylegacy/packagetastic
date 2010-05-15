@@ -190,10 +190,20 @@ class Builder(object):
 		package = home + '/.packagetastic/' + meta.name
 		commands.getoutput('tar --force-local --no-wildcards -v -p -cf ' + package + '_ubuntu-10.04_i386.pkg --use-compress-program=gzip ' + package)
 
-	def install(self):
+	def install(self, meta, packages, packager_sudo, packager_gpg):
+		home = os.path.expanduser('~')
+
+		# Copy all the files
+		for package in packages:
+			for entry in package.files:
+				dir_name = str.join('/', entry.split('/')[:-1])
+				if os.path.isdir(dir_name):
+					run_as_root('mkdir -p ' + dir_name, packager_sudo)
+				run_as_root('cp ' + home + '/.packagetastic/' + meta.name + entry + ' ' + entry, packager_sudo)
+
 		# Copy the *.list and *.md5sums
-		run_as_root("cp " + home + '/.packagetastic/' + meta.name + '.list /var/lib/dpkg/info/' + meta.name + '.list' , packager_sudo)
-		run_as_root("cp " + home + '/.packagetastic/' + meta.name + '.md5sums /var/lib/dpkg/info/' + meta.name + '.md5sums' , packager_sudo)
+		run_as_root("cp " + home + '/.packagetastic/' + meta.name + '/' + meta.name + '.list /var/lib/dpkg/info/' + meta.name + '.list' , packager_sudo)
+		run_as_root("cp " + home + '/.packagetastic/' + meta.name + '/' + meta.name + '.md5sums /var/lib/dpkg/info/' + meta.name + '.md5sums' , packager_sudo)
 
 		# Rename status to status-old, and create the new status
 		if os.path.isfile('/var/lib/dpkg/status-old'):
@@ -202,7 +212,7 @@ class Builder(object):
 		run_as_root("cp /var/lib/dpkg/status-old /var/lib/dpkg/status" , packager_sudo)
 
 		# Append the new status to the existing status
-		run_as_root("cat " + home + "/.packagetastic/temp-status" + " >> /var/lib/dpkg/status", packager_sudo)
+		run_as_root("cat " + home + "/.packagetastic/" + meta.name + "/temp-status" + " >> /var/lib/dpkg/status", packager_sudo)
 
 		# Rename available to available-old, and create the new available
 		if os.path.isfile('/var/lib/dpkg/available-old'):
@@ -219,7 +229,7 @@ class Builder(object):
 		# FIXME: This should update the existing package data
 		# Append the new available to the existing available
 		if not is_available:
-			run_as_root("cat " + home + "/.packagetastic/temp-available" + " >> /var/lib/dpkg/available", packager_sudo)
+			run_as_root("cat " + home + "/.packagetastic/" + meta.name + "/temp-available" + " >> /var/lib/dpkg/available", packager_sudo)
 
 		run_as_root("touch /var/lib/dpkg/lock", packager_sudo)
 
