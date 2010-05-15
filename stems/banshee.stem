@@ -36,7 +36,7 @@ class Meta(MetaPackage):
 							u'2005 by Brian Nickel']
 		self._homepage = 'http://banshee-project.org'
 		self._license = 'LGPL2.1'
-		self._source = 'http://download.banshee-project.org/banshee/banshee-1-1.4.3.tar.bz2'
+		self._source = 'http://download.banshee-project.org/banshee/stable/1.6.0/banshee-1.6.0.tar.gz'
 
 		self._build_requirements = ['cli-common-dev (>= 0.4.4)', 
 									'intltool (>= 0.35)', 
@@ -86,12 +86,13 @@ class Meta(MetaPackage):
 									u"and other media devices, play and manage video files and burn selections\n" + \
 									u"to a CD."
 
-		self._changelog = [Changelog(version="1.4.3", release=1, time="Sun, 23 Aug 2009 19:31:37 -0700", text=u"Initial release")]
+		self._changelog = [
+				Changelog(version="1.6.0", release=1, time="Fri, 14 May 2010 23:52:31 -0700", text=u"New version"), 
+				Changelog(version="1.4.3", release=1, time="Sun, 23 Aug 2009 19:31:37 -0700", text=u"Initial release")
+		]
 
 	def build(self):
-		self.configure(flags=['disable-docs', 'enable-mtp', 'enable-ipod', 
-								'enable-podcast', 'disable-boo', 
-								{'with-vendor-build-id' : '%{distro_id}'}])
+		self.configure("--disable-boo --disable-webkit --disable-youtube --disable-ipod")
 		self.make()
 		self.install()
 
@@ -114,6 +115,233 @@ class Banshee(BinaryPackage):
 										'brasero', 
 										'avahi-daemon']
 
+		self._files = [
+			'/usr/bin/banshee-1', 
+			'/usr/bin/muinshee', 
+			'/usr/lib/banshee-1/Banshee.CollectionIndexer.dll', 
+			'/usr/lib/banshee-1/Banshee.CollectionIndexer.dll.mdb', 
+			'/usr/lib/banshee-1/Banshee.Core.dll', 
+			'/usr/lib/banshee-1/Banshee.Core.dll.config', 
+			'/usr/lib/banshee-1/Banshee.Core.dll.mdb', 
+			'/usr/lib/banshee-1/Banshee.exe', 
+			'/usr/lib/banshee-1/Banshee.exe.config', 
+			'/usr/lib/banshee-1/Banshee.exe.mdb', 
+			'/usr/lib/banshee-1/Banshee.Services.addins', 
+			'/usr/lib/banshee-1/Banshee.Services.dll', 
+			'/usr/lib/banshee-1/Banshee.Services.dll.mdb', 
+			'/usr/lib/banshee-1/Banshee.ThickClient.dll', 
+			'/usr/lib/banshee-1/Banshee.ThickClient.dll.mdb', 
+			'/usr/lib/banshee-1/Banshee.Widgets.dll', 
+			'/usr/lib/banshee-1/Banshee.Widgets.dll.config', 
+			'/usr/lib/banshee-1/Banshee.Widgets.dll.mdb', 
+			'/usr/lib/banshee-1/Beroe.exe', 
+			'/usr/lib/banshee-1/Beroe.exe.mdb', 
+			'/usr/lib/banshee-1/gconf-schema-extractor.exe', 
+			'/usr/lib/banshee-1/Halie.exe', 
+			'/usr/lib/banshee-1/Halie.exe.mdb', 
+			'/usr/lib/banshee-1/Hyena.dll', 
+			'/usr/lib/banshee-1/Hyena.dll.mdb', 
+			'/usr/lib/banshee-1/Hyena.Gui.dll', 
+			'/usr/lib/banshee-1/Hyena.Gui.dll.config', 
+			'/usr/lib/banshee-1/Hyena.Gui.dll.mdb', 
+			'/usr/lib/banshee-1/Lastfm.dll', 
+			'/usr/lib/banshee-1/Lastfm.dll.mdb', 
+			'/usr/lib/banshee-1/Lastfm.Gui.dll', 
+			'/usr/lib/banshee-1/Lastfm.Gui.dll.mdb', 
+			'/usr/lib/banshee-1/libbanshee.a', 
+			'/usr/lib/banshee-1/libbanshee.la', 
+			'/usr/lib/banshee-1/libbanshee.so', 
+			'/usr/lib/banshee-1/Migo.dll', 
+			'/usr/lib/banshee-1/Migo.dll.mdb', 
+			'/usr/lib/banshee-1/Mono.Data.Sqlite.dll', 
+			'/usr/lib/banshee-1/Mono.Data.Sqlite.dll.mdb', 
+			'/usr/lib/banshee-1/Mono.Media.dll', 
+			'/usr/lib/banshee-1/Mono.Media.dll.mdb', 
+			'/usr/lib/banshee-1/Mtp.dll', 
+			'/usr/lib/banshee-1/Mtp.dll.config', 
+			'/usr/lib/banshee-1/Mtp.dll.mdb', 
+			'/usr/lib/banshee-1/Muinshee.exe', 
+			'/usr/lib/banshee-1/Muinshee.exe.mdb', 
+			'/usr/lib/banshee-1/MusicBrainz.dll', 
+			'/usr/lib/banshee-1/MusicBrainz.dll.mdb', 
+			'/usr/lib/banshee-1/Nereid.exe', 
+			'/usr/lib/banshee-1/Nereid.exe.mdb', 
+			'/usr/lib/banshee-1/Backends/Banshee.Gnome.dll', 
+			'/usr/lib/banshee-1/Backends/Banshee.Gnome.dll.mdb', 
+			'/usr/lib/banshee-1/Backends/Banshee.GStreamer.dll', 
+			'/usr/lib/banshee-1/Backends/Banshee.GStreamer.dll.config', 
+			'/usr/lib/banshee-1/Backends/Banshee.GStreamer.dll.mdb', 
+			'/usr/lib/banshee-1/Backends/Banshee.Hal.dll', 
+			'/usr/lib/banshee-1/Backends/Banshee.Hal.dll.mdb', 
+			'/usr/lib/banshee-1/Backends/Banshee.Unix.dll', 
+			'/usr/lib/banshee-1/Backends/Banshee.Unix.dll.config', 
+			'/usr/lib/banshee-1/Backends/Banshee.Unix.dll.mdb', 
+			'/usr/lib/banshee-1/Extensions/Banshee.Audiobook.dll', 
+			'/usr/lib/banshee-1/Extensions/Banshee.Audiobook.dll.mdb', 
+			'/usr/lib/banshee-1/Extensions/Banshee.AudioCd.dll', 
+			'/usr/lib/banshee-1/Extensions/Banshee.AudioCd.dll.mdb', 
+			'/usr/lib/banshee-1/Extensions/Banshee.Bookmarks.dll', 
+			'/usr/lib/banshee-1/Extensions/Banshee.Bookmarks.dll.mdb', 
+			'/usr/lib/banshee-1/Extensions/Banshee.Bpm.dll', 
+			'/usr/lib/banshee-1/Extensions/Banshee.Bpm.dll.mdb', 
+			'/usr/lib/banshee-1/Extensions/Banshee.CoverArt.dll', 
+			'/usr/lib/banshee-1/Extensions/Banshee.CoverArt.dll.mdb', 
+			'/usr/lib/banshee-1/Extensions/Banshee.Daap.dll', 
+			'/usr/lib/banshee-1/Extensions/Banshee.Daap.dll.mdb', 
+			'/usr/lib/banshee-1/Extensions/Banshee.Dap.dll', 
+			'/usr/lib/banshee-1/Extensions/Banshee.Dap.dll.mdb', 
+			'/usr/lib/banshee-1/Extensions/Banshee.Dap.MassStorage.dll', 
+			'/usr/lib/banshee-1/Extensions/Banshee.Dap.MassStorage.dll.mdb', 
+			'/usr/lib/banshee-1/Extensions/Banshee.Dap.Mtp.dll', 
+			'/usr/lib/banshee-1/Extensions/Banshee.Dap.Mtp.dll.mdb', 
+			'/usr/lib/banshee-1/Extensions/Banshee.Emusic.dll', 
+			'/usr/lib/banshee-1/Extensions/Banshee.Emusic.dll.mdb', 
+			'/usr/lib/banshee-1/Extensions/Banshee.FileSystemQueue.dll', 
+			'/usr/lib/banshee-1/Extensions/Banshee.FileSystemQueue.dll.mdb', 
+			'/usr/lib/banshee-1/Extensions/Banshee.InternetArchive.dll', 
+			'/usr/lib/banshee-1/Extensions/Banshee.InternetArchive.dll.mdb', 
+			'/usr/lib/banshee-1/Extensions/Banshee.InternetRadio.dll', 
+			'/usr/lib/banshee-1/Extensions/Banshee.InternetRadio.dll.mdb', 
+			'/usr/lib/banshee-1/Extensions/Banshee.Lastfm.dll', 
+			'/usr/lib/banshee-1/Extensions/Banshee.Lastfm.dll.mdb', 
+			'/usr/lib/banshee-1/Extensions/Banshee.LibraryWatcher.dll', 
+			'/usr/lib/banshee-1/Extensions/Banshee.LibraryWatcher.dll.mdb', 
+			'/usr/lib/banshee-1/Extensions/Banshee.MiniMode.dll', 
+			'/usr/lib/banshee-1/Extensions/Banshee.MiniMode.dll.mdb', 
+			'/usr/lib/banshee-1/Extensions/Banshee.MultimediaKeys.dll', 
+			'/usr/lib/banshee-1/Extensions/Banshee.MultimediaKeys.dll.mdb', 
+			'/usr/lib/banshee-1/Extensions/Banshee.NotificationArea.dll', 
+			'/usr/lib/banshee-1/Extensions/Banshee.NotificationArea.dll.config', 
+			'/usr/lib/banshee-1/Extensions/Banshee.NotificationArea.dll.mdb', 
+			'/usr/lib/banshee-1/Extensions/Banshee.NowPlaying.dll', 
+			'/usr/lib/banshee-1/Extensions/Banshee.NowPlaying.dll.mdb', 
+			'/usr/lib/banshee-1/Extensions/Banshee.PlayerMigration.dll', 
+			'/usr/lib/banshee-1/Extensions/Banshee.PlayerMigration.dll.mdb', 
+			'/usr/lib/banshee-1/Extensions/Banshee.PlayQueue.dll', 
+			'/usr/lib/banshee-1/Extensions/Banshee.PlayQueue.dll.mdb', 
+			'/usr/lib/banshee-1/Extensions/Banshee.Podcasting.dll', 
+			'/usr/lib/banshee-1/Extensions/Banshee.Podcasting.dll.mdb', 
+			'/usr/lib/banshee-1/gstreamer-0.10/libgstequalizer.a', 
+			'/usr/lib/banshee-1/gstreamer-0.10/libgstequalizer.la', 
+			'/usr/lib/banshee-1/gstreamer-0.10/libgstequalizer.so', 
+			'/usr/lib/pkgconfig/banshee-1-collection-indexer.pc', 
+			'/usr/lib/pkgconfig/banshee-1-core.pc', 
+			'/usr/lib/pkgconfig/banshee-1-hyena-gui.pc', 
+			'/usr/lib/pkgconfig/banshee-1-hyena.pc', 
+			'/usr/lib/pkgconfig/banshee-1-lastfm-gui.pc', 
+			'/usr/lib/pkgconfig/banshee-1-lastfm.pc', 
+			'/usr/lib/pkgconfig/banshee-1-mono-media.pc', 
+			'/usr/lib/pkgconfig/banshee-1-musicbrainz.pc', 
+			'/usr/lib/pkgconfig/banshee-1-nowplaying.pc', 
+			'/usr/lib/pkgconfig/banshee-1-services.pc', 
+			'/usr/lib/pkgconfig/banshee-1-thickclient.pc', 
+			'/usr/share/applications/banshee-1-audiocd.desktop', 
+			'/usr/share/applications/banshee-1.desktop', 
+			'/usr/share/applications/banshee-1-media-player.desktop', 
+			'/usr/share/banshee-1/audio-profiles/aac-novell.xml', 
+			'/usr/share/banshee-1/audio-profiles/base.xml', 
+			'/usr/share/banshee-1/audio-profiles/flac.xml', 
+			'/usr/share/banshee-1/audio-profiles/mp3-lame.xml', 
+			'/usr/share/banshee-1/audio-profiles/mp3-xing.xml', 
+			'/usr/share/banshee-1/audio-profiles/vorbis.xml', 
+			'/usr/share/banshee-1/audio-profiles/wavpack.xml', 
+			'/usr/share/banshee-1/audio-profiles/wav.xml', 
+			'/usr/share/banshee-1/audio-profiles/wma.xml', 
+
+			'/usr/share/banshee-1/icons/hicolor/16x16/actions/media-import-audio-cd.png', 
+			'/usr/share/banshee-1/icons/hicolor/16x16/actions/media-repeat-all.png', 
+			'/usr/share/banshee-1/icons/hicolor/16x16/actions/media-repeat-none.png', 
+			'/usr/share/banshee-1/icons/hicolor/16x16/actions/media-repeat-single.png', 
+			'/usr/share/banshee-1/icons/hicolor/16x16/actions/media-write-cd.png', 
+
+			'/usr/share/banshee-1/icons/hicolor/16x16/categories/amazon-mp3-source.png', 
+			'/usr/share/banshee-1/icons/hicolor/16x16/categories/audiobook.png', 
+			'/usr/share/banshee-1/icons/hicolor/16x16/categories/podcast.png', 
+			'/usr/share/banshee-1/icons/hicolor/16x16/categories/source-playlist.png', 
+			'/usr/share/banshee-1/icons/hicolor/16x16/categories/source-smart-playlist.png', 
+
+			'/usr/share/banshee-1/icons/hicolor/16x16/devices/phone-google-nexus-one.png', 
+			'/usr/share/banshee-1/icons/hicolor/16x16/devices/phone-htc-g1-white.png', 
+			'/usr/share/banshee-1/icons/hicolor/16x16/devices/phone-nokia-n900.png', 
+			'/usr/share/banshee-1/icons/hicolor/16x16/devices/phone-palm-pre.png', 
+
+			'/usr/share/banshee-1/icons/hicolor/16x16/emblems/creative-commons-by.png', 
+			'/usr/share/banshee-1/icons/hicolor/16x16/emblems/creative-commons-nc.png', 
+			'/usr/share/banshee-1/icons/hicolor/16x16/emblems/creative-commons-nd.png', 
+			'/usr/share/banshee-1/icons/hicolor/16x16/emblems/creative-commons-pd.png', 
+			'/usr/share/banshee-1/icons/hicolor/16x16/emblems/creative-commons-sa.png', 
+
+			'/usr/share/banshee-1/icons/hicolor/16x16/status/podcast-new.png', 
+
+			'/usr/share/banshee-1/icons/hicolor/22x22/actions/encode.png', 
+			'/usr/share/banshee-1/icons/hicolor/22x22/actions/media-import-audio-cd.png', 
+			'/usr/share/banshee-1/icons/hicolor/22x22/actions/media-write-cd.png', 
+
+			'/usr/share/banshee-1/icons/hicolor/22x22/categories/amazon-mp3-source.png', 
+			'/usr/share/banshee-1/icons/hicolor/22x22/categories/audiobook.png', 
+			'/usr/share/banshee-1/icons/hicolor/22x22/categories/internet-archive.png', 
+			'/usr/share/banshee-1/icons/hicolor/22x22/categories/lastfm-audioscrobbler.png', 
+			'/usr/share/banshee-1/icons/hicolor/22x22/categories/lastfm-neighbour.png', 
+			'/usr/share/banshee-1/icons/hicolor/22x22/categories/lastfm-personal.png', 
+			'/usr/share/banshee-1/icons/hicolor/22x22/categories/lastfm-recommended.png', 
+			'/usr/share/banshee-1/icons/hicolor/22x22/categories/lastfm-tag.png', 
+			'/usr/share/banshee-1/icons/hicolor/22x22/categories/podcast.png', 
+			'/usr/share/banshee-1/icons/hicolor/22x22/categories/radio.png', 
+			'/usr/share/banshee-1/icons/hicolor/22x22/categories/source-playlist.png', 
+			'/usr/share/banshee-1/icons/hicolor/22x22/categories/source-smart-playlist.png', 
+
+			'/usr/share/banshee-1/icons/hicolor/22x22/devices/phone-google-nexus-one.png', 
+			'/usr/share/banshee-1/icons/hicolor/22x22/devices/phone-htc-g1-white.png', 
+			'/usr/share/banshee-1/icons/hicolor/22x22/devices/phone-nokia-n900.png', 
+			'/usr/share/banshee-1/icons/hicolor/22x22/devices/phone-palm-pre.png', 
+
+			'/usr/share/banshee-1/icons/hicolor/24x24/devices/phone-google-nexus-one.png', 
+			'/usr/share/banshee-1/icons/hicolor/24x24/devices/phone-htc-g1-white.png', 
+			'/usr/share/banshee-1/icons/hicolor/24x24/devices/phone-nokia-n900.png', 
+			'/usr/share/banshee-1/icons/hicolor/24x24/devices/phone-palm-pre.png', 
+
+			'/usr/share/banshee-1/icons/hicolor/32x32/actions/media-write-cd.png', 
+
+			'/usr/share/banshee-1/icons/hicolor/32x32/devices/phone-google-nexus-one.png', 
+			'/usr/share/banshee-1/icons/hicolor/32x32/devices/phone-htc-g1-white.png', 
+			'/usr/share/banshee-1/icons/hicolor/32x32/devices/phone-nokia-n900.png', 
+			'/usr/share/banshee-1/icons/hicolor/32x32/devices/phone-palm-pre.png', 
+
+			'/usr/share/banshee-1/icons/hicolor/48x48/actions/media-write-cd.png', 
+
+			'/usr/share/banshee-1/icons/hicolor/48x48/categories/audiobook.png', 
+			'/usr/share/banshee-1/icons/hicolor/48x48/categories/podcast.png', 
+			'/usr/share/banshee-1/icons/hicolor/48x48/categories/radio.png', 
+
+			'/usr/share/banshee-1/icons/hicolor/48x48/devices/phone-google-nexus-one.png', 
+			'/usr/share/banshee-1/icons/hicolor/48x48/devices/phone-htc-g1-white.png', 
+			'/usr/share/banshee-1/icons/hicolor/48x48/devices/phone-nokia-n900.png', 
+			'/usr/share/banshee-1/icons/hicolor/48x48/devices/phone-palm-pre.png', 
+
+			'/usr/share/banshee-1/icons/hicolor/128x128/devices/phone-google-nexus-one.png', 
+			'/usr/share/banshee-1/icons/hicolor/128x128/devices/phone-htc-g1-white.png', 
+			'/usr/share/banshee-1/icons/hicolor/128x128/devices/phone-nokia-n900.png', 
+
+			'/usr/share/banshee-1/icons/hicolor/256x256/devices/phone-google-nexus-one.png', 
+			'/usr/share/banshee-1/icons/hicolor/256x256/devices/phone-palm-pre.png', 
+
+			'/usr/share/banshee-1/icons/hicolor/scalable/categories/audiobook.svg', 
+			'/usr/share/banshee-1/icons/hicolor/scalable/categories/radio.svg', 
+
+			'/usr/share/banshee-1/icons/hicolor/scalable/devices/phone-nokia-n900.svg', 
+			'/usr/share/banshee-1/icons/hicolor/scalable/devices/phone-palm-pre.svg', 
+
+			'/usr/share/dbus-1/services/org.bansheeproject.Banshee.service', 
+			'/usr/share/dbus-1/services/org.bansheeproject.CollectionIndexer.service', 
+
+			'/usr/share/icons/hicolor/16x16/apps/media-player-banshee.png', 
+			'/usr/share/icons/hicolor/22x22/apps/media-player-banshee.png', 
+			'/usr/share/icons/hicolor/24x24/apps/media-player-banshee.png', 
+			'/usr/share/icons/hicolor/32x32/apps/media-player-banshee.png', 
+			'/usr/share/icons/hicolor/48x48/apps/media-player-banshee.png', 
+			'/usr/share/icons/hicolor/192x192/apps/media-player-banshee.png'
+		]
+"""
 class Documentation(BinaryPackage):
 	def __init__(self):
 		BinaryPackage.__init__(self)
@@ -132,5 +360,5 @@ class Documentation(BinaryPackage):
 						'/usr/share/dbus-1/services/org.bansheeproject.CollectionIndexer.service', 
 						'/usr/share/banshee-1/', 
 						'/usr/share/icons/hicolor/*/apps/media-player-banshee.png']
-
+"""
 

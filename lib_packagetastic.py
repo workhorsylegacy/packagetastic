@@ -404,8 +404,8 @@ class MetaPackage(object):
 	def build(self):
 		raise Exception("The build method must be overridden by the child class.")
 
-	def configure(self):
-		child = pexpect.spawn('bash -c "./configure --prefix=/usr"', timeout=60)
+	def configure(self, flags=''):
+		child = pexpect.spawn('bash -c "./configure --prefix=/usr ' + flags + '"', timeout=60)
 		expected_lines = ["[\w|\s]*\n", 
 							pexpect.EOF]
 
