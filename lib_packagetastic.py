@@ -307,6 +307,7 @@ class MetaPackage(object):
 		self._packager_name = None
 		self._packager_email = None
 		self._packager_sudo = None
+		self._packager_gpg = None
 		self._homepage = None
 		self._license = None
 		self._source = None
@@ -344,6 +345,10 @@ class MetaPackage(object):
 	def get_packager_sudo(self): return self._packager_sudo
 	def set_packager_sudo(self, value): self._packager_sudo = value
 	packager_sudo = property(get_packager_sudo, set_packager_sudo)
+
+	def get_packager_gpg(self): return self._packager_gpg
+	def set_packager_gpg(self, value): self._packager_gpg = value
+	packager_gpg = property(get_packager_gpg, set_packager_gpg)
 
 	def get_homepage(self): return self._homepage
 	homepage = property(get_homepage)
@@ -859,7 +864,7 @@ def _get_packager_data():
 
 	return (packager_name, packager_email, packager_sudo, packager_gpg)
 
-def _get_package_data(distro_name, package_name):
+def _get_package_data(distro_name, package_name, packager_name, packager_email, packager_sudo, packager_gpg):
 	# Find any junk MetaPackage and BinaryPackage already in memory
 	junk_objects = []
 	for obj in gc.get_objects():
@@ -888,6 +893,11 @@ def _get_package_data(distro_name, package_name):
 
 	# Validate the meta and packages
 	validate_package(distro_name, meta, packages)
+
+	meta.packager_name = packager_name
+	meta.packager_email = packager_email
+	meta.packager_sudo = packager_sudo
+	meta.packager_gpg = packager_gpg
 	builder = eval('Builder()')
 
 	return (meta, packages, builder)
@@ -905,7 +915,7 @@ def build(distro_name, package_name):
 		print "Packagetastic does not have a stem file for the package '" + package_name + "'. Exiting ..."
 		exit()
 
-	meta, packages, builder = _get_package_data(distro_name, package_name)
+	meta, packages, builder = _get_package_data(distro_name, package_name, packager_name, packager_email, packager_sudo, packager_gpg)
 
 	# Download the source code
 	try:
@@ -930,20 +940,14 @@ def build(distro_name, package_name):
 
 	# Build the package for that distro
 	print "\nBuilding " + package_name + " ..."
-	meta.packager_sudo = packager_sudo
-	meta.packager_name = packager_name
-	meta.packager_email = packager_email
-	builder.build(meta, packages, packager_sudo, packager_gpg)
+	builder.build(meta, packages)
 
 def install(distro_name, package_name):
 	packager_name, packager_email, packager_sudo, packager_gpg = _get_packager_data()
 
-	meta, packages, builder = _get_package_data(distro_name, package_name)
+	meta, packages, builder = _get_package_data(distro_name, package_name, packager_name, packager_email, packager_sudo, packager_gpg)
 
 	# Install the package for that distro
 	print "\nInstalling " + package_name + " ..."
-	meta.packager_sudo = packager_sudo
-	meta.packager_name = packager_name
-	meta.packager_email = packager_email
-	builder.install(meta, packages, packager_sudo, packager_gpg)
+	builder.install(meta, packages)
 
