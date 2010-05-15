@@ -21,31 +21,23 @@ else:
 # Show the usage
 if mode == "help":
 	print "usage:"
-	print "./packagetastic build distro:=name package:=name [nochroot] [interactive]"
-	print "./packagetastic build_all distro:=name [nochroot] [interactive]"
+	print "./packagetastic build distro:=name package:=name"
+	print "./packagetastic build_all distro:=name"
 	print "./packagetastic gen_stem name:=name version:=version source:=url"
 	print ""
 	print "build: Generates a native package for the target distro."
 	print "build_all: Generates all the native packages for the target distro."
 	print "gen_stem: Generates a stem file from the source code at the url."
 	print ""
-	print "[nochroot] builds the package with the local installed libraries, rather than"
-	print "building it inside a chroot that has no installed libraries."
-	print ""
-	print "[interactive] outputs all build commands to the terminal. The user will also"
-	print "be required to perform input if needed."
-	print ""
 	print "examples:"
-	print "./packagetastic build distro:=fedora package:=hello"
-	print "./packagetastic build distro:=ubuntu package:=hello nochroot interactive"
-	print "./packagetastic build_all distro:=ubuntu"
+	print "./packagetastic build distro:=ubuntu package:=hello"
+	print "./packagetastic build_all distro:=fedora"
 	print "./packagetastic gen_stem name:=hello version:=2.1.1 source:=http://ftp.gnu.org/gnu/hello/hello-2.1.1.tar.gz"
 	exit()
 
 # Build a package
 if mode == "build":
 	package_name, distro_name = None, None
-	use_chroot, is_interactive = True, False
 
 	# Get the arguments
 	for arg in sys.argv[2:]:
@@ -53,10 +45,6 @@ if mode == "build":
 			package_name = arg.lower().split(':=')[1]
 		elif arg.startswith('distro:='):
 			distro_name = arg.lower().split(':=')[1]
-		elif arg == 'nochroot':
-			use_chroot = False
-		elif arg == 'interactive':
-			is_interactive = True
 
 	# Make sure we got something
 	pairs = {'package' : package_name, 'distro' : distro_name}
@@ -69,21 +57,16 @@ if mode == "build":
 	lib_packagetastic.init_packagetastic(distro_name)
 
 	# Build the package
-	lib_packagetastic.build(distro_name, package_name, use_chroot, is_interactive)
+	lib_packagetastic.build(distro_name, package_name)
 
 # Build all packages
 if mode == "build_all":
 	distro_name = None
-	use_chroot, is_interactive = True, False
 
 	# Get the arguments
 	for arg in sys.argv[2:]:
 		if arg.startswith('distro:='):
 			distro_name = arg.lower().split(':=')[1]
-		elif arg == 'nochroot':
-			use_chroot = False
-		elif arg == 'interactive':
-			is_interactive = True
 
 	# Make sure we got something
 	pairs = {'distro' : distro_name}
@@ -106,7 +89,7 @@ if mode == "build_all":
 	# Build all the packages
 	for package_name in stem_names:
 		try:
-			lib_packagetastic.build(distro_name, package_name, use_chroot, is_interactive)
+			lib_packagetastic.build(distro_name, package_name)
 		except KeyboardInterrupt:
 			raise
 		except:

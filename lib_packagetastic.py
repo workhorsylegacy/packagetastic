@@ -313,6 +313,10 @@ class MetaPackage(object):
 		self._short_description = None
 		self._long_description = None
 		self._changelog = None
+		self._packager_sudo = None
+
+	def set_packager_sudo(self, value):
+		self._packager_sudo = value
 
 	def get_name(self): return self._name
 	name = property(get_name)
@@ -438,7 +442,7 @@ class MetaPackage(object):
 
 			if result == 0:
 				print child.before
-				child.sendline(packager_sudo)
+				child.sendline(self._packager_sudo)
 			elif result == 1:
 				print child.before
 			elif result == len(expected_lines)-1:
@@ -458,7 +462,7 @@ class MetaPackage(object):
 
 			if result == 0:
 				print child.before
-				child.sendline(packager_sudo)
+				child.sendline(self._packager_sudo)
 			elif result == 1:
 				print child.before
 			elif result == len(expected_lines)-1:
@@ -812,7 +816,7 @@ def gen_stem(name, version, source):
 		template = lookup.get_template("template.stem.py")
 		spec_file.write(template.render(**params).replace("@@", "%").replace("\\\\\\", "\\\n"))
 
-def build(distro_name, package_name, use_chroot, is_interactive):
+def build(distro_name, package_name):
 	global packagetastic_dir
 	os.chdir(packagetastic_dir)
 
@@ -878,6 +882,7 @@ def build(distro_name, package_name, use_chroot, is_interactive):
 		if type(obj) == type and issubclass(obj, MetaPackage) and obj().name == package_name:
 			if junk_objects.count(obj) == 0:
 				meta = obj()
+				meta.set_packager_sudo(packager_sudo)
 				break
 
 	# Get the packages to build
@@ -917,6 +922,6 @@ def build(distro_name, package_name, use_chroot, is_interactive):
 	meta.packager_name = packager_name
 	meta.packager_email = packager_email
 	builder = eval('Builder()')
-	builder.build(meta, packages, packager_sudo, packager_gpg, use_chroot, is_interactive)
+	builder.build(meta, packages, packager_sudo, packager_gpg)
 
 

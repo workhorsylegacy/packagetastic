@@ -55,10 +55,7 @@ class Builder(object):
 		'documentation' : 'all'
 	}
 
-	def build(self, meta, packages, packager_sudo, packager_gpg, use_chroot, is_interactive):
-		if not use_chroot:
-			print "Warning: Using pbuilder as the chroot anyway."
-
+	def build(self, meta, packages, packager_sudo, packager_gpg):
 		# Make sure the password is legit
 		print "Checking if we can use sudo ..."
 		child = pexpect.spawn('bash -c "sudo -k; sudo su"', timeout=5)
@@ -124,12 +121,15 @@ class Builder(object):
 				if not os.path.isfile(entry): continue
 				package.custom['size'] += os.path.getsize(entry) / 1024
 
+		# Create the package directories
 		home = os.path.expanduser('~')
 		if not os.path.isdir(home + '/.packagetastic'):
 			os.mkdir(home + '/.packagetastic')
+		if not os.path.isdir(home + '/.packagetastic/' + meta.name):
+			os.mkdir(home + '/.packagetastic/' + meta.name)
 
 		# Generate the *.list file
-		f = open(home + '/.packagetastic/' + meta.name + '.list', 'w')
+		f = open(home + '/.packagetastic/' + meta.name + '/' + meta.name + '.list', 'w')
 		f.write("/.\n")
 		existing_paths = []
 		for package in packages:
@@ -146,7 +146,7 @@ class Builder(object):
 		f.close()
 
 		# Generate the *.md5sums file
-		f = open(home + '/.packagetastic/' + meta.name + '.md5sums', 'w')
+		f = open(home + '/.packagetastic/' + meta.name + '/' + meta.name + '.md5sums', 'w')
 		existing_paths = []
 		for package in packages:
 			for entry in package.files:
@@ -159,7 +159,7 @@ class Builder(object):
 		f.close()
 
 		# Generate the temp status file
-		with open(home + '/.packagetastic/temp-status', 'w') as f:
+		with open(home + '/.packagetastic/' + meta.name + '/temp-status', 'w') as f:
 			from mako.template import Template
 			from mako.lookup import TemplateLookup
 			lookup = TemplateLookup(directories=['../../distros/ubuntu_templates/'], output_encoding='utf-8')
@@ -167,13 +167,30 @@ class Builder(object):
 			f.write(template.render(**params).replace("@@", "$"))
 
 		# Generate the temp available file
-		with open(home + '/.packagetastic/temp-available', 'w') as f:
+		with open(home + '/.packagetastic/' + meta.name + '/temp-available', 'w') as f:
 			from mako.template import Template
 			from mako.lookup import TemplateLookup
 			lookup = TemplateLookup(directories=['../../distros/ubuntu_templates/'], output_encoding='utf-8')
 			template = lookup.get_template("template.available.py")
 			f.write(template.render(**params).replace("@@", "$"))
 
+		# Copy all the files for this package
+		for package in packages:
+			for entry in package.files:
+				dir_name = str.join('/', entry.split('/')[:-1])
+				run_as_root('mkdir -p ' + home + '/.packagetastic/' + meta.name + dir_name, packager_sudo)
+				run_as_root('cp ' + entry + ' ' + home + '/.packagetastic/' + meta.name + entry, packager_sudo)
+		for package in packages:
+			for entry in package.files:
+				run_as_root('rm ' + entry, packager_sudo)
+
+		# Compress all the files into a package
+		user_name = commands.getoutput('whoami')
+		run_as_root('chown -R ' + user_name + ' ' + home + '/.packagetastic/' + meta.name, packager_sudo)
+		package = home + '/.packagetastic/' + meta.name
+		commands.getoutput('tar --force-local --no-wildcards -v -p -cf ' + package + '_ubuntu-10.04_i386.pkg --use-compress-program=gzip ' + package)
+
+	def install(self):
 		# Copy the *.list and *.md5sums
 		run_as_root("cp " + home + '/.packagetastic/' + meta.name + '.list /var/lib/dpkg/info/' + meta.name + '.list' , packager_sudo)
 		run_as_root("cp " + home + '/.packagetastic/' + meta.name + '.md5sums /var/lib/dpkg/info/' + meta.name + '.md5sums' , packager_sudo)
