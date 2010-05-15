@@ -56,6 +56,8 @@ class Builder(object):
 	}
 
 	def build(self, meta, packages):
+		home = os.path.expanduser('~')
+
 		# Make sure the password is legit
 		print "Checking if we can use sudo ..."
 		child = pexpect.spawn('bash -c "sudo -k; sudo su"', timeout=5)
@@ -120,13 +122,6 @@ class Builder(object):
 			for entry in package.files:
 				if not os.path.isfile(entry): continue
 				package.custom['size'] += os.path.getsize(entry) / 1024
-
-		# Create the package directories
-		home = os.path.expanduser('~')
-		if not os.path.isdir(home + '/.packagetastic'):
-			os.mkdir(home + '/.packagetastic')
-		if not os.path.isdir(home + '/.packagetastic/' + meta.name):
-			os.mkdir(home + '/.packagetastic/' + meta.name)
 
 		# Generate the *.list file
 		f = open(home + '/.packagetastic/' + meta.name + '/' + meta.name + '.list', 'w')

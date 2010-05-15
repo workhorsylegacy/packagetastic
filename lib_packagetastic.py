@@ -915,6 +915,14 @@ def build(distro_name, package_name):
 		print "Packagetastic does not have a stem file for the package '" + package_name + "'. Exiting ..."
 		exit()
 
+	# Create the package directories
+	home = os.path.expanduser('~')
+	if not os.path.isdir(home + '/.packagetastic'):
+		os.mkdir(home + '/.packagetastic')
+	if not os.path.isdir(home + '/.packagetastic/' + package_name):
+		os.mkdir(home + '/.packagetastic/' + package_name)
+	commands.getoutput('cp stems/' + package_name + '.stem ' + home + '/.packagetastic/' +  package_name + '/' + package_name + '.stem')
+
 	meta, packages, builder = _get_package_data(distro_name, package_name, packager_name, packager_email, packager_sudo, packager_gpg)
 
 	# Download the source code
