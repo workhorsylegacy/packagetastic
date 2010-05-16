@@ -92,7 +92,25 @@ class Meta(MetaPackage):
 		]
 
 	def build(self):
-		self.configure("--disable-boo --disable-webkit --disable-youtube --disable-ipod")
+		self.configure("--disable-static " +
+						"--disable-tests " +
+						"--disable-clutter " +
+						"--disable-builtin-equalizer " +
+						"--disable-boo " +
+						"--enable-docs " +
+						"--enable-webkit " +
+						"--disable-youtube " +
+						"--enable-gnome " +
+						"--enable-schemas-install " +
+						"--enable-mtp " +
+						"--disable-ipod " +
+						"--enable-karma " +
+						"--disable-remote-audio " +
+						"--enable-daap " +
+						"--enable-gapless-playback " +
+						"--enable-podcast " +
+						"--enable-release " +
+						"--disable-shave ")
 		self.make()
 		self.install()
 
@@ -148,7 +166,6 @@ class Banshee(BinaryPackage):
 			'/usr/lib/banshee-1/Lastfm.dll.mdb', 
 			'/usr/lib/banshee-1/Lastfm.Gui.dll', 
 			'/usr/lib/banshee-1/Lastfm.Gui.dll.mdb', 
-			'/usr/lib/banshee-1/libbanshee.a', 
 			'/usr/lib/banshee-1/libbanshee.la', 
 			'/usr/lib/banshee-1/libbanshee.so', 
 			'/usr/lib/banshee-1/Migo.dll', 
@@ -221,9 +238,6 @@ class Banshee(BinaryPackage):
 			'/usr/lib/banshee-1/Extensions/Banshee.PlayQueue.dll.mdb', 
 			'/usr/lib/banshee-1/Extensions/Banshee.Podcasting.dll', 
 			'/usr/lib/banshee-1/Extensions/Banshee.Podcasting.dll.mdb', 
-			'/usr/lib/banshee-1/gstreamer-0.10/libgstequalizer.a', 
-			'/usr/lib/banshee-1/gstreamer-0.10/libgstequalizer.la', 
-			'/usr/lib/banshee-1/gstreamer-0.10/libgstequalizer.so', 
 			'/usr/lib/pkgconfig/banshee-1-collection-indexer.pc', 
 			'/usr/lib/pkgconfig/banshee-1-core.pc', 
 			'/usr/lib/pkgconfig/banshee-1-hyena-gui.pc', 
@@ -341,7 +355,7 @@ class Banshee(BinaryPackage):
 			'/usr/share/icons/hicolor/48x48/apps/media-player-banshee.png', 
 			'/usr/share/icons/hicolor/192x192/apps/media-player-banshee.png'
 		]
-"""
+
 class Documentation(BinaryPackage):
 	def __init__(self):
 		BinaryPackage.__init__(self)
@@ -353,12 +367,16 @@ class Documentation(BinaryPackage):
 
 		self._additional_description = u"This package contains the developer documentation for Banshee."
 
-		self._files = ['/usr/bin/banshee-1', 
-						'/usr/lib/banshee-1', 
-						'/usr/share/applications/*.desktop', 
-						'/usr/share/dbus-1/services/org.bansheeproject.Banshee.service', 
-						'/usr/share/dbus-1/services/org.bansheeproject.CollectionIndexer.service', 
-						'/usr/share/banshee-1/', 
-						'/usr/share/icons/hicolor/*/apps/media-player-banshee.png']
-"""
+		self._files = [
+			'/usr/lib/monodoc/sources/banshee-docs.source', 
+			'/usr/lib/monodoc/sources/banshee-docs.tree', 
+			'/usr/lib/monodoc/sources/banshee-docs.zip', 
+			'/usr/lib/monodoc/sources/hyena-docs.source', 
+			'/usr/lib/monodoc/sources/hyena-docs.tree', 
+			'/usr/lib/monodoc/sources/hyena-docs.zip', 
+			'/usr/share/doc/monodoc-banshee-manual/changelog.Debian.gz', 
+			'/usr/share/doc/monodoc-banshee-manual/changelog.gz', 
+			'/usr/share/doc/monodoc-banshee-manual/copyright'
+		]
+
 
