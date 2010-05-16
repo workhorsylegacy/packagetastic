@@ -10,6 +10,22 @@ package_names = {
 	#	'fedora' : [], 
 	#	'ubuntu' : ['gstreamer0.10-gnomevfs']
 	#}, 
+	'cheese' : {
+		'fedora' : ['cheese'], 
+		'ubuntu' : ['cheese']
+	},
+	'cheese-common' : {
+		'fedora' : ['cheese-common'], 
+		'ubuntu' : ['cheese-common']
+	},
+	'libcheese-gtk' : {
+		'fedora' : ['libcheese-gtk'], 
+		'ubuntu' : ['libcheese-gtk18']
+	},
+	'libcheese-gtk-dev' : {
+		'fedora' : ['libcheese-gtk-dev'], 
+		'ubuntu' : ['libcheese-gtk-dev']
+	},
 	'lxdream' : {
 		'fedora' : ['lxdream'], 
 		'ubuntu' : ['lxdream']

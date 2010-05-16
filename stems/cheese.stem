@@ -1,0 +1,277 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+from lib_packagetastic import *
+
+class Meta(MetaPackage):
+	def __init__(self):
+		MetaPackage.__init__(self)
+		self._name = 'cheese'
+		self._category = 'Applications/Audio'
+		self._build_method = 'autotools'
+		self._priority = 'optional'
+		self._authors = [u'fixme <fixme@fixme.com>']
+		self._copyright = [u'2004-2010 fixme']
+		self._homepage = 'http://launchpad.net/bzr-gtk'
+		self._license = 'LGPL2.1'
+		self._source = 'http://ftp.gnome.org/pub/GNOME/sources/cheese/2.29/cheese-2.29.91.tar.gz'
+
+		self._build_requirements = ['info']
+
+		self._short_description = u"A tool to take pictures and videos from your webcam"
+
+		self._long_description = u" Cheese is a cheesy program to take pictures and videos from your web\n" + \
+								u" cam. It also provides some graphical effects in order to please the\n" + \
+								u" user's play instinct."
+
+		self._changelog = [
+				Changelog(version="2.29.91", release=1, time="Sat, 15 May 2010 18:40:54 -0700", text=u"Initial release")
+		]
+
+	def build(self):
+		self.configure()
+		self.make()
+		self.install()
+
+class Cheese(BinaryPackage):
+	def __init__(self):
+		BinaryPackage.__init__(self)
+		self._name = 'cheese'
+		self._category = 'Applications/Video'
+		self._package_type = 'c application'
+		self._priority = 'optional'
+		self._install_requirements = ['info']
+
+		self._additional_description = u"A tool to take pictures and videos from your webcam"
+
+		self._files = \
+"""/usr/bin/cheese""".split("\n")
+
+class CheeseCommon(BinaryPackage):
+	def __init__(self):
+		BinaryPackage.__init__(self)
+		self._name = 'cheese-common'
+		self._category = 'Applications/Video'
+		self._package_type = 'c library'
+		self._priority = 'optional'
+		self._install_requirements = ['info']
+
+		self._additional_description = u"Common files for the Cheese tool to take pictures and videos"
+
+		self._files = \
+"""/usr/share/cheese/cheese-prefs.ui
+/usr/share/cheese/cheese-ui.xml
+/usr/share/cheese/cheese.ui
+/usr/share/cheese/effects/Hulk.png
+/usr/share/cheese/effects/Mauve.png
+/usr/share/cheese/effects/NoirBlanc.png
+/usr/share/cheese/effects/Saturation.png
+/usr/share/cheese/effects/dicetv.png
+/usr/share/cheese/effects/edgetv.png
+/usr/share/cheese/effects/identity.png
+/usr/share/cheese/effects/shagadelictv.png
+/usr/share/cheese/effects/vertigotv.png
+/usr/share/cheese/effects/videoflip_h.png
+/usr/share/cheese/effects/videoflip_v.png
+/usr/share/cheese/effects/warptv.png
+/usr/share/cheese/gtkrc
+/usr/share/cheese/icons/hicolor/16x16/actions/browse-webcam-effects.png
+/usr/share/cheese/icons/hicolor/16x16/actions/cheese-take-burst.png
+/usr/share/cheese/icons/hicolor/16x16/actions/cheese-take-photo.png
+/usr/share/cheese/icons/hicolor/22x22/actions/browse-webcam-effects.png
+/usr/share/cheese/icons/hicolor/22x22/actions/cheese-take-burst.png
+/usr/share/cheese/icons/hicolor/22x22/actions/cheese-take-photo.png
+/usr/share/cheese/icons/hicolor/24x24/actions/browse-webcam-effects.png
+/usr/share/cheese/icons/hicolor/24x24/actions/cheese-take-burst.png
+/usr/share/cheese/icons/hicolor/24x24/actions/cheese-take-photo.png
+/usr/share/cheese/icons/hicolor/32x32/actions/browse-webcam-effects.png
+/usr/share/cheese/icons/hicolor/32x32/actions/cheese-take-burst.png
+/usr/share/cheese/icons/hicolor/32x32/actions/cheese-take-photo.png
+/usr/share/cheese/icons/hicolor/48x48/actions/browse-webcam-effects.png
+/usr/share/cheese/icons/hicolor/48x48/actions/cheese-take-burst.png
+/usr/share/cheese/icons/hicolor/48x48/actions/cheese-take-photo.png
+/usr/share/cheese/icons/hicolor/scalable/actions/browse-webcam-effects.svg
+/usr/share/cheese/icons/hicolor/scalable/actions/cheese-take-burst.svg
+/usr/share/cheese/icons/hicolor/scalable/actions/cheese-take-photo.svg
+/usr/share/cheese/pixmaps/camera-icon.svg
+/usr/share/cheese/pixmaps/cheese-1.svg
+/usr/share/cheese/pixmaps/cheese-2.svg
+/usr/share/cheese/pixmaps/cheese-3.svg
+/usr/share/cheese/pixmaps/thumbnail-frame.png
+/usr/share/dbus-1/services/org.gnome.Cheese.service
+/usr/share/gnome/help/cheese/C/cheese.xml
+/usr/share/gnome/help/cheese/C/figures/cheese-effects.jpg
+/usr/share/gnome/help/cheese/C/figures/cheese-fullscreen.jpg
+/usr/share/gnome/help/cheese/C/figures/cheese-main.jpg
+/usr/share/gnome/help/cheese/C/figures/cheese-preferences.jpg
+/usr/share/gnome/help/cheese/C/figures/cheese-share.jpg
+/usr/share/gnome/help/cheese/C/figures/cheese-wide.jpg
+/usr/share/gnome/help/cheese/C/legal.xml
+/usr/share/gnome/help/cheese/ca/cheese.xml
+/usr/share/gnome/help/cheese/ca/figures/cheese-effects.jpg
+/usr/share/gnome/help/cheese/ca/figures/cheese-fullscreen.jpg
+/usr/share/gnome/help/cheese/ca/figures/cheese-main.jpg
+/usr/share/gnome/help/cheese/ca/figures/cheese-preferences.jpg
+/usr/share/gnome/help/cheese/ca/figures/cheese-share.jpg
+/usr/share/gnome/help/cheese/ca/figures/cheese-wide.jpg
+/usr/share/gnome/help/cheese/de/cheese.xml
+/usr/share/gnome/help/cheese/de/figures/cheese-effects.jpg
+/usr/share/gnome/help/cheese/de/figures/cheese-fullscreen.jpg
+/usr/share/gnome/help/cheese/de/figures/cheese-main.jpg
+/usr/share/gnome/help/cheese/de/figures/cheese-preferences.jpg
+/usr/share/gnome/help/cheese/de/figures/cheese-share.jpg
+/usr/share/gnome/help/cheese/de/figures/cheese-wide.jpg
+/usr/share/gnome/help/cheese/el/cheese.xml
+/usr/share/gnome/help/cheese/el/figures/cheese-effects.jpg
+/usr/share/gnome/help/cheese/el/figures/cheese-fullscreen.jpg
+/usr/share/gnome/help/cheese/el/figures/cheese-main.jpg
+/usr/share/gnome/help/cheese/el/figures/cheese-preferences.jpg
+/usr/share/gnome/help/cheese/el/figures/cheese-share.jpg
+/usr/share/gnome/help/cheese/el/figures/cheese-wide.jpg
+/usr/share/gnome/help/cheese/en_GB/cheese.xml
+/usr/share/gnome/help/cheese/en_GB/figures/cheese-effects.jpg
+/usr/share/gnome/help/cheese/en_GB/figures/cheese-fullscreen.jpg
+/usr/share/gnome/help/cheese/en_GB/figures/cheese-main.jpg
+/usr/share/gnome/help/cheese/en_GB/figures/cheese-preferences.jpg
+/usr/share/gnome/help/cheese/en_GB/figures/cheese-share.jpg
+/usr/share/gnome/help/cheese/en_GB/figures/cheese-wide.jpg
+/usr/share/gnome/help/cheese/es/cheese.xml
+/usr/share/gnome/help/cheese/es/figures/cheese-effects.jpg
+/usr/share/gnome/help/cheese/es/figures/cheese-fullscreen.jpg
+/usr/share/gnome/help/cheese/es/figures/cheese-main.jpg
+/usr/share/gnome/help/cheese/es/figures/cheese-preferences.jpg
+/usr/share/gnome/help/cheese/es/figures/cheese-share.jpg
+/usr/share/gnome/help/cheese/es/figures/cheese-wide.jpg
+/usr/share/gnome/help/cheese/fr/cheese.xml
+/usr/share/gnome/help/cheese/fr/figures/cheese-effects.jpg
+/usr/share/gnome/help/cheese/fr/figures/cheese-fullscreen.jpg
+/usr/share/gnome/help/cheese/fr/figures/cheese-main.jpg
+/usr/share/gnome/help/cheese/fr/figures/cheese-preferences.jpg
+/usr/share/gnome/help/cheese/fr/figures/cheese-share.jpg
+/usr/share/gnome/help/cheese/fr/figures/cheese-wide.jpg
+/usr/share/gnome/help/cheese/it/cheese.xml
+/usr/share/gnome/help/cheese/it/figures/cheese-effects.jpg
+/usr/share/gnome/help/cheese/it/figures/cheese-fullscreen.jpg
+/usr/share/gnome/help/cheese/it/figures/cheese-main.jpg
+/usr/share/gnome/help/cheese/it/figures/cheese-preferences.jpg
+/usr/share/gnome/help/cheese/it/figures/cheese-share.jpg
+/usr/share/gnome/help/cheese/it/figures/cheese-wide.jpg
+/usr/share/gnome/help/cheese/nl/cheese.xml
+/usr/share/gnome/help/cheese/nl/figures/cheese-effects.jpg
+/usr/share/gnome/help/cheese/nl/figures/cheese-fullscreen.jpg
+/usr/share/gnome/help/cheese/nl/figures/cheese-main.jpg
+/usr/share/gnome/help/cheese/nl/figures/cheese-preferences.jpg
+/usr/share/gnome/help/cheese/nl/figures/cheese-share.jpg
+/usr/share/gnome/help/cheese/nl/figures/cheese-wide.jpg
+/usr/share/gnome/help/cheese/oc/cheese.xml
+/usr/share/gnome/help/cheese/oc/figures/cheese-effects.jpg
+/usr/share/gnome/help/cheese/oc/figures/cheese-fullscreen.jpg
+/usr/share/gnome/help/cheese/oc/figures/cheese-main.jpg
+/usr/share/gnome/help/cheese/oc/figures/cheese-preferences.jpg
+/usr/share/gnome/help/cheese/oc/figures/cheese-share.jpg
+/usr/share/gnome/help/cheese/oc/figures/cheese-wide.jpg
+/usr/share/gnome/help/cheese/pt_BR/cheese.xml
+/usr/share/gnome/help/cheese/pt_BR/figures/cheese-effects.jpg
+/usr/share/gnome/help/cheese/pt_BR/figures/cheese-fullscreen.jpg
+/usr/share/gnome/help/cheese/pt_BR/figures/cheese-main.jpg
+/usr/share/gnome/help/cheese/pt_BR/figures/cheese-preferences.jpg
+/usr/share/gnome/help/cheese/pt_BR/figures/cheese-share.jpg
+/usr/share/gnome/help/cheese/pt_BR/figures/cheese-wide.jpg
+/usr/share/gnome/help/cheese/ru/cheese.xml
+/usr/share/gnome/help/cheese/ru/figures/cheese-effects.jpg
+/usr/share/gnome/help/cheese/ru/figures/cheese-fullscreen.jpg
+/usr/share/gnome/help/cheese/ru/figures/cheese-main.jpg
+/usr/share/gnome/help/cheese/ru/figures/cheese-preferences.jpg
+/usr/share/gnome/help/cheese/ru/figures/cheese-share.jpg
+/usr/share/gnome/help/cheese/ru/figures/cheese-wide.jpg
+/usr/share/gnome/help/cheese/sv/cheese.xml
+/usr/share/gnome/help/cheese/sv/figures/cheese-effects.jpg
+/usr/share/gnome/help/cheese/sv/figures/cheese-fullscreen.jpg
+/usr/share/gnome/help/cheese/sv/figures/cheese-main.jpg
+/usr/share/gnome/help/cheese/sv/figures/cheese-preferences.jpg
+/usr/share/gnome/help/cheese/sv/figures/cheese-share.jpg
+/usr/share/gnome/help/cheese/sv/figures/cheese-wide.jpg
+/usr/share/gnome/help/cheese/th/cheese.xml
+/usr/share/gnome/help/cheese/th/figures/cheese-effects.jpg
+/usr/share/gnome/help/cheese/th/figures/cheese-fullscreen.jpg
+/usr/share/gnome/help/cheese/th/figures/cheese-main.jpg
+/usr/share/gnome/help/cheese/th/figures/cheese-preferences.jpg
+/usr/share/gnome/help/cheese/th/figures/cheese-share.jpg
+/usr/share/gnome/help/cheese/th/figures/cheese-wide.jpg
+/usr/share/gnome/help/cheese/zh_CN/cheese.xml
+/usr/share/gnome/help/cheese/zh_CN/figures/cheese-effects.jpg
+/usr/share/gnome/help/cheese/zh_CN/figures/cheese-fullscreen.jpg
+/usr/share/gnome/help/cheese/zh_CN/figures/cheese-main.jpg
+/usr/share/gnome/help/cheese/zh_CN/figures/cheese-preferences.jpg
+/usr/share/gnome/help/cheese/zh_CN/figures/cheese-share.jpg
+/usr/share/gnome/help/cheese/zh_CN/figures/cheese-wide.jpg
+/usr/share/icons/hicolor/16x16/apps/cheese.png
+/usr/share/icons/hicolor/22x22/apps/cheese.png
+/usr/share/icons/hicolor/24x24/apps/cheese.png
+/usr/share/icons/hicolor/256x256/apps/cheese.png
+/usr/share/icons/hicolor/32x32/apps/cheese.png
+/usr/share/icons/hicolor/48x48/apps/cheese.png
+/usr/share/icons/hicolor/scalable/apps/cheese.svg
+/usr/share/omf/cheese/cheese-C.omf
+/usr/share/omf/cheese/cheese-ca.omf
+/usr/share/omf/cheese/cheese-de.omf
+/usr/share/omf/cheese/cheese-el.omf
+/usr/share/omf/cheese/cheese-en_GB.omf
+/usr/share/omf/cheese/cheese-es.omf
+/usr/share/omf/cheese/cheese-fr.omf
+/usr/share/omf/cheese/cheese-it.omf
+/usr/share/omf/cheese/cheese-nl.omf
+/usr/share/omf/cheese/cheese-oc.omf
+/usr/share/omf/cheese/cheese-pt_BR.omf
+/usr/share/omf/cheese/cheese-ru.omf
+/usr/share/omf/cheese/cheese-sv.omf
+/usr/share/omf/cheese/cheese-th.omf
+/usr/share/omf/cheese/cheese-zh_CN.omf""".split("\n")
+
+class LibCheeseGtk(BinaryPackage):
+	def __init__(self):
+		BinaryPackage.__init__(self)
+		self._name = 'libcheese-gtk'
+		self._category = 'Applications/Video'
+		self._package_type = 'c library'
+		self._priority = 'optional'
+		self._install_requirements = ['info']
+
+		self._additional_description = u"A tool to take pictures and videos from your webcam - widgets"
+
+		self._files = \
+"""/usr/lib/libcheese-gtk.so.18
+/usr/lib/libcheese-gtk.so.18.0.0""".split("\n")
+
+class LibCheeseGtkDev(BinaryPackage):
+	def __init__(self):
+		BinaryPackage.__init__(self)
+		self._name = 'libcheese-gtk-dev'
+		self._category = 'Applications/Video'
+		self._package_type = 'c library'
+		self._priority = 'optional'
+		self._install_requirements = ['info']
+
+		self._additional_description = u"A tool to take pictures and videos from your webcam - widgets dev"
+
+		self._files = \
+"""/usr/include/cheese/cheese-avatar-chooser.h
+/usr/include/cheese/cheese-camera-device-monitor.h
+/usr/include/cheese/cheese-widget.h
+/usr/lib/libcheese-gtk.so
+/usr/lib/pkgconfig/cheese-gtk.pc
+/usr/share/gtk-doc/html/cheese/CheeseAvatarChooser.html
+/usr/share/gtk-doc/html/cheese/CheeseWidget.html
+/usr/share/gtk-doc/html/cheese/api-index-full.html
+/usr/share/gtk-doc/html/cheese/ch01.html
+/usr/share/gtk-doc/html/cheese/cheese.devhelp
+/usr/share/gtk-doc/html/cheese/cheese.devhelp2
+/usr/share/gtk-doc/html/cheese/home.png
+/usr/share/gtk-doc/html/cheese/index.html
+/usr/share/gtk-doc/html/cheese/index.sgml
+/usr/share/gtk-doc/html/cheese/left.png
+/usr/share/gtk-doc/html/cheese/object-tree.html
+/usr/share/gtk-doc/html/cheese/right.png
+/usr/share/gtk-doc/html/cheese/style.css
+/usr/share/gtk-doc/html/cheese/up.png""".split("\n")
+
+
