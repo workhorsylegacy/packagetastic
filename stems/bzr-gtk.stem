@@ -1,0 +1,198 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+from lib_packagetastic import *
+
+class Meta(MetaPackage):
+	def __init__(self):
+		MetaPackage.__init__(self)
+		self._name = 'bzr-gtk'
+		self._category = 'Applications/Audio'
+		self._build_method = 'autotools'
+		self._priority = 'optional'
+		self._authors = [u'fixme <fixme@fixme.com>']
+		self._copyright = [u'2004-2010 fixme']
+		self._homepage = 'http://launchpad.net/bzr-gtk'
+		self._license = 'LGPL2.1'
+		self._source = 'http://edge.launchpad.net/bzr-gtk/trunk/0.98.0/+download/bzr-gtk-0.98.0.tar.gz'
+
+		self._build_requirements = ['info']
+
+		self._short_description = u"provides graphical interfaces to Bazaar (bzr) version control"
+
+		self._long_description = u"source code management tool."
+
+		self._changelog = [
+				Changelog(version="0.98.0", release=1, time="Sat, 15 May 2010 18:40:54 -0700", text=u"Initial release")
+		]
+
+	def build(self):
+		pass
+
+class BzrGtk(BinaryPackage):
+	def __init__(self):
+		BinaryPackage.__init__(self)
+		self._name = 'bzr-gtk'
+		self._category = 'Applications/Audio'
+		self._package_type = 'mono application'
+		self._priority = 'optional'
+		self._install_requirements = ['info']
+
+		self._files = [
+			'/etc/xdg/autostart/bzr-notify.desktop', 
+			'/usr/bin/bzr-handle-patch', 
+			'/usr/bin/bzr-notify', 
+			'/usr/bin/olive-gtk', 
+			'/usr/share/application-registry/bzr-gtk.applications', 
+			'/usr/share/applications/bazaar-properties.desktop', 
+			'/usr/share/applications/bzr-handle-patch.desktop', 
+			'/usr/share/applications/bzr-notify.desktop', 
+			'/usr/share/applications/olive-gtk.desktop', 
+			'/usr/share/bzr-gtk/credits.pickle', 
+			'/usr/share/bzr-gtk/icons/bug.png', 
+			'/usr/share/bzr-gtk/icons/bzr-icon-64.png', 
+			'/usr/share/bzr-gtk/icons/commit.png', 
+			'/usr/share/bzr-gtk/icons/commit16.png', 
+			'/usr/share/bzr-gtk/icons/diff.png', 
+			'/usr/share/bzr-gtk/icons/diff16.png', 
+			'/usr/share/bzr-gtk/icons/log.png', 
+			'/usr/share/bzr-gtk/icons/log16.png', 
+			'/usr/share/bzr-gtk/icons/olive-gtk.png', 
+			'/usr/share/bzr-gtk/icons/oliveicon2.png', 
+			'/usr/share/bzr-gtk/icons/pull.png', 
+			'/usr/share/bzr-gtk/icons/pull16.png', 
+			'/usr/share/bzr-gtk/icons/push.png', 
+			'/usr/share/bzr-gtk/icons/push16.png', 
+			'/usr/share/bzr-gtk/icons/refresh.png', 
+			'/usr/share/bzr-gtk/icons/sign-bad.png', 
+			'/usr/share/bzr-gtk/icons/sign-ok.png', 
+			'/usr/share/bzr-gtk/icons/sign-unknown.png', 
+			'/usr/share/bzr-gtk/icons/sign.png', 
+			'/usr/share/bzr-gtk/icons/tag-16.png', 
+			'/usr/share/doc/bzr-gtk/AUTHORS', 
+			'/usr/share/doc/bzr-gtk/NEWS.gz', 
+			'/usr/share/doc/bzr-gtk/README.gz', 
+			'/usr/share/doc/bzr-gtk/TODO', 
+			'/usr/share/doc/bzr-gtk/changelog.Debian.gz', 
+			'/usr/share/doc/bzr-gtk/copyright', 
+			'/usr/share/lintian/overrides/bzr-gtk', 
+			'/usr/share/locale/ca/LC_MESSAGES/olive-gtk.mo', 
+			'/usr/share/locale/cs/LC_MESSAGES/olive-gtk.mo', 
+			'/usr/share/locale/de/LC_MESSAGES/olive-gtk.mo', 
+			'/usr/share/locale/en_GB/LC_MESSAGES/olive-gtk.mo', 
+			'/usr/share/locale/es/LC_MESSAGES/olive-gtk.mo', 
+			'/usr/share/locale/fr/LC_MESSAGES/olive-gtk.mo', 
+			'/usr/share/locale/hu/LC_MESSAGES/olive-gtk.mo', 
+			'/usr/share/locale/id/LC_MESSAGES/olive-gtk.mo', 
+			'/usr/share/locale/it/LC_MESSAGES/olive-gtk.mo', 
+			'/usr/share/locale/ku/LC_MESSAGES/olive-gtk.mo', 
+			'/usr/share/locale/pl/LC_MESSAGES/olive-gtk.mo', 
+			'/usr/share/locale/pt_BR/LC_MESSAGES/olive-gtk.mo', 
+			'/usr/share/locale/ru/LC_MESSAGES/olive-gtk.mo', 
+			'/usr/share/locale/sr/LC_MESSAGES/olive-gtk.mo', 
+			'/usr/share/locale/sv/LC_MESSAGES/olive-gtk.mo', 
+			'/usr/share/man/man1/olive-gtk.1.gz', 
+			'/usr/share/olive/cmenu.ui', 
+			'/usr/share/pixmaps/bzr-icon-64.png', 
+			'/usr/share/pixmaps/olive-gtk.png', 
+			'/usr/share/pyshared-data/bzr-gtk', 
+			'/usr/share/pyshared/bzr_gtk-0.98.0.egg-info', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/__init__.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/about.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/annotate/__init__.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/annotate/colormap.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/annotate/config.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/annotate/gannotate.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/annotate/spanselector.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/branch.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/branchbox.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/branchview/__init__.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/branchview/graphcell.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/branchview/linegraph.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/branchview/treemodel.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/branchview/treeview.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/checkout.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/commands.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/commit.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/conflicts.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/dialog.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/diff.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/errors.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/history.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/initialize.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/keyring.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/loom.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/merge.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/mergedirective.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/missing.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/nautilus-bzr.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/notify.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/olive/__init__.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/olive/add.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/olive/bookmark.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/olive/guifiles.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/olive/info.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/olive/info_helper.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/olive/launch.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/olive/menu.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/olive/mkdir.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/olive/move.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/olive/remove.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/olive/rename.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/olive/window.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/preferences/__init__.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/preferences/identity.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/preferences/notifications.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/preferences/plugins.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/push.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/revbrowser.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/revidbox.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/revisionmenu.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/revisionview.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/seahorse.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/search.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/status.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/tags.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/tests/__init__.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/tests/test_annotate_config.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/tests/test_commit.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/tests/test_diff.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/tests/test_history.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/tests/test_linegraph.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/tests/test_preferences.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/tests/test_revisionview.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/ui.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/viz/__init__.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/viz/branchwin.py', 
+			'/usr/share/pyshared/bzrlib/plugins/gtk/window.py'
+		]
+
+class NautilusBzr(BinaryPackage):
+	def __init__(self):
+		BinaryPackage.__init__(self)
+		self._name = 'nautilus-bzr'
+		self._category = 'Documentation'
+		self._package_type = 'documentation'
+		self._priority = 'optional'
+		self._install_requirements = ['monodoc-manual']
+
+		self._additional_description = u"Basic plugin for Nautilus that provides integration for the\n" +
+										u"Bazaar version control system (bzr)."
+
+		self._files = [
+			'/usr/lib/nautilus/extensions-2.0/python/nautilus-bzr.py', 
+			'/usr/share/doc/nautilus-bzr/AUTHORS', 
+			'/usr/share/doc/nautilus-bzr/NEWS.gz', 
+			'/usr/share/doc/nautilus-bzr/README.gz', 
+			'/usr/share/doc/nautilus-bzr/TODO', 
+			'/usr/share/doc/nautilus-bzr/changelog.Debian.gz', 
+			'/usr/share/doc/nautilus-bzr/copyright', 
+			'/usr/share/icons/hicolor/scalable/emblems/emblem-bzr-added.svg', 
+			'/usr/share/icons/hicolor/scalable/emblems/emblem-bzr-conflict.svg', 
+			'/usr/share/icons/hicolor/scalable/emblems/emblem-bzr-controlled.svg', 
+			'/usr/share/icons/hicolor/scalable/emblems/emblem-bzr-ignored.svg', 
+			'/usr/share/icons/hicolor/scalable/emblems/emblem-bzr-modified.svg', 
+			'/usr/share/icons/hicolor/scalable/emblems/emblem-bzr-removed.svg', 
+			'/usr/share/pyshared-data/nautilus-bzr'
+		]
+
+
