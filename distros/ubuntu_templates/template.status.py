@@ -5,7 +5,6 @@
     mako is run, these symbols are replaced with others: \
     @@ is replaced with $ \
 </%doc>\
-% for package in packages:
 Package: ${package.name}
 Status: install ok installed
 Priority: ${package.priority}
@@ -13,6 +12,7 @@ Section: ${category_to_section[package.category]}
 Installed-Size: ${str(package.custom['size'])}
 Maintainer: ${packager_name} <${packager_email}>
 Architecture: ${package_type_to_architecture[package.package_type]}
+Source: ${name}
 Version: ${changelog[0].version}-${changelog[0].release}
 Depends: ${str.join(', ', package.install_requirements)}
 Description: ${short_description}
@@ -23,4 +23,3 @@ ${' ' + (long_description + '\n\n' + package.additional_description).replace("\n
 % endif
 Homepage: ${homepage}
 
-% endfor

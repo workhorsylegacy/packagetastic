@@ -110,7 +110,7 @@ class Builder(object):
 
 		# Get the parameters
 		params = meta.to_hash()
-		params['packages'] = packages
+		params['package'] = None
 		params['section'] = self.category_to_section[meta.category]
 		params['build_requirements'] += ["debhelper (>= 7)", "autotools-dev"]
 		params['category_to_section'] = self.category_to_section
@@ -123,11 +123,11 @@ class Builder(object):
 				if not os.path.isfile(entry): continue
 				package.custom['size'] += os.path.getsize(entry) / 1024
 
-		# Generate the *.list file
-		f = open(home + '/.packagetastic/' + meta.name + '/' + meta.name + '.list', 'w')
-		f.write("/.\n")
-		existing_paths = []
+		# Generate the *.list files
 		for package in packages:
+			f = open(home + '/.packagetastic/' + meta.name + '/' + package.name + '.list', 'w')
+			f.write("/.\n")
+			existing_paths = []
 			for entry in package.files:
 				if not os.path.isfile(entry): continue
 				path = ''
@@ -138,36 +138,40 @@ class Builder(object):
 						existing_paths.append(path)
 						f.write(path + "\n")
 
-		f.close()
+			f.close()
 
-		# Generate the *.md5sums file
-		f = open(home + '/.packagetastic/' + meta.name + '/' + meta.name + '.md5sums', 'w')
-		existing_paths = []
+		# Generate the *.md5sums files
 		for package in packages:
+			f = open(home + '/.packagetastic/' + meta.name + '/' + package.name + '.md5sums', 'w')
+			existing_paths = []
 			for entry in package.files:
 				if not os.path.isfile(entry): continue
 
 				md5sum = commands.getoutput("md5sum " + entry)
 				f.write(md5sum + "\n")
 
-		f.write("\n")
-		f.close()
+			f.write("\n")
+			f.close()
 
-		# Generate the temp status file
-		with open(home + '/.packagetastic/' + meta.name + '/temp-status', 'w') as f:
-			from mako.template import Template
-			from mako.lookup import TemplateLookup
-			lookup = TemplateLookup(directories=['../../distros/ubuntu_templates/'], output_encoding='utf-8')
-			template = lookup.get_template("template.status.py")
-			f.write(template.render(**params).replace("@@", "$"))
+		# Generate the temp status files
+		for package in packages:
+			params['package'] = package
+			with open(home + '/.packagetastic/' + meta.name + '/' + package.name + '.status', 'w') as f:
+				from mako.template import Template
+				from mako.lookup import TemplateLookup
+				lookup = TemplateLookup(directories=['../../distros/ubuntu_templates/'], output_encoding='utf-8')
+				template = lookup.get_template("template.status.py")
+				f.write(template.render(**params).replace("@@", "$"))
 
-		# Generate the temp available file
-		with open(home + '/.packagetastic/' + meta.name + '/temp-available', 'w') as f:
-			from mako.template import Template
-			from mako.lookup import TemplateLookup
-			lookup = TemplateLookup(directories=['../../distros/ubuntu_templates/'], output_encoding='utf-8')
-			template = lookup.get_template("template.available.py")
-			f.write(template.render(**params).replace("@@", "$"))
+		# Generate the temp available files
+		for package in packages:
+			params['package'] = package
+			with open(home + '/.packagetastic/' + meta.name + '/' + package.name + '.available', 'w') as f:
+				from mako.template import Template
+				from mako.lookup import TemplateLookup
+				lookup = TemplateLookup(directories=['../../distros/ubuntu_templates/'], output_encoding='utf-8')
+				template = lookup.get_template("template.available.py")
+				f.write(template.render(**params).replace("@@", "$"))
 
 		# Copy all the files for this package
 		for package in packages:
@@ -197,8 +201,9 @@ class Builder(object):
 				run_as_root('cp ' + home + '/.packagetastic/' + meta.name + entry + ' ' + entry, meta.packager_sudo)
 
 		# Copy the *.list and *.md5sums
-		run_as_root("cp " + home + '/.packagetastic/' + meta.name + '/' + meta.name + '.list /var/lib/dpkg/info/' + meta.name + '.list' , meta.packager_sudo)
-		run_as_root("cp " + home + '/.packagetastic/' + meta.name + '/' + meta.name + '.md5sums /var/lib/dpkg/info/' + meta.name + '.md5sums' , meta.packager_sudo)
+		for package in packages:
+			run_as_root("cp " + home + '/.packagetastic/' + meta.name + '/' + package.name + '.list /var/lib/dpkg/info/' + package.name + '.list' , meta.packager_sudo)
+			run_as_root("cp " + home + '/.packagetastic/' + meta.name + '/' + package.name + '.md5sums /var/lib/dpkg/info/' + package.name + '.md5sums' , meta.packager_sudo)
 
 		# Rename status to status-old, and create the new status
 		if os.path.isfile('/var/lib/dpkg/status-old'):
@@ -207,7 +212,8 @@ class Builder(object):
 		run_as_root("cp /var/lib/dpkg/status-old /var/lib/dpkg/status" , meta.packager_sudo)
 
 		# Append the new status to the existing status
-		run_as_root("cat " + home + "/.packagetastic/" + meta.name + "/temp-status" + " >> /var/lib/dpkg/status", meta.packager_sudo)
+		for package in packages:
+			run_as_root("cat " + home + "/.packagetastic/" + meta.name + "/" + package.name + ".status" + " >> /var/lib/dpkg/status", meta.packager_sudo)
 
 		# Rename available to available-old, and create the new available
 		if os.path.isfile('/var/lib/dpkg/available-old'):
@@ -215,16 +221,17 @@ class Builder(object):
 		run_as_root("mv /var/lib/dpkg/available /var/lib/dpkg/available-old" , meta.packager_sudo)
 		run_as_root("cp /var/lib/dpkg/available-old /var/lib/dpkg/available" , meta.packager_sudo)
 
-		is_available = False
-		with open('/var/lib/dpkg/available', 'r') as f:
-			for entry in f.read().split("\r\n\r\n"):
-				if entry.count('Package: ' + meta.name):
-					is_available = True
+		for package in packages:
+			is_available = False
+			with open('/var/lib/dpkg/available', 'r') as f:
+				for entry in f.read().split("\r\n\r\n"):
+					if entry.count('Package: ' + meta.name):
+						is_available = True
 
-		# FIXME: This should update the existing package data
-		# Append the new available to the existing available
-		if not is_available:
-			run_as_root("cat " + home + "/.packagetastic/" + meta.name + "/temp-available" + " >> /var/lib/dpkg/available", meta.packager_sudo)
+			# FIXME: This should update the existing package data
+			# Append the new available to the existing available
+			if not is_available:
+				run_as_root("cat " + home + "/.packagetastic/" + meta.name + "/" + package.name + ".available" + " >> /var/lib/dpkg/available", meta.packager_sudo)
 
 		run_as_root("touch /var/lib/dpkg/lock", meta.packager_sudo)
 
