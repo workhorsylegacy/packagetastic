@@ -131,7 +131,7 @@ class Builder(object):
 			for entry in package.files:
 				if not os.path.isfile(entry): continue
 
-				md5sum = commands.getoutput("md5sum " + entry)
+				md5sum = run_as_user("md5sum " + entry)
 				f.write(md5sum + "\n")
 
 			f.write("\n")
@@ -162,16 +162,13 @@ class Builder(object):
 			for entry in package.files:
 				dir_name = str.join('/', entry.split('/')[:-1])
 				run_as_root('mkdir -p ' + home + '/.packagetastic/' + meta.name + dir_name)
-				run_as_root('cp ' + entry + ' ' + home + '/.packagetastic/' + meta.name + entry)
-		for package in packages:
-			for entry in package.files:
-				run_as_root('rm ' + entry)
+				run_as_root('mv ' + entry + ' ' + home + '/.packagetastic/' + meta.name + entry)
 
 		# Compress all the files into a package
 		user_name = commands.getoutput('whoami')
 		run_as_root('chown -R ' + user_name + ' ' + home + '/.packagetastic/' + meta.name)
 		package = home + '/.packagetastic/' + meta.name
-		commands.getoutput('tar --force-local --no-wildcards -v -p -cf ' + package + '_' + meta.version + '_ubuntu-10.04_i386.pkg --use-compress-program=gzip ' + package)
+		run_as_user('tar --force-local --no-wildcards -v -p -cf ' + package + '_' + meta.version + '_ubuntu-10.04_i386.pkg --use-compress-program=gzip ' + package)
 
 	def install(self, meta, packages):
 		home = os.path.expanduser('~')

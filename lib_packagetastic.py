@@ -354,9 +354,10 @@ def lower_privileges():
 	os.setegid(user_gid)
 	os.seteuid(user_uid)
 
-def run_as_root(command, print_output=True):
+def run_as_root(command):
 	raise_privileges()
 
+	print command
 	child = pexpect.spawn('bash -c "' + command + '"', timeout=60)
 	expected_lines = ["[\w|\s]*\n", 
 							pexpect.EOF]
@@ -373,6 +374,10 @@ def run_as_root(command, print_output=True):
 	child.close()
 
 	lower_privileges()
+
+def run_as_user(command):
+	print command
+	return commands.getoutput(command)
 
 def download_file(file_url, file_name):
 	opener1 = urllib2.build_opener()
@@ -407,7 +412,7 @@ def init_packagetastic(distro_name):
 
 	# Try to get the OS name
 	os_name = None
-	if commands.getoutput('whereis lsb_release').split(':')[1] != '':
+	if run_as_user('whereis lsb_release').split(':')[1] != '':
 		os_name = commands.getoutput('lsb_release -is')
 	elif os.path.isfile('/etc/distro-release'):
 		os_name = commands.getoutput('cat /etc/distro-release')
@@ -456,24 +461,24 @@ def setup_source_code(meta):
 		os.chdir('sources')
 		dir_name = meta.source_file.rstrip('.tar.bz2')
 		print "Converting bzip source code to gzip ..."
-		commands.getoutput("tar xjf " + meta.source_file)
-		commands.getoutput(substitute_strings("mv " + dir_name + " #{name}-#{version}", meta.to_hash()))
-		commands.getoutput(substitute_strings("tar -czf #{name}-#{version}.tar.gz #{name}-#{version}", meta.to_hash()))
-		commands.getoutput(substitute_strings("rm -rf #{name}-#{version}", meta.to_hash()))
+		run_as_user("tar xjf " + meta.source_file)
+		run_as_user(substitute_strings("mv " + dir_name + " #{name}-#{version}", meta.to_hash()))
+		run_as_user(substitute_strings("tar -czf #{name}-#{version}.tar.gz #{name}-#{version}", meta.to_hash()))
+		run_as_user(substitute_strings("rm -rf #{name}-#{version}", meta.to_hash()))
 		source_file = substitute_strings("#{name}-#{version}.tar.gz", meta.to_hash())
 		os.chdir('..')
 
 	# Uncompress the source code
 	print "Uncompressing source code ..."
-	if os.path.isdir("builds"): commands.getoutput("rm -rf builds")
+	if os.path.isdir("builds"): run_as_user("rm -rf builds")
 	os.mkdir("builds")
-	commands.getoutput("cp sources/" + source_file + " builds/" + source_file)
+	run_as_user("cp sources/" + source_file + " builds/" + source_file)
 	os.chdir("builds")
-	commands.getoutput("tar xzf " + source_file)
-	commands.getoutput("rm " + source_file)
+	run_as_user("tar xzf " + source_file)
+	run_as_user("rm " + source_file)
 	actual_file = os.listdir(".")[0]
 	if actual_file != substitute_strings("#{name}-#{version}", meta.to_hash()):
-		commands.getoutput(substitute_strings("mv " + actual_file + " #{name}-#{version}", meta.to_hash()))
+		run_as_user(substitute_strings("mv " + actual_file + " #{name}-#{version}", meta.to_hash()))
 	os.chdir(substitute_strings("#{name}-#{version}", meta.to_hash()))
 
 def get_file_structure_for_package(meta, packages, params):
@@ -786,7 +791,7 @@ def build(distro_name, package_name):
 		os.mkdir(home + '/.packagetastic')
 	if not os.path.isdir(home + '/.packagetastic/' + package_name):
 		os.mkdir(home + '/.packagetastic/' + package_name)
-	commands.getoutput('cp stems/' + package_name + '.stem ' + home + '/.packagetastic/' +  package_name + '/' + package_name + '.stem')
+	run_as_user('cp stems/' + package_name + '.stem ' + home + '/.packagetastic/' +  package_name + '/' + package_name + '.stem')
 
 	meta, packages, builder = _get_package_data(distro_name, package_name, packager_name, packager_email)
 
