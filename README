@@ -2,7 +2,8 @@
 
 Packagetastic is a Linux packaging system, that works with dpkg and rpm.
 
-Right now it only works on 32 bit Fedora 12, Ubuntu 10.04, and Debian Lenny.
+Right now it only works on 32 bit Ubuntu 10.04. Fedora is dissabled while the
+project is rewritten.
 
 Development happens at:
 http://launchpad.net/packagetastic
@@ -11,72 +12,23 @@ The mailing list is located at:
 http://lists.launchpad.net/packagetastic-developers
 
 
-Step #1 on Debian:
-
-	# add your user to the sudo group
-	echo 'username ALL=(ALL) ALL' >> /etc/sudoers
-
-	# install requirements:
-	sudo apt-get install build-essential cdbs dh-make pbuilder fakeroot \
-	debhelper devscripts gnupg python-dev python-distutils-extra \
-	python-pexpect python-mako bzr lsb-release
-
-	# setup pbuilder:
-	cd ~
-	echo "COMPONENTS=\"main contrib non-free\"" > ~/.pbuilderrc
-	sudo pbuilder create
-
-	# create gpg key:
-	gpg --no-use-agent --gen-key
-
 Step #1 on Ubuntu:
-
 	# install requirements:
-	sudo apt-get install build-essential cdbs dh-make pbuilder fakeroot \
-	debhelper devscripts gnupg python-dev python-distutils-extra \
-	python-pexpect python-mako bzr lsb-release
-
-	# setup pbuilder:
-	cd ~
-	echo "COMPONENTS=\"main restricted universe multiverse\"" > ~/.pbuilderrc
-	sudo pbuilder create
-
-	# create gpg key:
-	gpg --no-use-agent --gen-key
-
-	# Turn off the gpg use agent. This makes it so we
-	# can sign the packages with the cli, instead of
-	# the popup dialog box.
-	sed -i 's/^use-agent$/#use-agent/' ~/.gnupg/gpg.conf
+	sudo apt-get install build-essential python-pexpect python-mako python-apt
 
 Step #1 on Fedora:
-
-	# add your user to the sudo group
-	echo 'username ALL=(ALL) ALL' >> /etc/sudoers
-
 	# install requirements:
 	sudo yum groupinstall "Development Tools"
-	sudo yum install mock rpmdevtools pexpect python-mako python-devel \
-	python-distutils-extra redhat-lsb
-
-	# setup mock
-	sudo usermod -a -G mock username
-	mock -r fedora-12-i386 --init
-
-	# create gpg key:
-	gpg --no-use-agent --gen-key
+	sudo yum install pexpect python-mako python-devel
 
 Step #2 - One time setup:
 	# Get the code if you have not
 	bzr branch lp:packagetastic
 	cd packagetastic
 
-	# Setup your name, email, and password files
-	# Make sure to use the same email and name as in your gpg key
+	# Setup your name, and email files
 	echo "Joe Packager" > packager_name
 	echo "joe.packager@linux.com" > packager_email
-	echo "password" > packager_sudo
-	echo "this is a secret" > packager_gpg
 
 Step #3 - Building packages:
 	# Make sure you have a stem file for the package you want
@@ -84,6 +36,6 @@ Step #3 - Building packages:
 
 	# Run packagetastic with arguments for package and distro
 	# For now, use ubuntu as the distro name instead of debian
-	./packagetastic build distro:=ubuntu package:=hello
+	sudo ./packagetastic build distro:=ubuntu package:=hello $UID
 
 
