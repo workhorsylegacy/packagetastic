@@ -1,15 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-import os, sys, time, re
+import os, sys, time, re, gc, base64
 import commands
 import platform
 import pexpect
-import base64
-import gc
-import distutils
 import urllib2
-import shutil
 import apt
 from helper import *
 
