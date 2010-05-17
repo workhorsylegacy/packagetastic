@@ -71,212 +71,6 @@ packagetastic_categories = [
 	'System/WebServers'
 ]
 
-def run_as_root(command, password, print_output=True):
-	child = pexpect.spawn('sudo bash -c "' + command + '"', timeout=60)
-	expected_lines = ["\[sudo\] password for [\w|\s]*: ", 
-							"[\w|\s]*\n", 
-							pexpect.EOF]
-
-	still_reading = True
-	while still_reading:
-		result = child.expect(expected_lines)
-
-		if result == 0:
-			print child.before
-			child.sendline(password)
-		elif result == 1:
-			print child.before
-		elif result == len(expected_lines)-1:
-			still_reading = False
-
-	child.close()
-
-def download_file(file_url, file_name):
-	opener1 = urllib2.build_opener()
-	page1 = opener1.open(file_url)
-	file_chunk = None
-	file_length = int(page1.headers['Content-Length'])
-	file_chunk_length = 0
-	out_file = open(file_name, 'wb')
-	prev_output_length = 0
-
-	while True:
-		file_chunk = page1.read(1024)
-		if len(file_chunk) == 0: break
-		file_chunk_length += len(file_chunk)
-		out_file.write(file_chunk)
-
-		percent = 100.0 * (float(file_chunk_length) / float(file_length))
-		output = ('Downloading source code: ' + str(percent) + ' %').ljust(50)
-		sys.stdout.write("\b" * prev_output_length + output)
-		sys.stdout.flush()
-		prev_output_length = len(output)
-
-	out_file.close()
-	sys.stdout.write("\n")
-
-packagetastic_dir = None
-def init_packagetastic(distro_name):
-	# Make sure we are on linux
-	if platform.system() != 'Linux':
-		print "Packagetastic only works on Linux, not '" + platform.system() + "'. Exiting ..."
-		exit()
-
-	# Try to get the OS name
-	os_name = None
-	if commands.getoutput('whereis lsb_release').split(':')[1] != '':
-		os_name = commands.getoutput('lsb_release -is')
-	elif os.path.isfile('/etc/distro-release'):
-		os_name = commands.getoutput('cat /etc/distro-release')
-	elif os.path.isfile('/etc/system-release'):
-		os_name = commands.getoutput('cat /etc/system-release').split()[0]
-	elif os.path.isfile('/etc/lsb-release'):
-		os_name = str.split(str.split(commands.getoutput('cat /etc/lsb-release'), "DISTRIB_ID=")[1], "\n")[0]
-	elif os.path.isfile('/etc/debian_version'):
-		os_name = "Debian"
-	elif os.path.isfile('/etc/fedora-release').split()[0]:
-		os_name = "Fedora"
-	elif os.path.isfile('/etc/SuSE-release'):
-		os_name = "SuSE"
-	elif os.path.isfile('/etc/mandriva-release'):
-		os_name = "Mandriva"
-	else:
-		print "Packagetastic could not find your Linux distribution name. Exiting ..."
-		exit()
-
-	# Make sure we got a distro we can build for
-	# NOTE: Other distros are LinuxMint, Mandriva, SuSE
-	if ['Debian', 'Ubuntu', 'Fedora'].count(os_name) == 0:
-		print "Packagetastic does not yet work with the Linux distribution '" + os_name + "'. Exiting ..."
-		exit()
-
-	# Make sure we are on the distro we want to build for
-	if distro_name != os_name.lower():
-		print "Packagetastic cannot build packages for '" + distro_name + "' while on '" + os_name + "'. Exiting ..."
-		exit()
-
-	# Get the path of packagetastic's location
-	global packagetastic_dir
-	packagetastic_dir = commands.getoutput('pwd')
-	if packagetastic_dir.count('packagetastic') == 0:
-		raise Exception("Could not find packagetastic in the current path.")
-
-def setup_source_code(meta):
-	# Make sure the source code exists
-	if not os.path.isfile("sources/" + meta.source.split('/')[-1]):
-		print substitute_strings("Missing source code at: sources/" + meta.source.split('/')[-1] + ". Exiting ...", meta.to_hash())
-		exit()
-
-	# Convert any .tar.bz2 files to .tar.gz
-	source = meta.source
-	if meta.source.split('/')[-1].endswith('.tar.bz2'):
-		os.chdir('sources')
-		dir_name = meta.source.split('/')[-1].rstrip('.tar.bz2')
-		print "Converting bzip source code to gzip ..."
-		commands.getoutput("tar xjf " + meta.source.split('/')[-1])
-		commands.getoutput(substitute_strings("mv " + dir_name + " #{name}-#{version}", meta.to_hash()))
-		commands.getoutput(substitute_strings("tar -czf #{name}-#{version}.tar.gz #{name}-#{version}", meta.to_hash()))
-		commands.getoutput(substitute_strings("rm -rf #{name}-#{version}", meta.to_hash()))
-		source = meta.source.rstrip(meta.source.split('/')[-1]) + substitute_strings("#{name}-#{version}.tar.gz", meta.to_hash())
-		os.chdir('..')
-
-	# Uncompress the source code
-	print "Uncompressing source code ..."
-	if os.path.isdir("builds"): commands.getoutput("rm -rf builds")
-	os.mkdir("builds")
-	commands.getoutput(substitute_strings("cp sources/" + source.split('/')[-1] + " builds/#{name}_#{version}.orig.tar.gz", meta.to_hash()))
-	os.chdir("builds")
-	commands.getoutput(substitute_strings("tar xzf #{name}_#{version}.orig.tar.gz", meta.to_hash()))
-	os.chdir(substitute_strings("#{name}-#{version}", meta.to_hash()))
-
-def get_file_structure_for_package(meta, packages, params):
-	# Set the default values
-	params['infodir_entries'] = []
-	params['mandir_entries'] = []
-	params['datadir_entries'] = []
-	params['libdir_entries'] = []
-	params['docs'] = []
-	params['import_python_sitelib'] = False
-	params['has_mime'] = False
-	params['has_info'] = False
-	params['has_icon_cache'] = False
-	params['has_icons'] = False
-	params['has_omf'] = False
-	params['has_lang'] = (os.path.isdir('po') or os.path.isdir('locale'))
-	params['has_desktop_file'] = False
-	params['desktop_file_name'] = None
-
-	# Find out which build methods are used
-	params['builds_with_autotools'] = \
-		os.path.isfile('Makefile.in') or os.path.isfile('GNUmakefile')
-	params['builds_with_python'] = os.path.isfile('setup.py')
-
-	if meta.build_method.count('python') > 0 and params['builds_with_python']:
-		params['import_python_sitelib'] = True
-
-	# Get the docs, lang, and example params
-	for doc in ['README', 'COPYING', 'ChangeLog', 'LICENSE', 'AUTHORS']:
-		if os.path.isfile(doc):
-			params['docs'].append(doc)
-	for doc in ['doc', 'examples']:
-		if os.path.isdir(doc):
-			params['docs'].append(doc)
-	params['docs'].sort()
-
-	simple_name = meta.name.lower().replace('_', '').replace('-', '')
-
-	# Add the files to the categories they belong to
-	for entry in packages[0].files:
-		if entry.startswith('/usr/share/info/'):
-			if not entry.startswith("/usr/share/info/dir"):
-				params['has_info'] = True
-		elif entry.startswith('/usr/share/icons/'):
-			if entry == '/usr/share/icons/hicolor/icon-theme.cache':
-				params['has_icon_cache'] = True
-			else:
-				params['has_icons'] = True
-		elif entry.startswith('/usr/share/applications/'):
-			if entry.endswith('.desktop') or entry.endswith('.desktop.in'):
-				params['has_desktop_file'] = True
-				params['desktop_file_name'] = entry[len('/usr/share/'):]
-		elif entry.startswith('/usr/share/mime/'):
-			params['has_mime'] = True
-		elif entry.startswith('/usr/share/omf/'):
-			params['has_omf'] = True
-
-def requirements_to_distro_specific(distro_name, requirements):
-	distro_requirements = []
-	for requirement in requirements:
-		name, version = '', ''
-		if requirement.count(' ') > 0:
-			name = requirement.split()[0]
-			version = requirement[len(name):]
-		else:
-			name = requirement.split()[0]
-
-		for new_name in package_names[name][distro_name]:
-			distro_requirements.append(new_name + version)
-
-	return distro_requirements
-
-def substitute_strings(string, sub_hash):
-	result = string[:]
-
-	for key, replacement in sub_hash.iteritems():
-		p = re.compile("#\{" + key + "\}")
-
-		if replacement == None: replacement = ''
-
-		while True:
-			# Look for a pattern, and return if there was none
-			match = p.search(result)
-			if match == None: break
-
-			# Replace the pattern with the replacement
-			start, end = match.span()
-			result = result[:start] + replacement + result[end:]
-	return result
-
 class Changelog(object):
 	def __init__(self, version, release, time, text):
 		self._version = version
@@ -298,6 +92,7 @@ class Changelog(object):
 
 class MetaPackage(object):
 	def __init__(self):
+		self._source = None
 		self._name = None
 		self._priority = None
 		self._category = None
@@ -310,11 +105,22 @@ class MetaPackage(object):
 		self._packager_gpg = None
 		self._homepage = None
 		self._license = None
-		self._source = None
 		self._build_requirements = []
 		self._short_description = None
 		self._long_description = None
 		self._changelog = None
+
+	def get_source(self): return self._source
+	source = property(get_source)
+
+	def get_source_file(self):
+		extension = None
+		if self.source.endswith('.tar.gz'):
+			extension = '.tar.gz'
+		elif self.source.endswith('.tar.bz2'):
+			extension = '.tar.bz2'
+		return self.name + '-' + self.version + extension
+	source_file = property(get_source_file)
 
 	def get_name(self): return self._name
 	name = property(get_name)
@@ -360,9 +166,6 @@ class MetaPackage(object):
 		with open(packagetastic_dir + '/license_headers/' + self.license) as f:
 			return f.read()
 	license_text = property(get_license_text)
-
-	def get_source(self): return self._source
-	source = property(get_source)
 
 	def get_build_requirements(self): return self._build_requirements
 	build_requirements = property(get_build_requirements)
@@ -499,6 +302,7 @@ class MetaPackage(object):
 				'release' : str(self.release), 
 				'short_description' : self.short_description, 
 				'source' : self.source, 
+				'source_file' : self.source_file, 
 				'version' : self.version, 
 				}
 
@@ -565,6 +369,216 @@ class BinaryPackage(object):
 		retval['human_timestring'] = time.strftime("%a %b %d %Y", time.localtime())
 
 		return retval
+
+def run_as_root(command, password, print_output=True):
+	child = pexpect.spawn('sudo bash -c "' + command + '"', timeout=60)
+	expected_lines = ["\[sudo\] password for [\w|\s]*: ", 
+							"[\w|\s]*\n", 
+							pexpect.EOF]
+
+	still_reading = True
+	while still_reading:
+		result = child.expect(expected_lines)
+
+		if result == 0:
+			print child.before
+			child.sendline(password)
+		elif result == 1:
+			print child.before
+		elif result == len(expected_lines)-1:
+			still_reading = False
+
+	child.close()
+
+def download_file(file_url, file_name):
+	opener1 = urllib2.build_opener()
+	page1 = opener1.open(file_url)
+	file_chunk = None
+	file_length = int(page1.headers['Content-Length'])
+	file_chunk_length = 0
+	out_file = open(file_name, 'wb')
+	prev_output_length = 0
+
+	while True:
+		file_chunk = page1.read(1024)
+		if len(file_chunk) == 0: break
+		file_chunk_length += len(file_chunk)
+		out_file.write(file_chunk)
+
+		percent = 100.0 * (float(file_chunk_length) / float(file_length))
+		output = ('Downloading source code: ' + str(percent) + ' %').ljust(50)
+		sys.stdout.write("\b" * prev_output_length + output)
+		sys.stdout.flush()
+		prev_output_length = len(output)
+
+	out_file.close()
+	sys.stdout.write("\n")
+
+packagetastic_dir = None
+def init_packagetastic(distro_name):
+	# Make sure we are on linux
+	if platform.system() != 'Linux':
+		print "Packagetastic only works on Linux, not '" + platform.system() + "'. Exiting ..."
+		exit()
+
+	# Try to get the OS name
+	os_name = None
+	if commands.getoutput('whereis lsb_release').split(':')[1] != '':
+		os_name = commands.getoutput('lsb_release -is')
+	elif os.path.isfile('/etc/distro-release'):
+		os_name = commands.getoutput('cat /etc/distro-release')
+	elif os.path.isfile('/etc/system-release'):
+		os_name = commands.getoutput('cat /etc/system-release').split()[0]
+	elif os.path.isfile('/etc/lsb-release'):
+		os_name = str.split(str.split(commands.getoutput('cat /etc/lsb-release'), "DISTRIB_ID=")[1], "\n")[0]
+	elif os.path.isfile('/etc/debian_version'):
+		os_name = "Debian"
+	elif os.path.isfile('/etc/fedora-release').split()[0]:
+		os_name = "Fedora"
+	elif os.path.isfile('/etc/SuSE-release'):
+		os_name = "SuSE"
+	elif os.path.isfile('/etc/mandriva-release'):
+		os_name = "Mandriva"
+	else:
+		print "Packagetastic could not find your Linux distribution name. Exiting ..."
+		exit()
+
+	# Make sure we got a distro we can build for
+	# NOTE: Other distros are LinuxMint, Mandriva, SuSE
+	if ['Debian', 'Ubuntu', 'Fedora'].count(os_name) == 0:
+		print "Packagetastic does not yet work with the Linux distribution '" + os_name + "'. Exiting ..."
+		exit()
+
+	# Make sure we are on the distro we want to build for
+	if distro_name != os_name.lower():
+		print "Packagetastic cannot build packages for '" + distro_name + "' while on '" + os_name + "'. Exiting ..."
+		exit()
+
+	# Get the path of packagetastic's location
+	global packagetastic_dir
+	packagetastic_dir = commands.getoutput('pwd')
+	if packagetastic_dir.count('packagetastic') == 0:
+		raise Exception("Could not find packagetastic in the current path.")
+
+def setup_source_code(meta):
+	# Make sure the source code exists
+	if not os.path.isfile("sources/" + meta.source_file):
+		print substitute_strings("Missing source code at: sources/#{source_file}. Exiting ...", meta.to_hash())
+		exit()
+
+	# Convert any .tar.bz2 files to .tar.gz
+	source_file = meta.source_file
+	if meta.source_file.endswith('.tar.bz2'):
+		os.chdir('sources')
+		dir_name = meta.source_file.rstrip('.tar.bz2')
+		print "Converting bzip source code to gzip ..."
+		commands.getoutput("tar xjf " + meta.source_file)
+		commands.getoutput(substitute_strings("mv " + dir_name + " #{name}-#{version}", meta.to_hash()))
+		commands.getoutput(substitute_strings("tar -czf #{name}-#{version}.tar.gz #{name}-#{version}", meta.to_hash()))
+		commands.getoutput(substitute_strings("rm -rf #{name}-#{version}", meta.to_hash()))
+		source_file = substitute_strings("#{name}-#{version}.tar.gz", meta.to_hash())
+		os.chdir('..')
+
+	# Uncompress the source code
+	print "Uncompressing source code ..."
+	if os.path.isdir("builds"): commands.getoutput("rm -rf builds")
+	os.mkdir("builds")
+	commands.getoutput("cp sources/" + source_file + " builds/" + source_file)
+	os.chdir("builds")
+	commands.getoutput("tar xzf " + source_file)
+	commands.getoutput("rm " + source_file)
+	actual_file = os.listdir(".")[0]
+	if actual_file != substitute_strings("#{name}-#{version}", meta.to_hash()):
+		commands.getoutput(substitute_strings("mv " + actual_file + " #{name}-#{version}", meta.to_hash()))
+	os.chdir(substitute_strings("#{name}-#{version}", meta.to_hash()))
+
+def get_file_structure_for_package(meta, packages, params):
+	# Set the default values
+	params['infodir_entries'] = []
+	params['mandir_entries'] = []
+	params['datadir_entries'] = []
+	params['libdir_entries'] = []
+	params['docs'] = []
+	params['import_python_sitelib'] = False
+	params['has_mime'] = False
+	params['has_info'] = False
+	params['has_icon_cache'] = False
+	params['has_icons'] = False
+	params['has_omf'] = False
+	params['has_lang'] = (os.path.isdir('po') or os.path.isdir('locale'))
+	params['has_desktop_file'] = False
+	params['desktop_file_name'] = None
+
+	# Find out which build methods are used
+	params['builds_with_autotools'] = \
+		os.path.isfile('Makefile.in') or os.path.isfile('GNUmakefile')
+	params['builds_with_python'] = os.path.isfile('setup.py')
+
+	if meta.build_method.count('python') > 0 and params['builds_with_python']:
+		params['import_python_sitelib'] = True
+
+	# Get the docs, lang, and example params
+	for doc in ['README', 'COPYING', 'ChangeLog', 'LICENSE', 'AUTHORS']:
+		if os.path.isfile(doc):
+			params['docs'].append(doc)
+	for doc in ['doc', 'examples']:
+		if os.path.isdir(doc):
+			params['docs'].append(doc)
+	params['docs'].sort()
+
+	simple_name = meta.name.lower().replace('_', '').replace('-', '')
+
+	# Add the files to the categories they belong to
+	for entry in packages[0].files:
+		if entry.startswith('/usr/share/info/'):
+			if not entry.startswith("/usr/share/info/dir"):
+				params['has_info'] = True
+		elif entry.startswith('/usr/share/icons/'):
+			if entry == '/usr/share/icons/hicolor/icon-theme.cache':
+				params['has_icon_cache'] = True
+			else:
+				params['has_icons'] = True
+		elif entry.startswith('/usr/share/applications/'):
+			if entry.endswith('.desktop') or entry.endswith('.desktop.in'):
+				params['has_desktop_file'] = True
+				params['desktop_file_name'] = entry[len('/usr/share/'):]
+		elif entry.startswith('/usr/share/mime/'):
+			params['has_mime'] = True
+		elif entry.startswith('/usr/share/omf/'):
+			params['has_omf'] = True
+
+def requirements_to_distro_specific(distro_name, requirements):
+	distro_requirements = []
+	for requirement in requirements:
+		name, version = '', ''
+		if requirement.count(' ') > 0:
+			name = requirement.split()[0]
+			version = requirement[len(name):]
+		else:
+			name = requirement.split()[0]
+
+		for new_name in package_names[name][distro_name]:
+			distro_requirements.append(new_name + version)
+
+	return distro_requirements
+
+def substitute_strings(string, sub_hash):
+	result = string[:]
+
+	for key, replacement in sub_hash.iteritems():
+		p = re.compile("#\{" + key + "\}")
+
+		if replacement == None: replacement = ''
+
+		while True:
+			# Look for a pattern, and return if there was none
+			match = p.search(result)
+			if match == None: break
+
+			# Replace the pattern with the replacement
+			start, end = match.span()
+			result = result[:start] + replacement + result[end:]
+	return result
 
 def validate_package(distro_name, meta, packages):
 	# Make sure meta and packages were loaded
@@ -709,119 +723,6 @@ def validate_package(distro_name, meta, packages):
 				print "Stem file is Broken. The install requirement \"" + install_requirement + "\" is missing for this distro. Please add it to package_names.py. Exiting ..."
 				exit()
 
-def gen_stem(name, version, source):
-	# Download the source code if needed
-	try:
-		if not os.path.isdir('sources'): os.mkdir('sources')
-		file_url = source
-		file_name = 'sources/' + source.split('/')[-1]
-		if not os.path.isfile(file_name):
-			download_file(file_url, file_name)
-	except urllib2.HTTPError:
-		print "HTTPError: Failed to download the source code. Exiting ..."
-		exit()
-	except urllib2.URLError:
-		print "URLError: Failed to download the source code. Exiting ..."
-		exit()
-
-	# Convert any .tar.bz2 files to .tar.gz
-	if source.split('/')[-1].endswith('.tar.bz2'):
-		os.chdir('sources')
-		dir_name = source.split('/')[-1].rstrip('.tar.bz2')
-		print "Converting bzip source code to gzip ..."
-		commands.getoutput("tar xjf " + source.split('/')[-1])
-		commands.getoutput("mv " + dir_name + " " + name + "-" + version)
-		commands.getoutput("tar -czf " + name + "-" + version + ".tar.gz " + name +"-" + version)
-		commands.getoutput("rm -rf " + name + "-" + version)
-		source = source.rstrip(source.split('/')[-1]) + name + "-" + version + ".tar.gz"
-		os.chdir('..')
-
-	# Uncompress the source code
-	print "Uncompressing source code ..."
-	if os.path.isdir("builds"): commands.getoutput("rm -rf builds")
-	os.mkdir("builds")
-	commands.getoutput("cp sources/" + source.split('/')[-1] + " builds/" + name + "_" + version + ".orig.tar.gz")
-	os.chdir("builds")
-	commands.getoutput("tar xzf " + name + "_" + version + ".orig.tar.gz")
-	os.chdir(name + "-" + version)
-
-	# Determine the build method for the code
-	build_method = None
-	if os.path.isfile('Makefile.in'):
-		build_method = "autotools"
-	elif os.path.isfile('setup.py'):
-		build_method = "python"
-
-	# Build the program in a sub directory
-	os.mkdir('packagetastic_build')
-	if build_method == 'autotools':
-		print "Building program with autotools ..."
-		pwd = commands.getoutput('pwd')
-		commands.getoutput('./configure --prefix=' + pwd + '/packagetastic_build')
-		commands.getoutput('make')
-		commands.getoutput('make install')
-	elif build_method == 'python':
-		print "Building program with python ..."
-		commands.getoutput('python setup.py bdist')
-
-		if not os.path.isdir('dist/'):
-			print "Broken python setup.py. Ran 'python setup.py bdist', but found no *.tar.gz. Exiting ..."
-			exit()
-
-		tgz_name = os.listdir('dist/')[0]
-		if tgz_name.count('tar.gz') == 0:
-			print "Broken python setup.py. Ran 'python setup.py bdist', but found no *.tar.gz. Exiting ..."
-			exit()
-
-		commands.getoutput('mv dist/' + tgz_name + ' packagetastic_build/' + tgz_name)
-		os.chdir('packagetastic_build/')
-		commands.getoutput("tar xzf " + tgz_name)
-		commands.getoutput("rm " + tgz_name)
-		os.chdir('..')
-		commands.getoutput('mv packagetastic_build/usr/ packagetastic_build_usr/')
-		commands.getoutput('rm -rf packagetastic_build/')
-		commands.getoutput('mv packagetastic_build_usr/ packagetastic_build/')
-
-	# Examine the source code and get the parameters for the template
-	params = {}
-	params['packages'] = [{}]
-	params['name'] = name
-	params['version'] = version
-	params['source'] = source
-	params['authors'] = ['a','b', 'c']
-	params['copyright'] = ['x', 'y', 'z']
-
-	# Get a list of all the files
-	files = []
-	entries = os.listdir("packagetastic_build/")
-	while len(entries) > 0:
-		entry = entries.pop(0)
-		if os.path.isdir("packagetastic_build/" + entry):
-			for sub in os.listdir("packagetastic_build/" + entry):
-				entries.append(entry + '/' + sub)
-		elif os.path.isfile("packagetastic_build/" + entry):
-			if entry.startswith('share/locale/') or entry.startswith('share/po/'):
-				pass
-			elif entry.endswith('.old'):
-				pass
-			elif entry.startswith('man/') or entry.startswith('info/'):
-				files.append('/usr/share/' + entry + '*')
-			else:
-				files.append('/usr/' + entry)
-
-	params['packages'][0]['files'] = files
-	params['packages'][0]['name'] = name
-	os.chdir('../..')
-
-	# Write the stem file
-	print "Generating the stem file ..."
-	with open('stems/' + name + '.stem', 'w') as spec_file:
-		from mako.template import Template
-		from mako.lookup import TemplateLookup
-		lookup = TemplateLookup(directories=['.'], output_encoding='utf-8')
-		template = lookup.get_template("template.stem.py")
-		spec_file.write(template.render(**params).replace("@@", "%").replace("\\\\\\", "\\\n"))
-
 def _get_packager_data():
 	global packagetastic_dir
 	os.chdir(packagetastic_dir)
@@ -927,11 +828,10 @@ def build(distro_name, package_name):
 
 	# Download the source code
 	try:
-		if not os.path.isdir('sources'): os.mkdir('sources')
-		file_url = meta.source
-		file_name = 'sources/' + meta.source.split('/')[-1]
-		if not os.path.isfile(file_name):
-			download_file(file_url, file_name)
+		if not os.path.isdir('sources'):
+			os.mkdir('sources')
+		if not os.path.isfile('sources/' + meta.source_file):
+			download_file(meta.source, 'sources/' + meta.source_file)
 	except urllib2.HTTPError:
 		print "HTTPError: Failed to download the source code. Exiting ..."
 		exit()

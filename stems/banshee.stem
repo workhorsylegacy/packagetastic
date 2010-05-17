@@ -36,7 +36,7 @@ class Meta(MetaPackage):
 							u'2005 by Brian Nickel']
 		self._homepage = 'http://banshee-project.org'
 		self._license = 'LGPL2.1'
-		self._source = 'http://download.banshee-project.org/banshee/stable/1.6.0/banshee-1.6.0.tar.gz'
+		self._source = 'http://download.banshee-project.org/banshee/stable/1.6.0/banshee-1-1.6.0.tar.gz'
 
 		self._build_requirements = ['cli-common-dev (>= 0.4.4)', 
 									'intltool (>= 0.35)', 
@@ -374,9 +374,9 @@ class Documentation(BinaryPackage):
 			'/usr/lib/monodoc/sources/hyena-docs.source', 
 			'/usr/lib/monodoc/sources/hyena-docs.tree', 
 			'/usr/lib/monodoc/sources/hyena-docs.zip', 
-			'/usr/share/doc/monodoc-banshee-manual/changelog.Debian.gz', 
-			'/usr/share/doc/monodoc-banshee-manual/changelog.gz', 
-			'/usr/share/doc/monodoc-banshee-manual/copyright'
+			#'/usr/share/doc/monodoc-banshee-manual/changelog.Debian.gz', 
+			#'/usr/share/doc/monodoc-banshee-manual/changelog.gz', 
+			#'/usr/share/doc/monodoc-banshee-manual/copyright'
 		]
 
 

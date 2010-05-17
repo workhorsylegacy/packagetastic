@@ -26,16 +26,13 @@ if mode == "help":
 	print "./packagetastic build distro:=name package:=name"
 	print "./packagetastic install distro:=name package:=name"
 	print "./packagetastic build_all distro:=name"
-	print "./packagetastic gen_stem name:=name version:=version source:=url"
 	print ""
 	print "build: Generates a native package for the target distro."
 	print "build_all: Generates all the native packages for the target distro."
-	print "gen_stem: Generates a stem file from the source code at the url."
 	print ""
 	print "examples:"
 	print "./packagetastic build distro:=ubuntu package:=hello"
 	print "./packagetastic build_all distro:=fedora"
-	print "./packagetastic gen_stem name:=hello version:=2.1.1 source:=http://ftp.gnu.org/gnu/hello/hello-2.1.1.tar.gz"
 	exit()
 
 # Build a package
@@ -121,28 +118,6 @@ if mode == "build_all":
 			raise
 		except:
 			pass
-
-# Generate a stem file
-if mode == "gen_stem":
-	name, version, source = None, None, None
-
-	# Get the arguments
-	for arg in sys.argv[2:]:
-		if arg.startswith('name:='):
-			name = arg.lower().split(':=')[1]
-		elif arg.startswith('version:='):
-			version = arg.lower().split(':=')[1]
-		elif arg.startswith('source:='):
-			source = arg.lower().split(':=')[1]
-
-	# Make sure we got something
-	pairs = {'name' : name, 'version' : version, 'source' : source}
-	for key, value in pairs.iteritems():
-		if value == None:
-			print "No argument for " + key + " was found. Exiting ..."
-			exit()
-
-	lib_packagetastic.gen_stem(name, version, source)
 
 
 
