@@ -58,6 +58,23 @@ class Builder(object):
 	def build(self, meta, packages):
 		home = os.path.expanduser('~')
 
+		# Install all the requirements
+		raise_privileges()
+		c = apt.Cache()
+		for build_requirements in meta.build_requirements:
+			requirements = package_names[build_requirements]['ubuntu']
+
+			for requirement in requirements:
+				pkg = c[requirement]
+				if not pkg.isInstalled:
+					print "Installing required package " + requirement
+					pkg.markInstall()
+
+		if not c.commit():
+			print "Failed to install requirements. Exiting ..."
+			exit()
+		lower_privileges()
+
 		# Build the package
 		setup_source_code(meta)
 		meta.build()
@@ -158,6 +175,24 @@ class Builder(object):
 
 	def install(self, meta, packages):
 		home = os.path.expanduser('~')
+
+		# Install all the requirements
+		raise_privileges()
+		c = apt.Cache()
+		for package in packages:
+			for install_requirement in package.install_requirements:
+				requirements = package_names[install_requirement]['ubuntu']
+
+				for requirement in requirements:
+					pkg = c[requirement]
+					if not pkg.isInstalled:
+						print "Installing required package " + requirement
+						pkg.markInstall()
+
+		if not c.commit():
+			print "Failed to install requirements. Exiting ..."
+			exit()
+		lower_privileges()
 
 		# Copy all the files
 		for package in packages:

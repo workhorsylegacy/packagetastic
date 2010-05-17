@@ -10,6 +10,7 @@ import gc
 import distutils
 import urllib2
 import shutil
+import apt
 from helper import *
 
 exec_file("package_names.py", globals(), locals())
