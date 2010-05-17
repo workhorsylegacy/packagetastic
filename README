@@ -14,12 +14,12 @@ http://lists.launchpad.net/packagetastic-developers
 
 Step #1 on Ubuntu:
 	# install requirements:
-	sudo apt-get install build-essential python-pexpect python-mako python-apt
+	sudo apt-get install build-essential python-pexpect python-mako python-apt lsb_release
 
 Step #1 on Fedora:
 	# install requirements:
 	sudo yum groupinstall "Development Tools"
-	sudo yum install pexpect python-mako python-devel
+	sudo yum install pexpect python-mako python-devel redhat-lsb
 
 Step #2 - One time setup:
 	# Get the code if you have not
