@@ -7,32 +7,37 @@ import lib_packagetastic
 # Move the path to the location of the current file
 os.chdir(os.sys.path[0])
 
+# Make sure we are root and the uid for the normal user was passed
+if not lib_packagetastic.is_root():
+	print "This program must be run as root. Exiting ..."
+	exit()
+
 # Determine what we are going to do
 mode = ""
-if len(sys.argv) >= 4 and sys.argv[1] == "build":
+if len(sys.argv) >= 5 and sys.argv[1] == "build":
 	mode = "build"
-elif len(sys.argv) >= 4 and sys.argv[1] == "install":
+elif len(sys.argv) >= 5 and sys.argv[1] == "install":
 	mode = "install"
-elif len(sys.argv) >= 3 and sys.argv[1] == "build_all":
+elif len(sys.argv) >= 4 and sys.argv[1] == "build_all":
 	mode = "build_all"
-elif len(sys.argv) == 5 and sys.argv[1] == "gen_stem":
-	mode = "gen_stem"
 else:
 	mode = "help"
+
+lib_packagetastic.setup_user_ids(int(sys.argv[4]))
 
 # Show the usage
 if mode == "help":
 	print "usage:"
-	print "./packagetastic build distro:=name package:=name"
-	print "./packagetastic install distro:=name package:=name"
-	print "./packagetastic build_all distro:=name"
+	print "./packagetastic build distro:=name package:=name 1000"
+	print "./packagetastic install distro:=name package:=name 1000"
+	print "./packagetastic build_all distro:=name 1000"
 	print ""
 	print "build: Generates a native package for the target distro."
 	print "build_all: Generates all the native packages for the target distro."
 	print ""
 	print "examples:"
-	print "./packagetastic build distro:=ubuntu package:=hello"
-	print "./packagetastic build_all distro:=fedora"
+	print "./packagetastic build distro:=ubuntu package:=hello 1000"
+	print "./packagetastic build_all distro:=fedora 1000"
 	exit()
 
 # Build a package

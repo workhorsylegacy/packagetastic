@@ -58,39 +58,6 @@ class Builder(object):
 	def build(self, meta, packages):
 		home = os.path.expanduser('~')
 
-		# Make sure the password is legit
-		print "Checking if we can use sudo ..."
-		child = pexpect.spawn('bash -c "sudo -k; sudo su"', timeout=5)
-
-		expected_lines = ["Sorry, try again.\r\n" + 
-							"\[sudo\] password for [\w|\s]*: ", 
-							"\[sudo\] password for [\w|\s]*: ", 
-							'[$%#]', # command prompt
-							pexpect.EOF]
-
-		still_reading = True
-		had_error = True
-		while still_reading:
-			result = child.expect(expected_lines)
-
-			if result == 0:
-				child.sendline("")
-			elif result == 1:
-				child.sendline(meta.packager_sudo)
-			elif result == 2:
-				child.sendline("exit")
-				had_error = False
-			elif result == len(expected_lines)-1:
-				still_reading = False
-
-		child.close()
-		if had_error:
-			print "Incorrect password for sudo. Exiting ..."
-			exit()
-
-		# Clear sudo so we don't use it till needed
-		commands.getoutput("sudo -k")
-
 		# Build the package
 		setup_source_code(meta)
 		meta.build()
@@ -177,15 +144,15 @@ class Builder(object):
 		for package in packages:
 			for entry in package.files:
 				dir_name = str.join('/', entry.split('/')[:-1])
-				run_as_root('mkdir -p ' + home + '/.packagetastic/' + meta.name + dir_name, meta.packager_sudo)
-				run_as_root('cp ' + entry + ' ' + home + '/.packagetastic/' + meta.name + entry, meta.packager_sudo)
+				run_as_root('mkdir -p ' + home + '/.packagetastic/' + meta.name + dir_name)
+				run_as_root('cp ' + entry + ' ' + home + '/.packagetastic/' + meta.name + entry)
 		for package in packages:
 			for entry in package.files:
-				run_as_root('rm ' + entry, meta.packager_sudo)
+				run_as_root('rm ' + entry)
 
 		# Compress all the files into a package
 		user_name = commands.getoutput('whoami')
-		run_as_root('chown -R ' + user_name + ' ' + home + '/.packagetastic/' + meta.name, meta.packager_sudo)
+		run_as_root('chown -R ' + user_name + ' ' + home + '/.packagetastic/' + meta.name)
 		package = home + '/.packagetastic/' + meta.name
 		commands.getoutput('tar --force-local --no-wildcards -v -p -cf ' + package + '_' + meta.version + '_ubuntu-10.04_i386.pkg --use-compress-program=gzip ' + package)
 
@@ -197,29 +164,29 @@ class Builder(object):
 			for entry in package.files:
 				dir_name = str.join('/', entry.split('/')[:-1])
 				if os.path.isdir(dir_name):
-					run_as_root('mkdir -p ' + dir_name, meta.packager_sudo)
-				run_as_root('cp ' + home + '/.packagetastic/' + meta.name + entry + ' ' + entry, meta.packager_sudo)
+					run_as_root('mkdir -p ' + dir_name)
+				run_as_root('cp ' + home + '/.packagetastic/' + meta.name + entry + ' ' + entry)
 
 		# Copy the *.list and *.md5sums
 		for package in packages:
-			run_as_root("cp " + home + '/.packagetastic/' + meta.name + '/' + package.name + '.list /var/lib/dpkg/info/' + package.name + '.list' , meta.packager_sudo)
-			run_as_root("cp " + home + '/.packagetastic/' + meta.name + '/' + package.name + '.md5sums /var/lib/dpkg/info/' + package.name + '.md5sums' , meta.packager_sudo)
+			run_as_root("cp " + home + '/.packagetastic/' + meta.name + '/' + package.name + '.list /var/lib/dpkg/info/' + package.name + '.list')
+			run_as_root("cp " + home + '/.packagetastic/' + meta.name + '/' + package.name + '.md5sums /var/lib/dpkg/info/' + package.name + '.md5sums')
 
 		# Rename status to status-old, and create the new status
 		if os.path.isfile('/var/lib/dpkg/status-old'):
-			run_as_root("rm /var/lib/dpkg/status-old" , meta.packager_sudo)
-		run_as_root("mv /var/lib/dpkg/status /var/lib/dpkg/status-old" , meta.packager_sudo)
-		run_as_root("cp /var/lib/dpkg/status-old /var/lib/dpkg/status" , meta.packager_sudo)
+			run_as_root("rm /var/lib/dpkg/status-old")
+		run_as_root("mv /var/lib/dpkg/status /var/lib/dpkg/status-old")
+		run_as_root("cp /var/lib/dpkg/status-old /var/lib/dpkg/status")
 
 		# Append the new status to the existing status
 		for package in packages:
-			run_as_root("cat " + home + "/.packagetastic/" + meta.name + "/" + package.name + ".status" + " >> /var/lib/dpkg/status", meta.packager_sudo)
+			run_as_root("cat " + home + "/.packagetastic/" + meta.name + "/" + package.name + ".status" + " >> /var/lib/dpkg/status")
 
 		# Rename available to available-old, and create the new available
 		if os.path.isfile('/var/lib/dpkg/available-old'):
-			run_as_root("rm /var/lib/dpkg/available-old" , meta.packager_sudo)
-		run_as_root("mv /var/lib/dpkg/available /var/lib/dpkg/available-old" , meta.packager_sudo)
-		run_as_root("cp /var/lib/dpkg/available-old /var/lib/dpkg/available" , meta.packager_sudo)
+			run_as_root("rm /var/lib/dpkg/available-old")
+		run_as_root("mv /var/lib/dpkg/available /var/lib/dpkg/available-old")
+		run_as_root("cp /var/lib/dpkg/available-old /var/lib/dpkg/available")
 
 		for package in packages:
 			is_available = False
@@ -231,9 +198,9 @@ class Builder(object):
 			# FIXME: This should update the existing package data
 			# Append the new available to the existing available
 			if not is_available:
-				run_as_root("cat " + home + "/.packagetastic/" + meta.name + "/" + package.name + ".available" + " >> /var/lib/dpkg/available", meta.packager_sudo)
+				run_as_root("cat " + home + "/.packagetastic/" + meta.name + "/" + package.name + ".available" + " >> /var/lib/dpkg/available")
 
-		run_as_root("touch /var/lib/dpkg/lock", meta.packager_sudo)
+		run_as_root("touch /var/lib/dpkg/lock")
 
 		print "Done"
 

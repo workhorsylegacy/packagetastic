@@ -240,44 +240,10 @@ class MetaPackage(object):
 		child.close()
 
 	def install(self):
-		child = pexpect.spawn('bash -c "sudo make install"', timeout=60)
-		expected_lines = ["\[sudo\] password for [\w|\s]*: ", 
-							"[\w|\s]*\n", 
-							pexpect.EOF]
-
-		still_reading = True
-		while still_reading:
-			result = child.expect(expected_lines)
-
-			if result == 0:
-				print child.before
-				child.sendline(self._packager_sudo)
-			elif result == 1:
-				print child.before
-			elif result == len(expected_lines)-1:
-				still_reading = False
-
-		child.close()
+		run_as_root("make install")
 
 	def setup_py_install(self):
-		child = pexpect.spawn('bash -c "sudo python setup.py install --record=install-files.txt"', timeout=60)
-		expected_lines = ["\[sudo\] password for [\w|\s]*: ", 
-							"[\w|\s]*\n", 
-							pexpect.EOF]
-
-		still_reading = True
-		while still_reading:
-			result = child.expect(expected_lines)
-
-			if result == 0:
-				print child.before
-				child.sendline(self._packager_sudo)
-			elif result == 1:
-				print child.before
-			elif result == len(expected_lines)-1:
-				still_reading = False
-
-		child.close()
+		run_as_root("python setup.py install --record=install-files.txt")
 
 	def to_hash(self):
 		retval={ 'authors' : self.authors, 
@@ -370,10 +336,42 @@ class BinaryPackage(object):
 
 		return retval
 
-def run_as_root(command, password, print_output=True):
-	child = pexpect.spawn('sudo bash -c "' + command + '"', timeout=60)
-	expected_lines = ["\[sudo\] password for [\w|\s]*: ", 
-							"[\w|\s]*\n", 
+user_gid, user_uid = None, None
+def setup_user_ids(normal_user_uid):
+	global user_gid
+	global user_uid
+
+	user_gid = normal_user_uid
+	user_uid = normal_user_uid
+
+	raise_privileges()
+	lower_privileges()
+
+def is_root():
+	return os.getegid() == 0 and os.geteuid() == 0
+
+def raise_privileges():
+	if is_root():
+		return
+
+	os.setegid(0)
+	os.seteuid(0)
+
+def lower_privileges():
+	global user_gid
+	global user_uid
+
+	if not is_root():
+		return
+
+	os.setegid(user_gid)
+	os.seteuid(user_uid)
+
+def run_as_root(command, print_output=True):
+	raise_privileges()
+
+	child = pexpect.spawn('bash -c "' + command + '"', timeout=60)
+	expected_lines = ["[\w|\s]*\n", 
 							pexpect.EOF]
 
 	still_reading = True
@@ -382,13 +380,12 @@ def run_as_root(command, password, print_output=True):
 
 		if result == 0:
 			print child.before
-			child.sendline(password)
-		elif result == 1:
-			print child.before
 		elif result == len(expected_lines)-1:
 			still_reading = False
 
 	child.close()
+
+	lower_privileges()
 
 def download_file(file_url, file_name):
 	opener1 = urllib2.build_opener()
