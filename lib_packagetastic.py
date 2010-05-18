@@ -534,15 +534,17 @@ def get_file_structure_for_package(meta, packages, params):
 def requirements_to_distro_specific(distro_name, requirements):
 	distro_requirements = []
 	for requirement in requirements:
-		name, version = '', ''
-		if requirement.count(' ') > 0:
-			name = requirement.split()[0]
-			version = requirement[len(name):]
-		else:
-			name = requirement.split()[0]
+		name, compare, version = None, None, None
+		r = requirement.split()
+		if len(r) >= 1: name = r[0]
+		if len(r) >= 2: compare = r[1]
+		if len(r) >= 3: version = r[2]
 
 		for new_name in package_names[name][distro_name]:
-			distro_requirements.append(new_name + version)
+			distro_requirements.append({'name' : new_name, 
+										'compare' : compare, 
+										'version' : version})
+
 
 	return distro_requirements
 
@@ -686,13 +688,14 @@ def validate_package(distro_name, meta, packages):
 
 	# Make sure we know about the build requirements
 	for build_requirement in meta.build_requirements:
-		build_requirement = build_requirement.split()[0]
-		if not package_names.has_key(build_requirement):
-			print "Stem file is Broken. The build requirement \"" + build_requirement + "\" was not found. Please add it to package_names.py. Exiting ..."
+		requirement = build_requirement.split()[0]
+
+		if not package_names.has_key(requirement):
+			print "Stem file is Broken. The build requirement \"" + requirement + "\" was not found. Please add it to package_names.py. Exiting ..."
 			exit()
-		elif package_names[build_requirement].has_key(distro_name) and \
-			len(package_names[build_requirement][distro_name]) == 0:
-			print "Stem file is Broken. The build requirement \"" + build_requirement + "\" is missing for this distro. Please add it to package_names.py. Exiting ..."
+		elif package_names[requirement].has_key(distro_name) and \
+			len(package_names[requirement][distro_name]) == 0:
+			print "Stem file is Broken. The build requirement \"" + requirement + "\" is missing for this distro. Please add it to package_names.py. Exiting ..."
 			exit()
 
 	# Make sure we know about the install requirements
@@ -818,6 +821,13 @@ def install(distro_name, package_name):
 	packager_name, packager_email = _get_packager_data()
 
 	meta, packages, builder = _get_package_data(distro_name, package_name, packager_name, packager_email)
+
+	# Convert the requirements to be distro specific
+	meta.__dict__['_build_requirements'] = \
+		requirements_to_distro_specific(distro_name, meta.build_requirements)
+	for package in packages:
+		package.__dict__['_install_requirements'] = \
+			requirements_to_distro_specific(distro_name, package.install_requirements)
 
 	# Install the package for that distro
 	print "\nInstalling " + package_name + " ..."

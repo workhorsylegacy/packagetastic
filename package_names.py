@@ -2,14 +2,34 @@
 # -*- coding: UTF-8 -*-
 
 package_names = {
-	#'libkarma-cil' : { 
-	#	'fedora' : [], 
-	#	'ubuntu' : ['libkarma-cil']
-	#}, 
+	'libkarma-cil' : { 
+		'fedora' : [], 
+		'ubuntu' : ['libkarma-cil']
+	}, 
+	'libkarma-cil-dev' : { 
+		'fedora' : [], 
+		'ubuntu' : ['libkarma-cil-dev']
+	}, 
+	'libwebkit-cil-dev' : { 
+		'fedora' : [], 
+		'ubuntu' : ['libwebkit-cil-dev']
+	}, 
+	'libgdata-cil-dev' : { 
+		'fedora' : [], 
+		'ubuntu' : ['libgdata-cil-dev']
+	}, 
+	'gstreamer0.10-alsa' : { 
+		'fedora' : [], 
+		'ubuntu' : ['gstreamer0.10-alsa']
+	}, 
 	#'gstreamer0.10-gnomevfs' : { 
 	#	'fedora' : [], 
 	#	'ubuntu' : ['gstreamer0.10-gnomevfs']
 	#}, 
+	'autotools-dev' : {
+		'fedora' : ['autotools-dev'], 
+		'ubuntu' : ['autotools-dev']
+	},
 	'cheese' : {
 		'fedora' : ['cheese'], 
 		'ubuntu' : ['cheese']
@@ -222,9 +242,17 @@ package_names = {
 		'fedora' : ['ipod-sharp'], 
 		'ubuntu' : ['libipodui-cil']
 	}, 
+	'libipodui-cil-dev' : { 
+		'fedora' : ['libipodui-cil-dev'], 
+		'ubuntu' : ['libipodui-cil-dev']
+	}, 
 	'libipod-cil' : { 
 		'fedora' : ['ipod-sharp'], 
 		'ubuntu' : ['libipod-cil']
+	}, 
+	'libipod-cil-dev' : { 
+		'fedora' : ['libipod-cil-dev'], 
+		'ubuntu' : ['libipod-cil-dev']
 	}, 
 	'libglade2.0-cil' : { 
 		'fedora' : ['mono-devel'], 
@@ -234,13 +262,25 @@ package_names = {
 		'fedora' : ['mono-devel'], 
 		'ubuntu' : ['libglib2.0-cil']
 	}, 
+	'libglib2.0-cil-dev' : { 
+		'fedora' : ['libglib2.0-cil-dev'], 
+		'ubuntu' : ['libglib2.0-cil-dev']
+	}, 
 	'libnotify0.4-cil' : { 
 		'fedora' : ['notify-sharp'], 
 		'ubuntu' : ['libnotify0.4-cil']
 	}, 
+	'libnotify-cil-dev' : { 
+		'fedora' : ['libnotify-cil-dev'], 
+		'ubuntu' : ['libnotify-cil-dev']
+	}, 
 	'libnotify-dev' : { 
 		'fedora' : ['libnotify-devel'], 
 		'ubuntu' : ['libnotify-dev-gtk2.10']
+	}, 
+	'libmono-zeroconf-cil-dev' : { 
+		'fedora' : ['libmono-zeroconf-cil-dev'], 
+		'ubuntu' : ['libmono-zeroconf-cil-dev']
 	}, 
 	'libmono-zeroconf1.0-cil' : { 
 		'fedora' : ['mono-zeroconf'], 
@@ -362,6 +402,10 @@ package_names = {
 		'fedora' : ['mono-devel'], 
 		'ubuntu' : ['libmono-dev']
 	}, 
+	'mono-devel' : { 
+		'fedora' : ['mono-devel'], 
+		'ubuntu' : ['mono-devel']
+	}, 
 	'boo' : { 
 		'fedora' : ['boo'], 
 		'ubuntu' : ['boo']
@@ -386,9 +430,29 @@ package_names = {
 		'fedora' : ['ndesk-dbus-glib-devel'], 
 		'ubuntu' : ['libndesk-dbus-glib1.0-cil']
 	}, 
+	'libndesk-dbus-glib1.0-cil-dev' : {
+		'fedora' : ['libndesk-dbus-glib1.0-cil-dev'], 
+		'ubuntu' : ['libndesk-dbus-glib1.0-cil-dev']
+	},
 	'libndesk-dbus1.0-cil' : { 
 		'fedora' : ['ndesk-dbus-devel'], 
 		'ubuntu' : ['libndesk-dbus1.0-cil']
+	}, 
+	'libndesk-dbus1.0-cil-dev' : {
+		'fedora' : ['libndesk-dbus1.0-cil-dev'], 
+		'ubuntu' : ['libndesk-dbus1.0-cil-dev']
+	},
+	'libmono-addins-cil-dev' : {
+		'fedora' : ['libmono-addins-cil-dev'], 
+		'ubuntu' : ['libmono-addins-cil-dev']
+	},
+	'libmono-addins-gui-cil-dev' : {
+		'fedora' : ['libmono-addins-gui-cil-dev'], 
+		'ubuntu' : ['libmono-addins-gui-cil-dev']
+	},
+	'libtaglib-cil-dev' : { 
+		'fedora' : ['libtaglib-cil-dev'], 
+		'ubuntu' : ['libtaglib-cil-dev']
 	}, 
 	'libmono-cairo2.0-cil' : { 
 		'fedora' : ['mono-devel'], 
@@ -430,6 +494,10 @@ package_names = {
 		'fedora' : ['gnome-sharp-devel'], 
 		'ubuntu' : ['libgconf2.0-cil']
 	}, 
+	'libgconf2.0-cil-dev' : { 
+		'fedora' : ['libgconf2.0-cil-dev'], 
+		'ubuntu' : ['libgconf2.0-cil-dev']
+	}, 
 	'libgconf2-dev' : { 
 		'fedora' : ['GConf2-devel'], 
 		'ubuntu' : ['libgconf2-dev']
@@ -441,6 +509,10 @@ package_names = {
 	'libgtk2.0-cil' : { 
 		'fedora' : ['gtk-sharp2-devel'], 
 		'ubuntu' : ['libgtk2.0-cil']
+	}, 
+	'libgtk2.0-cil-dev' : { 
+		'fedora' : ['libgtk2.0-cil-dev'], 
+		'ubuntu' : ['libgtk2.0-cil-dev']
 	}, 
 	'hello' : { 
 		'fedora' : ['hello'], 

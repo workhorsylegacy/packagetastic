@@ -61,14 +61,11 @@ class Builder(object):
 		# Install all the requirements
 		raise_privileges()
 		c = apt.Cache()
-		for build_requirements in meta.build_requirements:
-			requirements = package_names[build_requirements]['ubuntu']
-
-			for requirement in requirements:
-				pkg = c[requirement]
-				if not pkg.isInstalled:
-					print "Installing required package " + requirement
-					pkg.markInstall()
+		for requirement in meta.build_requirements:
+			pkg = c[requirement['name']]
+			if not pkg.isInstalled:
+				print "Installing required package " + requirement['name']
+				pkg.markInstall()
 
 		if not c.commit():
 			print "Failed to install requirements. Exiting ..."
@@ -177,14 +174,11 @@ class Builder(object):
 		raise_privileges()
 		c = apt.Cache()
 		for package in packages:
-			for install_requirement in package.install_requirements:
-				requirements = package_names[install_requirement]['ubuntu']
-
-				for requirement in requirements:
-					pkg = c[requirement]
-					if not pkg.isInstalled:
-						print "Installing required package " + requirement
-						pkg.markInstall()
+			for requirement in package.install_requirements:
+				pkg = c[requirement['name']]
+				if not pkg.isInstalled:
+					print "Installing required package " + requirement['name']
+					pkg.markInstall()
 
 		if not c.commit():
 			print "Failed to install requirements. Exiting ..."

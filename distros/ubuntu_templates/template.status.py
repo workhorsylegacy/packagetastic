@@ -14,7 +14,16 @@ Maintainer: ${packager_name} <${packager_email}>
 Architecture: ${package_type_to_architecture[package.package_type]}
 Source: ${name}
 Version: ${changelog[0].version}-${changelog[0].release}
-Depends: ${str.join(', ', package.install_requirements)}
+<%r = []%>\
+Depends: \
+% for requirement in package.install_requirements:
+% if requirement['version']:
+<% r.append(requirement['name'] + ' (' + requirement['compare'] + ' ' + requirement['version'] + ')') %>\
+% else:
+<% r.append(requirement['name']) %>\
+% endif
+% endfor
+${str.join(', ', r)}
 Description: ${short_description}
 % if len(package.additional_description) == 0:
 ${' ' + long_description.replace("\n", "\n ").replace("\n \n", "\n .\n")}
