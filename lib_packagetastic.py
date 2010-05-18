@@ -470,7 +470,8 @@ def setup_source_code(meta):
 
 	# Uncompress the source code
 	print "Uncompressing source code ..."
-	if os.path.isdir("builds"): run_as_user("rm -rf builds")
+	if os.path.isdir("builds"):
+		run_as_root("rm -rf builds")
 	os.mkdir("builds")
 	run_as_user("cp sources/" + source_file + " builds/" + source_file)
 	os.chdir("builds")
