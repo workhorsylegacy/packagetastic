@@ -1,7 +1,7 @@
 
 
 Packagetastic is a Linux packaging system, that works with dpkg and rpm.
-
+ 
 Right now it only works on 32 bit Ubuntu 10.04. Fedora is dissabled while the
 project is rewritten.
 
