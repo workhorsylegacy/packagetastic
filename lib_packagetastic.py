@@ -149,11 +149,6 @@ class MetaPackage(object):
 	def get_license(self): return self._license
 	license = property(get_license)
 
-	def get_license_text(self):
-		with open(packagetastic_dir + '/license_headers/' + self.license) as f:
-			return f.read()
-	license_text = property(get_license_text)
-
 	def get_build_requirements(self): return self._build_requirements
 	build_requirements = property(get_build_requirements)
 
@@ -245,7 +240,6 @@ class MetaPackage(object):
 				'copyright' : self.copyright, 
 				'homepage' : self.homepage, 
 				'license' : self.license, 
-				'license_text' : self.license_text, 
 				'long_description' : self.long_description, 
 				'name' : self.name, 
 				'packager_email' : self.packager_email, 
