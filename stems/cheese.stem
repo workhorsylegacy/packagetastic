@@ -15,7 +15,27 @@ class Meta(MetaPackage):
 		self._license = 'LGPL2.1'
 		self._source = 'http://ftp.gnome.org/pub/GNOME/sources/cheese/2.29/cheese-2.29.91.tar.gz'
 
-		self._build_requirements = ['info']
+		self._build_requirements = [
+			'gnome-pkg-tools >= 0.10', 
+			'libglib2.0-dev >= 2.16.0', 
+			'libpango1.0-dev >= 1.18.0', 
+			'librsvg2-dev >= 2.18.0', 
+			'libgtk2.0-dev >= 2.19.1', 
+			'libgnome-desktop-dev >=2.25.1', 
+			'libcanberra-gtk-dev', 
+			'libgconf2-dev >= 2.16.0', 
+			'libgstreamer0.10-dev >= 0.10.23', 
+			'libgstreamer-plugins-base0.10-dev', 
+			'libcairo2-dev >= 1.4.0', 
+			'libdbus-1-dev >= 1.0', 
+			'libdbus-glib-dev >= 0.7', 
+			'libgudev-1.0-dev', 
+			'libxtst-dev', 
+			'libxml-parser-perl', 
+			'rarian-compat', 
+			'gnome-doc-utils', 
+			'docbook-utils'
+		]
 
 		self._short_description = u"A tool to take pictures and videos from your webcam"
 
@@ -39,7 +59,12 @@ class Cheese(BinaryPackage):
 		self._category = 'Applications/Video'
 		self._package_type = 'c application'
 		self._priority = 'optional'
-		self._install_requirements = ['info']
+		self._install_requirements = [
+			'cheese-common', 
+			'gstreamer0.10-plugins-base >= 0.10.23', 
+			'gstreamer0.10-plugins-good >= 0.10.8', 
+			'gstreamer0.10 >= 0.10.20'
+		]
 
 		self._additional_description = u"A tool to take pictures and videos from your webcam"
 
@@ -53,7 +78,9 @@ class CheeseCommon(BinaryPackage):
 		self._category = 'Applications/Video'
 		self._package_type = 'c library'
 		self._priority = 'optional'
-		self._install_requirements = ['info']
+		self._install_requirements = [
+			'info'
+		]
 
 		self._additional_description = u"Common files for the Cheese tool to take pictures and videos"
 
@@ -234,7 +261,9 @@ class LibCheeseGtk(BinaryPackage):
 		self._category = 'Applications/Video'
 		self._package_type = 'c library'
 		self._priority = 'optional'
-		self._install_requirements = ['info']
+		self._install_requirements = [
+			'cheese-common'
+		]
 
 		self._additional_description = u"A tool to take pictures and videos from your webcam - widgets"
 
@@ -249,7 +278,12 @@ class LibCheeseGtkDev(BinaryPackage):
 		self._category = 'Applications/Video'
 		self._package_type = 'c library'
 		self._priority = 'optional'
-		self._install_requirements = ['info']
+		self._install_requirements = [
+			'libcheese-gtk', 
+			'libgtk2.0-dev', 
+			'libgstreamer0.10-dev', 
+			'libcanberra-gtk-dev'
+		]
 
 		self._additional_description = u"A tool to take pictures and videos from your webcam - widgets dev"
 

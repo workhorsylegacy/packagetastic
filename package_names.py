@@ -2,6 +2,86 @@
 # -*- coding: UTF-8 -*-
 
 package_names = {
+	'docbook-utils' : { 
+		'fedora' : [], 
+		'ubuntu' : ['docbook-utils']
+	},
+	'libxtst-dev' : { 
+		'fedora' : [], 
+		'ubuntu' : ['libxtst-dev']
+	},
+	'libgudev-1.0-dev' : { 
+		'fedora' : [], 
+		'ubuntu' : ['libgudev-1.0-dev']
+	},
+	'gnome-pkg-tools' : { 
+		'fedora' : [], 
+		'ubuntu' : ['gnome-pkg-tools']
+	},
+	'libpango1.0-dev' : { 
+		'fedora' : [], 
+		'ubuntu' : ['libpango1.0-dev']
+	},
+	'librsvg2-dev' : { 
+		'fedora' : [], 
+		'ubuntu' : ['librsvg2-dev']
+	},
+	'libgnome-desktop-dev' : { 
+		'fedora' : [], 
+		'ubuntu' : ['libgnome-desktop-dev']
+	},
+	'libcanberra-gtk-dev' : { 
+		'fedora' : [], 
+		'ubuntu' : ['libcanberra-gtk-dev']
+	},
+	'libgconf2-dev' : { 
+		'fedora' : [], 
+		'ubuntu' : ['libgconf2-dev']
+	},
+	'libcairo2-dev' : { 
+		'fedora' : [], 
+		'ubuntu' : ['libcairo2-dev']
+	},
+	'libdbus-1-dev' : { 
+		'fedora' : [], 
+		'ubuntu' : ['libdbus-1-dev']
+	},
+	'seahorse' : { 
+		'fedora' : [], 
+		'ubuntu' : ['seahorse']
+	},
+	'python-gtksourceview2' : { 
+		'fedora' : [], 
+		'ubuntu' : ['python-gtksourceview2']
+	},
+	'python-gnomekeyring' : { 
+		'fedora' : [], 
+		'ubuntu' : ['python-gnomekeyring']
+	},
+	'bzr-dbus' : { 
+		'fedora' : [], 
+		'ubuntu' : ['bzr-dbus']
+	},
+	'python-nautilus' : { 
+		'fedora' : [], 
+		'ubuntu' : ['python-nautilus']
+	},
+	'bzr-stats' : { 
+		'fedora' : [], 
+		'ubuntu' : ['bzr-stats']
+	},
+	'bzr' : { 
+		'fedora' : [], 
+		'ubuntu' : ['bzr']
+	},
+	'nautilus-bzr' : { 
+		'fedora' : [], 
+		'ubuntu' : ['nautilus-bzr']
+	},
+	'bzr-gtk' : { 
+		'fedora' : [], 
+		'ubuntu' : ['bzr-gtk']
+	}, 
 	'libkarma-cil' : { 
 		'fedora' : [], 
 		'ubuntu' : ['libkarma-cil']
@@ -722,7 +802,7 @@ package_names = {
 		'fedora' : ['gstreamer'], 
 		'ubuntu' : ['libgstreamer0.10-0']
 	}, 
-	'gstreamer' : { 
+	'gstreamer0.10' : { 
 		'fedora' : ['gstreamer'], 
 		'ubuntu' : ['gstreamer0.10-x']
 	}, 

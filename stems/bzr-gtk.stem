@@ -15,7 +15,8 @@ class Meta(MetaPackage):
 		self._license = 'LGPL2.1'
 		self._source = 'http://edge.launchpad.net/bzr-gtk/trunk/0.98.0/+download/bzr-gtk-0.98.0.tar.gz'
 
-		self._build_requirements = ['info']
+		self._build_requirements = ['bzr >= 1.17', 'bzr-stats', 
+									'python-nautilus >= 0.5.0', 'python']
 
 		self._short_description = u"provides graphical interfaces to Bazaar (bzr) version control"
 
@@ -26,7 +27,7 @@ class Meta(MetaPackage):
 		]
 
 	def build(self):
-		pass
+		self.setup_py_install()
 
 class BzrGtk(BinaryPackage):
 	def __init__(self):
@@ -35,7 +36,18 @@ class BzrGtk(BinaryPackage):
 		self._category = 'Applications/Audio'
 		self._package_type = 'mono application'
 		self._priority = 'optional'
-		self._install_requirements = ['info']
+		self._install_requirements = [
+			'bzr >= 1.17', 
+			'python-gtk2 >= 2.8', 
+			'python-glade2 >= 2.10', 
+			'python-notify', 
+			'bzr-dbus', 
+			'python-cairo >= 1.0', 
+			'python-gnome2-desktop', 
+			'python-gnomekeyring', 
+			'python-gtksourceview2', 
+			'seahorse'
+		]
 
 		self._files = [
 			'/etc/xdg/autostart/bzr-notify.desktop', 
@@ -173,9 +185,12 @@ class NautilusBzr(BinaryPackage):
 		self._category = 'Documentation'
 		self._package_type = 'documentation'
 		self._priority = 'optional'
-		self._install_requirements = ['monodoc-manual']
+		self._install_requirements = [
+			'bzr-gtk', 
+			'python-nautilus >= 0.5.0'
+		]
 
-		self._additional_description = u"Basic plugin for Nautilus that provides integration for the\n" +
+		self._additional_description = u"Basic plugin for Nautilus that provides integration for the\n" + \
 										u"Bazaar version control system (bzr)."
 
 		self._files = [
