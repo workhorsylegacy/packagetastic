@@ -13,12 +13,19 @@ class Meta(MetaPackage):
 		self._copyright = [u'2004-2006 Bart Hakvoort']
 		self._homepage = 'http://gparted.sourceforge.net'
 		self._license = 'GPL2+'
-		self._source = 'http://sourceforge.net/projects/gparted/files/gparted/gparted-0.5.1/gparted-0.5.1.tar.bz2'
+		self._source = 'http://downloads.sourceforge.net/project/gparted/gparted/gparted-0.5.1/gparted-0.5.1.tar.bz2'
 
-		self._build_requirements = ["gettext", "libxml-parser-perl", "uuid-dev", 
-									"parted", "pkg-config", "gnome-doc-utils", 
-									"rarian-compat", "libgtkmm-2.4-dev", 
-									"libparted0-dev", "intltool"]
+		self._build_requirements = [
+			'libxml-parser-perl', 
+			'uuid-dev', 
+			'parted', 
+			'pkg-config', 
+			'gnome-doc-utils', 
+			'rarian-compat', 
+			'libgtkmm-2.4-dev', 
+			'libparted0-dev >= 2.2', 
+			'intltool'
+		]
 
 		self._short_description = u'GNOME partition editor'
 
