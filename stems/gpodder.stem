@@ -13,9 +13,16 @@ class Meta(MetaPackage):
 		self._copyright = [u'2005-2008 Thomas Perl']
 		self._homepage = 'http://gpodder.org/'
 		self._license = 'GPL3+'
-		self._source = 'http://download.berlios.de/gpodder/gpodder-0.14.0.tar.gz'
+		self._source = 'http://download.berlios.de/gpodder/gpodder-2.2.tar.gz'
 
-		self._build_requirements = ['python-feedparser', 'imagemagick']
+		self._build_requirements = [
+			'python-support >= 0.3', 
+			'python-feedparser', 
+			'help2man', 
+			'intltool', 
+			'imagemagick', 
+			'python-mygpoclient'
+		]
 
 		self._short_description = u"A free podcast aggregator written in PyGTK"
 
@@ -25,11 +32,11 @@ class Meta(MetaPackage):
 									u"iPods, MTP-based players, filesystem-based MP3 players and Bluetooth\n" + \
 									u"enabled mobile phones"
 
-		self._changelog = [Changelog(version="0.14.0", release=1, time="Fri, 21 Aug 2009 20:24:17 -0700", text=u"Initial release") ]
+		self._changelog = [Changelog(version="2.2.0", release=1, time="Wed, 15 May 2010 13:43:11 -0700", text=u"New release"), 
+							Changelog(version="0.14.0", release=1, time="Fri, 21 Aug 2009 20:24:17 -0700", text=u"Initial release") ]
 
 	def build(self):
-		self.configure()
-		self.make()
+		self.make_messages()
 		self.install()
 
 class GParted(BinaryPackage):
@@ -39,15 +46,123 @@ class GParted(BinaryPackage):
 		self._category = 'Applications/Audio'
 		self._package_type = 'python application'
 		self._priority = 'optional'
-		self._install_requirements = []
+		self._install_requirements = [
+			'python-gtk2', 
+			'python-feedparser', 
+			'python-dbus', 
+			'python-mygpoclient', 
+			'python-gpod', 
+			'python-pymtp', 
+			'dbus-x11', 
+			'python-simplejson'
+		]
 
-		self._files = ['/usr/bin/gpodder', 
-						'/usr/share/gpodder/', 
-						'/usr/share/icons/hicolor/', 
-						'/usr/share/man/man1/*', 
-						'/usr/share/applications/*.desktop', 
-						'/usr/share/pixmaps/gpodder*.png', 
-						'/usr/lib/python2.6/site-packages/gpodder/', 
-						'/usr/lib/python2.6/site-packages/gpodder*.egg-info']
+		self._files = \
+"""/usr/bin/gpo
+/usr/bin/gpodder
+/usr/bin/gpodder-backup
+/usr/share/applications/gpodder.desktop
+/usr/share/dbus-1/services/org.gpodder.service
+/usr/share/doc/gpodder/README.gz
+/usr/share/doc/gpodder/changelog.Debian.gz
+/usr/share/doc/gpodder/changelog.gz
+/usr/share/doc/gpodder/copyright
+/usr/share/gpodder/credits.txt
+/usr/share/gpodder/ui/desktop/gpodder.ui
+/usr/share/gpodder/ui/desktop/gpodderaddpodcast.ui
+/usr/share/gpodder/ui/desktop/gpodderchannel.ui
+/usr/share/gpodder/ui/desktop/gpodderconfigeditor.ui
+/usr/share/gpodder/ui/desktop/gpodderdependencymanager.ui
+/usr/share/gpodder/ui/desktop/gpodderdeviceplaylist.ui
+/usr/share/gpodder/ui/desktop/gpodderepisodeselector.ui
+/usr/share/gpodder/ui/desktop/gpodderpodcastdirectory.ui
+/usr/share/gpodder/ui/desktop/gpodderpreferences.ui
+/usr/share/gpodder/ui/desktop/gpoddershownotes.ui
+/usr/share/gpodder/ui/desktop/gpoddersyncprogress.ui
+/usr/share/gpodder/ui/gpodderwelcome.ui
+/usr/share/gpodder/ui/mygpoddersettings.ui
+/usr/share/icons/hicolor/16x16/apps/gpodder.png
+/usr/share/icons/hicolor/22x22/apps/gpodder.png
+/usr/share/icons/hicolor/24x24/apps/gpodder.png
+/usr/share/icons/hicolor/48x48/apps/gpodder.png
+/usr/share/icons/hicolor/scalable/apps/gpodder.svg
+/usr/share/locale/cs/LC_MESSAGES/gpodder.mo
+/usr/share/locale/da/LC_MESSAGES/gpodder.mo
+/usr/share/locale/de/LC_MESSAGES/gpodder.mo
+/usr/share/locale/es/LC_MESSAGES/gpodder.mo
+/usr/share/locale/fi/LC_MESSAGES/gpodder.mo
+/usr/share/locale/fr/LC_MESSAGES/gpodder.mo
+/usr/share/locale/gl/LC_MESSAGES/gpodder.mo
+/usr/share/locale/it/LC_MESSAGES/gpodder.mo
+/usr/share/locale/nb/LC_MESSAGES/gpodder.mo
+/usr/share/locale/nl/LC_MESSAGES/gpodder.mo
+/usr/share/locale/nn/LC_MESSAGES/gpodder.mo
+/usr/share/locale/pl/LC_MESSAGES/gpodder.mo
+/usr/share/locale/pt/LC_MESSAGES/gpodder.mo
+/usr/share/locale/pt_BR/LC_MESSAGES/gpodder.mo
+/usr/share/locale/ru/LC_MESSAGES/gpodder.mo
+/usr/share/locale/sv/LC_MESSAGES/gpodder.mo
+/usr/share/locale/uk/LC_MESSAGES/gpodder.mo
+/usr/share/man/man1/gpo.1.gz
+/usr/share/man/man1/gpodder-backup.1.gz
+/usr/share/man/man1/gpodder.1.gz
+/usr/share/menu/gpodder
+/usr/share/pixmaps/gpodder.png
+/usr/share/pyshared/gpodder-2.2-py2.6.egg-info
+/usr/share/pyshared/gpodder/__init__.py
+/usr/share/pyshared/gpodder/api.py
+/usr/share/pyshared/gpodder/config.py
+/usr/share/pyshared/gpodder/console.py
+/usr/share/pyshared/gpodder/corestats.py
+/usr/share/pyshared/gpodder/dbsqlite.py
+/usr/share/pyshared/gpodder/dbusproxy.py
+/usr/share/pyshared/gpodder/download.py
+/usr/share/pyshared/gpodder/feedcore.py
+/usr/share/pyshared/gpodder/gtkui/__init__.py
+/usr/share/pyshared/gpodder/gtkui/base.py
+/usr/share/pyshared/gpodder/gtkui/config.py
+/usr/share/pyshared/gpodder/gtkui/desktop/__init__.py
+/usr/share/pyshared/gpodder/gtkui/desktop/channel.py
+/usr/share/pyshared/gpodder/gtkui/desktop/dependencymanager.py
+/usr/share/pyshared/gpodder/gtkui/desktop/deviceplaylist.py
+/usr/share/pyshared/gpodder/gtkui/desktop/episodeselector.py
+/usr/share/pyshared/gpodder/gtkui/desktop/podcastdirectory.py
+/usr/share/pyshared/gpodder/gtkui/desktop/preferences.py
+/usr/share/pyshared/gpodder/gtkui/desktop/shownotes.py
+/usr/share/pyshared/gpodder/gtkui/desktop/sync.py
+/usr/share/pyshared/gpodder/gtkui/desktop/syncprogress.py
+/usr/share/pyshared/gpodder/gtkui/desktop/trayicon.py
+/usr/share/pyshared/gpodder/gtkui/desktopfile.py
+/usr/share/pyshared/gpodder/gtkui/download.py
+/usr/share/pyshared/gpodder/gtkui/draw.py
+/usr/share/pyshared/gpodder/gtkui/interface/__init__.py
+/usr/share/pyshared/gpodder/gtkui/interface/addpodcast.py
+/usr/share/pyshared/gpodder/gtkui/interface/common.py
+/usr/share/pyshared/gpodder/gtkui/interface/configeditor.py
+/usr/share/pyshared/gpodder/gtkui/interface/progress.py
+/usr/share/pyshared/gpodder/gtkui/interface/shownotes.py
+/usr/share/pyshared/gpodder/gtkui/interface/welcome.py
+/usr/share/pyshared/gpodder/gtkui/model.py
+/usr/share/pyshared/gpodder/gtkui/mygpodder.py
+/usr/share/pyshared/gpodder/gtkui/opml.py
+/usr/share/pyshared/gpodder/gtkui/services.py
+/usr/share/pyshared/gpodder/gtkui/widgets.py
+/usr/share/pyshared/gpodder/gui.py
+/usr/share/pyshared/gpodder/launcher.py
+/usr/share/pyshared/gpodder/libconverter.py
+/usr/share/pyshared/gpodder/liblogger.py
+/usr/share/pyshared/gpodder/minidb.py
+/usr/share/pyshared/gpodder/model.py
+/usr/share/pyshared/gpodder/my.py
+/usr/share/pyshared/gpodder/opml.py
+/usr/share/pyshared/gpodder/qtui.py
+/usr/share/pyshared/gpodder/services.py
+/usr/share/pyshared/gpodder/soundcloud.py
+/usr/share/pyshared/gpodder/sync.py
+/usr/share/pyshared/gpodder/unittests.py
+/usr/share/pyshared/gpodder/util.py
+/usr/share/pyshared/gpodder/youtube.py
+/usr/share/python-support/gpodder.public""".split("\n")
+
 
 

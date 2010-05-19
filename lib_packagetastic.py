@@ -221,6 +221,9 @@ class MetaPackage(object):
 
 		child.close()
 
+	def make_messages(self):
+		run_as_user("make messages")
+
 	def install(self):
 		run_as_root("make install")
 

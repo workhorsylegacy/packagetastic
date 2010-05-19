@@ -2,6 +2,14 @@
 # -*- coding: UTF-8 -*-
 
 package_names = {
+	'dbus-x11' : { 
+		'fedora' : [], 
+		'ubuntu' : ['dbus-x11']
+	},
+	'python-mygpoclient' : { 
+		'fedora' : [], 
+		'ubuntu' : ['python-mygpoclient']
+	},
 	'hicolor-icon-theme' : { 
 		'fedora' : [], 
 		'ubuntu' : ['hicolor-icon-theme']
