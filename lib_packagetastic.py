@@ -471,6 +471,9 @@ def setup_source_code(meta):
 	os.chdir("builds")
 	run_as_user("tar xzf " + source_file)
 	run_as_user("rm " + source_file)
+	if len(os.listdir(".")) == 0:
+		print "Failed to uncompress the source code. Exiting ..."
+		exit()
 	actual_file = os.listdir(".")[0]
 	if actual_file != substitute_strings("#{name}-#{version}", meta.to_hash()):
 		run_as_user(substitute_strings("mv " + actual_file + " #{name}-#{version}", meta.to_hash()))
