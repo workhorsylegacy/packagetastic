@@ -18,7 +18,9 @@ class Meta(MetaPackage):
 		self._license = 'GPL2+'
 		self._source = 'http://johnp.fedorapeople.org/d-feet-0.1.8.tar.gz'
 
-		self._build_requirements = []
+		self._build_requirements = [
+			'python-support >= 0.5.3'
+		]
 
 		self._short_description = u"A D-Bus object browser, viewer and debugger"
 
@@ -40,14 +42,57 @@ class DFeet(BinaryPackage):
 		self._category = 'Development/Tools'
 		self._package_type = 'python application'
 		self._priority = 'extra'
-		self._install_requirements = ['python-dbus (>= 0.82.3)', 
-										'python-gtk2', 
-										'python-glade2']
+		self._install_requirements = [
+			'python-dbus >= 0.82.3', 
+			'python-gtk2', 
+			'python-glade2', 
+			'hicolor-icon-theme'
+		]
 
-		self._files = ['/usr/lib/python2.6/site-packages/*', 
-						'/usr/bin/d-feet', 
-						'/usr/share/dfeet/', 
-						'/usr/share/icons/hicolor/48x48/apps/*.png', 
-						'/usr/share/icons/hicolor/16x16/apps/*.png', 
-						'/usr/share/applications/dfeet.desktop']
+		self._files = \
+"""/usr/bin/d-feet
+/usr/share/applications/dfeet.desktop
+/usr/share/dfeet/addconnectiondialog.ui
+/usr/share/dfeet/default-actiongroup.ui
+/usr/share/dfeet/executedialog.ui
+/usr/share/dfeet/filterbox.ui
+/usr/share/dfeet/introspectview.ui
+/usr/share/dfeet/mainwindow.ui
+/usr/share/dfeet/test-actions.ui
+/usr/share/doc/d-feet/AUTHORS
+/usr/share/doc/d-feet/README
+/usr/share/doc/d-feet/changelog.Debian.gz
+/usr/share/doc/d-feet/copyright
+/usr/share/icons/hicolor/16x16/apps/dfeet-icon-default-service.png
+/usr/share/icons/hicolor/16x16/apps/dfeet-method-category.png
+/usr/share/icons/hicolor/16x16/apps/dfeet-method.png
+/usr/share/icons/hicolor/16x16/apps/dfeet-object.png
+/usr/share/icons/hicolor/16x16/apps/dfeet-property-category.png
+/usr/share/icons/hicolor/16x16/apps/dfeet-property.png
+/usr/share/icons/hicolor/16x16/apps/dfeet-signal-category.png
+/usr/share/icons/hicolor/16x16/apps/dfeet-signal.png
+/usr/share/icons/hicolor/48x48/apps/dfeet-icon.png
+/usr/share/man/man1/d-feet.1.gz
+/usr/share/pyshared/d_feet-0.1.10.egg-info/PKG-INFO
+/usr/share/pyshared/d_feet-0.1.10.egg-info/SOURCES.txt
+/usr/share/pyshared/d_feet-0.1.10.egg-info/dependency_links.txt
+/usr/share/pyshared/d_feet-0.1.10.egg-info/top_level.txt
+/usr/share/pyshared/dfeet/DFeetApp.py
+/usr/share/pyshared/dfeet/__init__.py
+/usr/share/pyshared/dfeet/_introspect_parser.py
+/usr/share/pyshared/dfeet/_ui/__init__.py
+/usr/share/pyshared/dfeet/_ui/addconnectiondialog.py
+/usr/share/pyshared/dfeet/_ui/busbox.py
+/usr/share/pyshared/dfeet/_ui/busnamebox.py
+/usr/share/pyshared/dfeet/_ui/busnameinfobox.py
+/usr/share/pyshared/dfeet/_ui/busnameview.py
+/usr/share/pyshared/dfeet/_ui/executemethoddialog.py
+/usr/share/pyshared/dfeet/_ui/uiloader.py
+/usr/share/pyshared/dfeet/_ui/wnck_utils.py
+/usr/share/pyshared/dfeet/_util.py
+/usr/share/pyshared/dfeet/dbus_introspector.py
+/usr/share/pyshared/dfeet/dbus_utils.py
+/usr/share/pyshared/dfeet/introspect_data.py
+/usr/share/pyshared/dfeet/settings.py
+/usr/share/python-support/d-feet.public""".split("\n")
 

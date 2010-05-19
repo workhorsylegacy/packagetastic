@@ -2,6 +2,14 @@
 # -*- coding: UTF-8 -*-
 
 package_names = {
+	'hicolor-icon-theme' : { 
+		'fedora' : [], 
+		'ubuntu' : ['hicolor-icon-theme']
+	},
+	'python-support' : { 
+		'fedora' : [], 
+		'ubuntu' : ['python-support']
+	},
 	'docbook-utils' : { 
 		'fedora' : [], 
 		'ubuntu' : ['docbook-utils']
