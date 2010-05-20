@@ -2,6 +2,26 @@
 # -*- coding: UTF-8 -*-
 
 package_names = {
+	'python-indicate' : { 
+		'fedora' : [], 
+		'ubuntu' : ['python-indicate']
+	},
+	'python-pycurl' : { 
+		'fedora' : [], 
+		'ubuntu' : ['python-pycurl']
+	},
+	'python-desktopcouch-records' : { 
+		'fedora' : [], 
+		'ubuntu' : ['python-desktopcouch-records']
+	},
+	'python-wnck' : { 
+		'fedora' : [], 
+		'ubuntu' : ['python-wnck']
+	},
+	'python-gtkspell' : { 
+		'fedora' : [], 
+		'ubuntu' : ['python-gtkspell']
+	},
 	'dbus-x11' : { 
 		'fedora' : [], 
 		'ubuntu' : ['dbus-x11']
@@ -646,6 +666,14 @@ package_names = {
 		'fedora' : ['gwibber'], 
 		'ubuntu' : ['gwibber']
 	}, 
+	'gwibber-service' : { 
+		'fedora' : ['gwibber-service'], 
+		'ubuntu' : ['gwibber-service']
+	}, 
+	'gwibber-themes' : { 
+		'fedora' : ['gwibber-themes'], 
+		'ubuntu' : ['gwibber-themes']
+	}, 
 	'd-feet' : { 
 		'fedora' : ['d-feet'], 
 		'ubuntu' : ['d-feet']
@@ -726,10 +754,22 @@ package_names = {
 		'fedora' : ['desktop-file-utils'], 
 		'ubuntu' : ['desktop-file-utils']
 	}, 
+	'python-webkit' : { 
+		'fedora' : ['python-webkit'], 
+		'ubuntu' : ['python-webkit']
+	}, 
+	'python-central' : { 
+		'fedora' : ['python-central'], 
+		'ubuntu' : ['python-central']
+	}, 
 	'python-all-dev' : { 
 		'fedora' : ['python-devel', 'python'], 
 		'ubuntu' : ['python-all-dev']
 	}, 
+	'python-all' : { 
+		'fedora' : [], 
+		'ubuntu' : ['python-all']
+	},
 	'python-dev' : { 
 		'fedora' : ['python-devel', 'python'], 
 		'ubuntu' : ['python-dev']

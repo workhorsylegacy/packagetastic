@@ -9,25 +9,30 @@ class Meta(MetaPackage):
 		self._category = 'Applications/Communications'
 		self._build_method = 'python'
 		self._priority = 'optional'
-		self._authors = [u'Ryan Paul (SegPhault) <segphault@arstechnica.com>']
-		self._copyright = [u'2008 Ryan Paul']
+		self._authors = [u'Ryan Paul (SegPhault) <segphault@arstechnica.com>', 
+						u'Dominic Evans <oldmanuk@gmail.com>', 
+						u'Greg Grossmeier <greg.grossmeier@gmail.com>', 
+						u'Ken VanDine <ken.vandine@canonical.com>']
+		self._copyright = [u'2008-2010 Ryan Paul']
 		self._homepage = 'https://launchpad.net/gwibber'
 		self._license = 'GPL2+'
-		self._source = 'http://launchpad.net/gwibber/+download/gwibber-0.8.tar.gz'
+		self._source = 'http://launchpad.net/gwibber/2.30/2.30.0/+download/gwibber-2.30.0.1.tar.gz'
 
-		self._build_requirements = ['python-all-dev', 
-									'python-distutils-extra']
+		self._build_requirements = [
+			'python-all', 
+			'python-central >=0.5.6', 
+			'python-distutils-extra'
+		]
 
 		self._short_description = u"Open source microblogging client for GNOME"
 
 		self._long_description = u"It supports Twitter, Jaiku, Identi.ca, Facebook, and Digg."
 
-		self._changelog = [Changelog(version="0.8", release=1, time="Mon, 24 Aug 2009 15:28:47 -0700", text=u"Initial release") ]
+		self._changelog = [Changelog(version="2.30.0.1", release=1, time="Wed, 15 May 2010 16:36:20 -0700", text=u"New release"), 
+							Changelog(version="0.8", release=1, time="Mon, 24 Aug 2009 15:28:47 -0700", text=u"Initial release") ]
 
 	def build(self):
-		self.configure()
-		self.make()
-		self.install()
+		self.setup_py_install()
 
 class Gwibber(BinaryPackage):
 	def __init__(self):
@@ -36,26 +41,352 @@ class Gwibber(BinaryPackage):
 		self._category = 'Applications/Communications'
 		self._package_type = 'python application'
 		self._priority = 'optional'
-		self._install_requirements = ['python-dbus', 
-										'python-gtk2', 
-										'python-gconf', 
-										'python-notify', 
-										#'python-egenix-mxdatetime', 
-										'python-simplejson', 
-										'python-cairo', 
-										'libwebkit', 
-										'python-webkitgtk', 
-										'librsvg2', 
-										'librsvg2-common', 
-										'python-feedparser', 
-										'python-imaging', 
-										'python-gnome2-desktop', 
-										'python-xdg']
+		self._install_requirements = [
+			'python-dbus', 
+			'python-gtk2', 
+			'python-gconf', 
+			'python-egenix-mxdatetime', 
+			'python-simplejson', 
+			'python-webkit', 
+			'librsvg2', 
+			'librsvg2-common', 
+			'python-imaging', 
+			'python-xdg', 
+			'python-mako', 
+			'python-gtkspell', 
+			'python-wnck', 
+			'python-desktopcouch-records', 
+			'gwibber-service'
+		]
 
-		self._files = ['/usr/lib/python2.6/site-packages/gwibber', 
-						'/usr/lib/python2.6/site-packages/gwibber-*.egg-info', 
-						'/usr/bin/gwibber', 
-						'/usr/share/gwibber', 
-						'/usr/share/pixmaps/gwibber.svg', 
-						'/usr/share/applications/fedora-gwibber.desktop']
+		self._files = \
+"""/etc/xdg/autostart/gwibber.desktop
+/usr/bin/gwibber
+/usr/bin/gwibber-accounts
+/usr/bin/gwibber-error
+/usr/bin/gwibber-poster
+/usr/bin/gwibber-preferences
+/usr/share/applications/gwibber-preferences.desktop
+/usr/share/applications/gwibber.desktop
+/usr/share/dbus-1/services/com.GwibberClient.service
+/usr/share/doc/gwibber/AUTHORS
+/usr/share/doc/gwibber/README
+/usr/share/doc/gwibber/changelog.Debian.gz
+/usr/share/doc/gwibber/copyright
+/usr/share/gwibber/ui/gwibber-about-dialog.ui
+/usr/share/gwibber/ui/gwibber-accounts-dialog.ui
+/usr/share/gwibber/ui/gwibber-accounts-digg.ui
+/usr/share/gwibber/ui/gwibber-accounts-facebook.ui
+/usr/share/gwibber/ui/gwibber-accounts-flickr.ui
+/usr/share/gwibber/ui/gwibber-accounts-friendfeed.ui
+/usr/share/gwibber/ui/gwibber-accounts-identica.ui
+/usr/share/gwibber/ui/gwibber-accounts-qaiku.ui
+/usr/share/gwibber/ui/gwibber-accounts-statusnet.ui
+/usr/share/gwibber/ui/gwibber-accounts-twitter.ui
+/usr/share/gwibber/ui/gwibber-preferences-dialog.ui
+/usr/share/gwibber/ui/gwibber.png
+/usr/share/gwibber/ui/gwibber.svg
+/usr/share/gwibber/ui/icons/breakdance/16x16/brightkite.png
+/usr/share/gwibber/ui/icons/breakdance/16x16/brightkite.svg
+/usr/share/gwibber/ui/icons/breakdance/16x16/digg.png
+/usr/share/gwibber/ui/icons/breakdance/16x16/digg.svg
+/usr/share/gwibber/ui/icons/breakdance/16x16/facebook.png
+/usr/share/gwibber/ui/icons/breakdance/16x16/facebook.svg
+/usr/share/gwibber/ui/icons/breakdance/16x16/flickr.png
+/usr/share/gwibber/ui/icons/breakdance/16x16/flickr.svg
+/usr/share/gwibber/ui/icons/breakdance/16x16/friendfeed.png
+/usr/share/gwibber/ui/icons/breakdance/16x16/friendfeed.svg
+/usr/share/gwibber/ui/icons/breakdance/16x16/identica.png
+/usr/share/gwibber/ui/icons/breakdance/16x16/identica.svg
+/usr/share/gwibber/ui/icons/breakdance/16x16/jaiku.png
+/usr/share/gwibber/ui/icons/breakdance/16x16/jaiku.svg
+/usr/share/gwibber/ui/icons/breakdance/16x16/openid.png
+/usr/share/gwibber/ui/icons/breakdance/16x16/openid.svg
+/usr/share/gwibber/ui/icons/breakdance/16x16/pingfm.png
+/usr/share/gwibber/ui/icons/breakdance/16x16/pingfm.svg
+/usr/share/gwibber/ui/icons/breakdance/16x16/qaiku.png
+/usr/share/gwibber/ui/icons/breakdance/16x16/qaiku.svg
+/usr/share/gwibber/ui/icons/breakdance/16x16/statusnet.png
+/usr/share/gwibber/ui/icons/breakdance/16x16/statusnet.svg
+/usr/share/gwibber/ui/icons/breakdance/16x16/stumbleupon.png
+/usr/share/gwibber/ui/icons/breakdance/16x16/stumbleupon.svg
+/usr/share/gwibber/ui/icons/breakdance/16x16/twitter.png
+/usr/share/gwibber/ui/icons/breakdance/16x16/twitter.svg
+/usr/share/gwibber/ui/icons/breakdance/22x22/brightkite.png
+/usr/share/gwibber/ui/icons/breakdance/22x22/brightkite.svg
+/usr/share/gwibber/ui/icons/breakdance/22x22/digg.png
+/usr/share/gwibber/ui/icons/breakdance/22x22/digg.svg
+/usr/share/gwibber/ui/icons/breakdance/22x22/facebook.png
+/usr/share/gwibber/ui/icons/breakdance/22x22/facebook.svg
+/usr/share/gwibber/ui/icons/breakdance/22x22/flickr.png
+/usr/share/gwibber/ui/icons/breakdance/22x22/flickr.svg
+/usr/share/gwibber/ui/icons/breakdance/22x22/friendfeed.png
+/usr/share/gwibber/ui/icons/breakdance/22x22/friendfeed.svg
+/usr/share/gwibber/ui/icons/breakdance/22x22/identica.png
+/usr/share/gwibber/ui/icons/breakdance/22x22/identica.svg
+/usr/share/gwibber/ui/icons/breakdance/22x22/jaiku.png
+/usr/share/gwibber/ui/icons/breakdance/22x22/jaiku.svg
+/usr/share/gwibber/ui/icons/breakdance/22x22/openid.png
+/usr/share/gwibber/ui/icons/breakdance/22x22/openid.svg
+/usr/share/gwibber/ui/icons/breakdance/22x22/pingfm.png
+/usr/share/gwibber/ui/icons/breakdance/22x22/pingfm.svg
+/usr/share/gwibber/ui/icons/breakdance/22x22/qaiku.png
+/usr/share/gwibber/ui/icons/breakdance/22x22/qaiku.svg
+/usr/share/gwibber/ui/icons/breakdance/22x22/statusnet.png
+/usr/share/gwibber/ui/icons/breakdance/22x22/statusnet.svg
+/usr/share/gwibber/ui/icons/breakdance/22x22/stumbleupon.png
+/usr/share/gwibber/ui/icons/breakdance/22x22/stumbleupon.svg
+/usr/share/gwibber/ui/icons/breakdance/22x22/twitter.png
+/usr/share/gwibber/ui/icons/breakdance/22x22/twitter.svg
+/usr/share/gwibber/ui/icons/breakdance/scalable/brightkite.png
+/usr/share/gwibber/ui/icons/breakdance/scalable/brightkite.svg
+/usr/share/gwibber/ui/icons/breakdance/scalable/digg.png
+/usr/share/gwibber/ui/icons/breakdance/scalable/digg.svg
+/usr/share/gwibber/ui/icons/breakdance/scalable/facebook.png
+/usr/share/gwibber/ui/icons/breakdance/scalable/facebook.svg
+/usr/share/gwibber/ui/icons/breakdance/scalable/flickr.png
+/usr/share/gwibber/ui/icons/breakdance/scalable/flickr.svg
+/usr/share/gwibber/ui/icons/breakdance/scalable/friendfeed.png
+/usr/share/gwibber/ui/icons/breakdance/scalable/friendfeed.svg
+/usr/share/gwibber/ui/icons/breakdance/scalable/identica.png
+/usr/share/gwibber/ui/icons/breakdance/scalable/identica.svg
+/usr/share/gwibber/ui/icons/breakdance/scalable/jaiku.png
+/usr/share/gwibber/ui/icons/breakdance/scalable/jaiku.svg
+/usr/share/gwibber/ui/icons/breakdance/scalable/openid.png
+/usr/share/gwibber/ui/icons/breakdance/scalable/openid.svg
+/usr/share/gwibber/ui/icons/breakdance/scalable/pingfm.png
+/usr/share/gwibber/ui/icons/breakdance/scalable/pingfm.svg
+/usr/share/gwibber/ui/icons/breakdance/scalable/qaiku.png
+/usr/share/gwibber/ui/icons/breakdance/scalable/qaiku.svg
+/usr/share/gwibber/ui/icons/breakdance/scalable/statusnet.png
+/usr/share/gwibber/ui/icons/breakdance/scalable/statusnet.svg
+/usr/share/gwibber/ui/icons/breakdance/scalable/stumbleupon.png
+/usr/share/gwibber/ui/icons/breakdance/scalable/stumbleupon.svg
+/usr/share/gwibber/ui/icons/breakdance/scalable/twitter.png
+/usr/share/gwibber/ui/icons/breakdance/scalable/twitter.svg
+/usr/share/gwibber/ui/icons/streams/16x16/favorites.png
+/usr/share/gwibber/ui/icons/streams/16x16/group.png
+/usr/share/gwibber/ui/icons/streams/16x16/home.png
+/usr/share/gwibber/ui/icons/streams/16x16/images.png
+/usr/share/gwibber/ui/icons/streams/16x16/messages.png
+/usr/share/gwibber/ui/icons/streams/16x16/private.png
+/usr/share/gwibber/ui/icons/streams/16x16/public.png
+/usr/share/gwibber/ui/icons/streams/16x16/replies.png
+/usr/share/gwibber/ui/icons/streams/16x16/search.png
+/usr/share/gwibber/ui/icons/streams/16x16/sent.png
+/usr/share/gwibber/ui/icons/streams/16x16/thread.png
+/usr/share/gwibber/ui/icons/streams/16x16/user.png
+/usr/share/gwibber/ui/icons/streams/24x24/favorite.png
+/usr/share/gwibber/ui/icons/streams/24x24/group.png
+/usr/share/gwibber/ui/icons/streams/24x24/home.png
+/usr/share/gwibber/ui/icons/streams/24x24/images.png
+/usr/share/gwibber/ui/icons/streams/24x24/messages.png
+/usr/share/gwibber/ui/icons/streams/24x24/private.png
+/usr/share/gwibber/ui/icons/streams/24x24/replies.png
+/usr/share/gwibber/ui/icons/streams/24x24/search.png
+/usr/share/gwibber/ui/icons/streams/24x24/sent.png
+/usr/share/gwibber/ui/icons/streams/24x24/user.png
+/usr/share/gwibber/ui/icons/streams/scalable
+/usr/share/gwibber/ui/progress.gif
+/usr/share/gwibber/ui/templates/base.mako
+/usr/share/gwibber/ui/templates/css.mako
+/usr/share/gwibber/ui/templates/defaultcss.mako
+/usr/share/gwibber/ui/templates/jquery.js
+/usr/share/gwibber/ui/templates/navigation.mako
+/usr/share/gwibber/ui/templates/targetbar.mako
+/usr/share/gwibber/ui/themes/default/comment.png
+/usr/share/gwibber/ui/themes/default/errors.mako
+/usr/share/gwibber/ui/themes/default/favorite.png
+/usr/share/gwibber/ui/themes/default/jquery.js
+/usr/share/gwibber/ui/themes/default/template.mako
+/usr/share/gwibber/ui/themes/default/theme.version
+/usr/share/gwibber/ui/themes/ubuntu/comment.png
+/usr/share/gwibber/ui/themes/ubuntu/errors.mako
+/usr/share/gwibber/ui/themes/ubuntu/favorite.png
+/usr/share/gwibber/ui/themes/ubuntu/images/blueBackground.png
+/usr/share/gwibber/ui/themes/ubuntu/images/blueCurves.png
+/usr/share/gwibber/ui/themes/ubuntu/images/blueIndicator.png
+/usr/share/gwibber/ui/themes/ubuntu/images/blueIndicator2.png
+/usr/share/gwibber/ui/themes/ubuntu/images/greenBackground.png
+/usr/share/gwibber/ui/themes/ubuntu/images/greenCurves.png
+/usr/share/gwibber/ui/themes/ubuntu/images/greenIndicator.png
+/usr/share/gwibber/ui/themes/ubuntu/images/greenIndicator2.png
+/usr/share/gwibber/ui/themes/ubuntu/images/redBackground.png
+/usr/share/gwibber/ui/themes/ubuntu/images/redCurves.png
+/usr/share/gwibber/ui/themes/ubuntu/images/redIndicator.png
+/usr/share/gwibber/ui/themes/ubuntu/images/redIndicator2.png
+/usr/share/gwibber/ui/themes/ubuntu/images/steelBackground.png
+/usr/share/gwibber/ui/themes/ubuntu/images/steelCurves.png
+/usr/share/gwibber/ui/themes/ubuntu/images/steelHeading.jpg
+/usr/share/gwibber/ui/themes/ubuntu/images/steelIndicator.png
+/usr/share/gwibber/ui/themes/ubuntu/images/steelIndicator2.png
+/usr/share/gwibber/ui/themes/ubuntu/images/typing-left.png
+/usr/share/gwibber/ui/themes/ubuntu/images/typing-right.png
+/usr/share/gwibber/ui/themes/ubuntu/images/yellowBackground.png
+/usr/share/gwibber/ui/themes/ubuntu/images/yellowCurves.png
+/usr/share/gwibber/ui/themes/ubuntu/images/yellowHeading.jpg
+/usr/share/gwibber/ui/themes/ubuntu/images/yellowIndicator.png
+/usr/share/gwibber/ui/themes/ubuntu/images/yellowIndicator2.png
+/usr/share/gwibber/ui/themes/ubuntu/images/yellowTL.png
+/usr/share/gwibber/ui/themes/ubuntu/images/yellowTR.png
+/usr/share/gwibber/ui/themes/ubuntu/jquery.js
+/usr/share/gwibber/ui/themes/ubuntu/main.css
+/usr/share/gwibber/ui/themes/ubuntu/template.mako
+/usr/share/gwibber/ui/themes/ubuntu/theme.version
+/usr/share/indicators/messages/applications/gwibber
+/usr/share/man/man1/gwibber-poster.1.gz
+/usr/share/man/man1/gwibber.1.gz
+/usr/share/pixmaps/gwibber.svg
+/usr/share/pyshared-data/gwibber
+/usr/share/pyshared/gwibber/accounts.py
+/usr/share/pyshared/gwibber/actions.py
+/usr/share/pyshared/gwibber/client.py
+/usr/share/pyshared/gwibber/error.py
+/usr/share/pyshared/gwibber/gwui.py
+/usr/share/pyshared/gwibber/lib/gtk/__init__.py
+/usr/share/pyshared/gwibber/lib/gtk/digg.py
+/usr/share/pyshared/gwibber/lib/gtk/facebook.py
+/usr/share/pyshared/gwibber/lib/gtk/flickr.py
+/usr/share/pyshared/gwibber/lib/gtk/friendfeed.py
+/usr/share/pyshared/gwibber/lib/gtk/identica.py
+/usr/share/pyshared/gwibber/lib/gtk/qaiku.py
+/usr/share/pyshared/gwibber/lib/gtk/statusnet.py
+/usr/share/pyshared/gwibber/lib/gtk/twitter.py
+/usr/share/pyshared/gwibber/lib/gtk/widgets.py
+/usr/share/pyshared/gwibber/pidgin.py
+/usr/share/pyshared/gwibber/preferences.py
+/usr/share/pyshared/gwibber/resources.py
+/usr/share/pyshared/gwibber/upgrade.py
+/usr/share/pyshared/gwibber/util.py""".split("\n")
+
+
+class GwibberService(BinaryPackage):
+	def __init__(self):
+		BinaryPackage.__init__(self)
+		self._name = 'gwibber-service'
+		self._category = 'Applications/Communications'
+		self._package_type = 'python application'
+		self._priority = 'optional'
+		self._install_requirements = [
+			'python-dbus', 
+			'python-notify', 
+			'python-egenix-mxdatetime', 
+			'python-simplejson', 
+			'python-xdg', 
+			'python-pycurl', 
+			'python-desktopcouch-records', 
+			'python-gnomekeyring', 
+			'python-indicate >= 0.3.0'
+		]
+
+		self._files = \
+"""/usr/bin/gwibber-service
+/usr/share/dbus-1/services/com.Gwibber.Service.service
+/usr/share/doc/gwibber-service/AUTHORS
+/usr/share/doc/gwibber-service/README
+/usr/share/doc/gwibber-service/changelog.Debian.gz
+/usr/share/doc/gwibber-service/copyright
+/usr/share/pyshared
+/usr/share/pyshared-data/gwibber-service
+/usr/share/pyshared/gwibber/__init__.py
+/usr/share/pyshared/gwibber/lib/__init__.py
+/usr/share/pyshared/gwibber/microblog/__init__.py
+/usr/share/pyshared/gwibber/microblog/brightkite.py
+/usr/share/pyshared/gwibber/microblog/can.py
+/usr/share/pyshared/gwibber/microblog/digg.py
+/usr/share/pyshared/gwibber/microblog/dispatcher.py
+/usr/share/pyshared/gwibber/microblog/facebook.py
+/usr/share/pyshared/gwibber/microblog/flickr.py
+/usr/share/pyshared/gwibber/microblog/friendfeed.py
+/usr/share/pyshared/gwibber/microblog/greader.py
+/usr/share/pyshared/gwibber/microblog/identica.py
+/usr/share/pyshared/gwibber/microblog/jaiku.py
+/usr/share/pyshared/gwibber/microblog/network.py
+/usr/share/pyshared/gwibber/microblog/opencollaboration.py
+/usr/share/pyshared/gwibber/microblog/pingfm.py
+/usr/share/pyshared/gwibber/microblog/qaiku.py
+/usr/share/pyshared/gwibber/microblog/rss.py
+/usr/share/pyshared/gwibber/microblog/statusnet.py
+/usr/share/pyshared/gwibber/microblog/storage.py
+/usr/share/pyshared/gwibber/microblog/support
+/usr/share/pyshared/gwibber/microblog/support/__init__.py
+/usr/share/pyshared/gwibber/microblog/support/facelib.py
+/usr/share/pyshared/gwibber/microblog/twitter.py
+/usr/share/pyshared/gwibber/microblog/urlshorter
+/usr/share/pyshared/gwibber/microblog/urlshorter/__init__.py
+/usr/share/pyshared/gwibber/microblog/urlshorter/cligs.py
+/usr/share/pyshared/gwibber/microblog/urlshorter/isgd.py
+/usr/share/pyshared/gwibber/microblog/urlshorter/snipurlcom.py
+/usr/share/pyshared/gwibber/microblog/urlshorter/tinyurlcom.py
+/usr/share/pyshared/gwibber/microblog/urlshorter/trim.py
+/usr/share/pyshared/gwibber/microblog/urlshorter/ur1ca.py
+/usr/share/pyshared/gwibber/microblog/urlshorter/zima.py
+/usr/share/pyshared/gwibber/microblog/util/__init__.py
+/usr/share/pyshared/gwibber/microblog/util/const.py
+/usr/share/pyshared/gwibber/microblog/util/couch.py
+/usr/share/pyshared/gwibber/microblog/util/exceptions.py
+/usr/share/pyshared/gwibber/microblog/util/facelib.py
+/usr/share/pyshared/gwibber/microblog/util/imagehandler.py
+/usr/share/pyshared/gwibber/microblog/util/keyring.py
+/usr/share/pyshared/gwibber/microblog/util/libproxy.py
+/usr/share/pyshared/gwibber/microblog/util/log.py
+/usr/share/pyshared/gwibber/microblog/util/resources.py""".split("\n")
+
+class GwibberThemes(BinaryPackage):
+	def __init__(self):
+		BinaryPackage.__init__(self)
+		self._name = 'gwibber-themes'
+		self._category = 'Applications/Communications'
+		self._package_type = 'python application'
+		self._priority = 'optional'
+		self._install_requirements = [
+			'gwibber', 
+			'python-mako'
+		]
+
+		self._files = \
+"""/usr/share/doc/gwibber-themes
+/usr/share/doc/gwibber-themes/AUTHORS
+/usr/share/doc/gwibber-themes/README
+/usr/share/doc/gwibber-themes/changelog.Debian.gz
+/usr/share/doc/gwibber-themes/copyright
+/usr/share/gwibber/ui/themes/compact/comment.png
+/usr/share/gwibber/ui/themes/compact/errors.mako
+/usr/share/gwibber/ui/themes/compact/favorite.png
+/usr/share/gwibber/ui/themes/compact/jquery.js
+/usr/share/gwibber/ui/themes/compact/template.mako
+/usr/share/gwibber/ui/themes/compact/theme.version
+/usr/share/gwibber/ui/themes/flat/comment.png
+/usr/share/gwibber/ui/themes/flat/errors.mako
+/usr/share/gwibber/ui/themes/flat/favorite.png
+/usr/share/gwibber/ui/themes/flat/jquery.js
+/usr/share/gwibber/ui/themes/flat/list-add.png
+/usr/share/gwibber/ui/themes/flat/loading.png
+/usr/share/gwibber/ui/themes/flat/mail-reply-all.png
+/usr/share/gwibber/ui/themes/flat/mail-reply-sender.png
+/usr/share/gwibber/ui/themes/flat/template.mako
+/usr/share/gwibber/ui/themes/flat/theme.css
+/usr/share/gwibber/ui/themes/flat/theme.version
+/usr/share/gwibber/ui/themes/gwilouche/comment.png
+/usr/share/gwibber/ui/themes/gwilouche/errors.mako
+/usr/share/gwibber/ui/themes/gwilouche/favorite.png
+/usr/share/gwibber/ui/themes/gwilouche/jquery.js
+/usr/share/gwibber/ui/themes/gwilouche/list-add.png
+/usr/share/gwibber/ui/themes/gwilouche/loading.png
+/usr/share/gwibber/ui/themes/gwilouche/mail-reply-all.png
+/usr/share/gwibber/ui/themes/gwilouche/mail-reply-sender.png
+/usr/share/gwibber/ui/themes/gwilouche/template.mako
+/usr/share/gwibber/ui/themes/gwilouche/theme.css
+/usr/share/gwibber/ui/themes/gwilouche/theme.version
+/usr/share/gwibber/ui/themes/simple/comment.png
+/usr/share/gwibber/ui/themes/simple/errors.mako
+/usr/share/gwibber/ui/themes/simple/favorite.png
+/usr/share/gwibber/ui/themes/simple/jquery.js
+/usr/share/gwibber/ui/themes/simple/list-add.png
+/usr/share/gwibber/ui/themes/simple/loading.png
+/usr/share/gwibber/ui/themes/simple/mail-reply-all.png
+/usr/share/gwibber/ui/themes/simple/mail-reply-sender.png
+/usr/share/gwibber/ui/themes/simple/template.mako
+/usr/share/gwibber/ui/themes/simple/theme.css
+/usr/share/gwibber/ui/themes/simple/theme.version""".split("\n")
 
