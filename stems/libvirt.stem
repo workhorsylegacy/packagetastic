@@ -56,7 +56,7 @@ class LibVirtPackage(MetaPackage):
 	def build(self):
 		self.configure()
 		self.make()
-		self.install()
+		self.make_install()
 
 class LibVirtBin(BinaryPackage):
 	def __init__(self):

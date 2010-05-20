@@ -37,7 +37,7 @@ class Meta(MetaPackage):
 
 	def build(self):
 		self.make_messages()
-		self.install()
+		self.make_install()
 
 class GParted(BinaryPackage):
 	def __init__(self):

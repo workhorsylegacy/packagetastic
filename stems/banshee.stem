@@ -108,7 +108,7 @@ class Meta(MetaPackage):
 						"--enable-release " +
 						"--disable-shave ")
 		self.make()
-		self.install()
+		self.make_install()
 
 class Banshee(BinaryPackage):
 	def __init__(self):

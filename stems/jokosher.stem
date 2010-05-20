@@ -48,7 +48,7 @@ class Meta(MetaPackage):
 							Changelog(version="0.11.1", release=1, time="Fri, 21 Aug 2009 19:49:12 -0700", text=u"Initial release")]
 
 	def build(self):
-		self.setup_py_install("--prefix=/usr --install-lib=/usr/share/jokosher")
+		self.python_setup_install("--prefix=/usr --install-lib=/usr/share/jokosher")
 		self.python_unpack_eggs("/usr/share/jokosher/extensions/")
 
 class Jokosher(BinaryPackage):

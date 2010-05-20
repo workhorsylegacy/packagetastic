@@ -224,10 +224,10 @@ class MetaPackage(object):
 	def make_messages(self):
 		run_as_user("make messages")
 
-	def install(self):
+	def make_install(self):
 		run_as_root("make install")
 
-	def setup_py_install(self, flags=''):
+	def python_setup_install(self, flags=''):
 		run_as_root("python setup.py install --record=install-files.txt " + flags)
 
 	def python_unpack_eggs(self, egg_directory):

@@ -29,7 +29,7 @@ class Meta(MetaPackage):
 		self._changelog = [Changelog(version="0.12", release=1, time="Fri, 07 Aug 2009 18:32:26 -0700", text=u"Initial release") ]
 
 	def build(self):
-		self.setup_py_install()
+		self.python_setup_install()
 
 class Shrip(BinaryPackage):
 	def __init__(self):

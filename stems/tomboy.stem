@@ -59,7 +59,7 @@ class Meta(MetaPackage):
 	def build(self):
 		self.configure()
 		self.make()
-		self.install()
+		self.make_install()
 
 class Tomboy(BinaryPackage):
 	def __init__(self):

@@ -32,7 +32,7 @@ class Meta(MetaPackage):
 							Changelog(version="0.8", release=1, time="Mon, 24 Aug 2009 15:28:47 -0700", text=u"Initial release") ]
 
 	def build(self):
-		self.setup_py_install()
+		self.python_setup_install()
 
 class Gwibber(BinaryPackage):
 	def __init__(self):

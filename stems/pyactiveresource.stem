@@ -28,7 +28,7 @@ class Meta(MetaPackage):
 							Changelog(version="1.0.0", release=1, time="Fri, 07 Aug 2009 18:32:26 -0700", text=u"Initial release") ]
 
 	def build(self):
-		self.setup_py_install()
+		self.python_setup_install()
 
 class Pyactiveresource(BinaryPackage):
 	def __init__(self):

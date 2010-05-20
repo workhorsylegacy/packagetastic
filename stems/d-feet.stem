@@ -33,7 +33,7 @@ class Meta(MetaPackage):
 		self._changelog = [Changelog(version="0.1.8", release=1, time="Fri, 21 Aug 2009 20:12:51 -0700", text=u"Initial release") ]
 
 	def build(self):
-		self.setup_py_install()
+		self.python_setup_install()
 
 class DFeet(BinaryPackage):
 	def __init__(self):

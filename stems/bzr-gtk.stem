@@ -27,7 +27,7 @@ class Meta(MetaPackage):
 		]
 
 	def build(self):
-		self.setup_py_install()
+		self.python_setup_install()
 
 class BzrGtk(BinaryPackage):
 	def __init__(self):
