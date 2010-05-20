@@ -30,8 +30,11 @@ class Meta(MetaPackage):
 		self._license = 'GPL2+'
 		self._source = 'http://launchpad.net/jokosher/0.11/0.11.3/+download/jokosher-0.11.3.tar.gz'
 
-		self._build_requirements = ['python-setuptools', 'desktop-file-utils', 
-									'gettext', 'python-gtk2-dev', 'scrollkeeper']
+		self._build_requirements = [
+			'python >= 2.4', 
+			'python-support >= 0.5.3', 
+			'unzip'
+		]
 
 		self._short_description = u"simple and easy to use audio multi-tracker"
 
@@ -45,9 +48,8 @@ class Meta(MetaPackage):
 							Changelog(version="0.11.1", release=1, time="Fri, 21 Aug 2009 19:49:12 -0700", text=u"Initial release")]
 
 	def build(self):
-		self.configure()
-		self.make()
-		self.install()
+		self.setup_py_install("--prefix=/usr --install-lib=/usr/share/jokosher")
+		self.python_unpack_eggs("/usr/share/jokosher/extensions/")
 
 class Jokosher(BinaryPackage):
 	def __init__(self):
@@ -56,24 +58,270 @@ class Jokosher(BinaryPackage):
 		self._category = 'Applications/Audio'
 		self._package_type = 'python application'
 		self._priority = 'optional'
-		self._install_requirements = ['python-cairo', 
-										'python-dbus', 
-										'python-glade2', 
-										'python-gtk2', 
-										'python-gstreamer', 
-										'gstreamer-gnonlin (>= 0.10.8)', 
-										'gstreamer-plugins-good (>= 0.10.9)', 
-										'gstreamer-plugins-base (>= 0.10.12)', 
-										'python-setuptools']
+		self._install_requirements = [
+			'python-cairo', 
+			'python-dbus', 
+			'python-glade2', 
+			'python-gtk2', 
+			'python-gobject', 
+			'python-gstreamer', 
+			'gstreamer-gnonlin >= 0.10.8', 
+			'gstreamer-plugins-good >= 0.10.9', 
+			'gstreamer-plugins-base >= 0.10.12', 
+			'python-pkg-resources', 
+			'python-xdg'
+		]
 
-		self._files = ['/usr/lib/python2.6/site-packages/jokosher-0.11.3-py2.6.egg-info', 
-						'/usr/lib/python2.6/site-packages/Jokosher', 
-						'/usr/bin/jokosher', 
-						'/usr/share/jokosher/', 
-						'/usr/share/icons/hicolor/48x48/apps/jokosher.png', 
-						'/usr/share/pixmaps/jokosher.png', 
-						'/usr/share/applications/jokosher.desktop', 
-						'/usr/share/mime/packages/jokosher.xml', 
-						'/usr/share/gnome/help/jokosher/', 
-						'/usr/share/omf/jokosher/']
+		self._files = \
+"""/usr/bin/jokosher
+/usr/share/applications/jokosher.desktop
+/usr/share/gnome/help/jokosher/C/figures/add_instrument.png
+/usr/share/gnome/help/jokosher/C/figures/extension_manager.png
+/usr/share/gnome/help/jokosher/C/figures/instrument_effects.png
+/usr/share/gnome/help/jokosher/C/figures/instrument_features.png
+/usr/share/gnome/help/jokosher/C/figures/main_window.png
+/usr/share/gnome/help/jokosher/C/figures/mixing_window.png
+/usr/share/gnome/help/jokosher/C/figures/volume_fades.png
+/usr/share/gnome/help/jokosher/C/figures/welcome_dialog.png
+/usr/share/gnome/help/jokosher/C/jokosher.xml
+/usr/share/gnome/help/jokosher/C/legal.xml
+/usr/share/icons/hicolor/48x48/apps/jokosher.png
+/usr/share/jokosher/Instruments/acousticguitar.instr
+/usr/share/jokosher/Instruments/audiofile.instr
+/usr/share/jokosher/Instruments/bassdrum.instr
+/usr/share/jokosher/Instruments/bassguitar.instr
+/usr/share/jokosher/Instruments/cello.instr
+/usr/share/jokosher/Instruments/cymbal.instr
+/usr/share/jokosher/Instruments/drumkit.instr
+/usr/share/jokosher/Instruments/effect.instr
+/usr/share/jokosher/Instruments/electricguitar.instr
+/usr/share/jokosher/Instruments/harmonica.instr
+/usr/share/jokosher/Instruments/images/acousticguitar.png
+/usr/share/jokosher/Instruments/images/audiofile.png
+/usr/share/jokosher/Instruments/images/bassdrum.png
+/usr/share/jokosher/Instruments/images/bassguitar.png
+/usr/share/jokosher/Instruments/images/cello.png
+/usr/share/jokosher/Instruments/images/cymbal.png
+/usr/share/jokosher/Instruments/images/drumkit.png
+/usr/share/jokosher/Instruments/images/effect.png
+/usr/share/jokosher/Instruments/images/electricguitar.png
+/usr/share/jokosher/Instruments/images/harmonica.png
+/usr/share/jokosher/Instruments/images/keyboard.png
+/usr/share/jokosher/Instruments/images/other.png
+/usr/share/jokosher/Instruments/images/saxophone.png
+/usr/share/jokosher/Instruments/images/snare.png
+/usr/share/jokosher/Instruments/images/tomtom.png
+/usr/share/jokosher/Instruments/images/trumpet.png
+/usr/share/jokosher/Instruments/images/violin.png
+/usr/share/jokosher/Instruments/images/vocal.png
+/usr/share/jokosher/Instruments/keyboard.instr
+/usr/share/jokosher/Instruments/other.instr
+/usr/share/jokosher/Instruments/saxophone.instr
+/usr/share/jokosher/Instruments/snare.instr
+/usr/share/jokosher/Instruments/tomtom.instr
+/usr/share/jokosher/Instruments/trumpet.instr
+/usr/share/jokosher/Instruments/violin.instr
+/usr/share/jokosher/Instruments/vocal.instr
+/usr/share/jokosher/Jokosher.glade
+/usr/share/jokosher/Jokosher/AddInstrumentDialog.py
+/usr/share/jokosher/Jokosher/AudioBackend.py
+/usr/share/jokosher/Jokosher/AudioPreview.py
+/usr/share/jokosher/Jokosher/CompactMixView.py
+/usr/share/jokosher/Jokosher/ControlsBox.py
+/usr/share/jokosher/Jokosher/EffectPresets.py
+/usr/share/jokosher/Jokosher/Event.py
+/usr/share/jokosher/Jokosher/EventLaneViewer.py
+/usr/share/jokosher/Jokosher/EventViewer.py
+/usr/share/jokosher/Jokosher/Extension.py
+/usr/share/jokosher/Jokosher/ExtensionManager.py
+/usr/share/jokosher/Jokosher/ExtensionManagerDialog.py
+/usr/share/jokosher/Jokosher/Globals.py
+/usr/share/jokosher/Jokosher/IncrementalSave.py
+/usr/share/jokosher/Jokosher/Instrument.py
+/usr/share/jokosher/Jokosher/InstrumentConnectionsDialog.py
+/usr/share/jokosher/Jokosher/InstrumentEffectsDialog.py
+/usr/share/jokosher/Jokosher/InstrumentViewer.py
+/usr/share/jokosher/Jokosher/JokosherApp.py
+/usr/share/jokosher/Jokosher/LevelsList.py
+/usr/share/jokosher/Jokosher/MasterMixerStrip.py
+/usr/share/jokosher/Jokosher/MixdownActions.py
+/usr/share/jokosher/Jokosher/MixdownProfileDialog.py
+/usr/share/jokosher/Jokosher/MixdownProfileManager.py
+/usr/share/jokosher/Jokosher/MixdownProfiles.py
+/usr/share/jokosher/Jokosher/MixerStrip.py
+/usr/share/jokosher/Jokosher/NewProjectDialog.py
+/usr/share/jokosher/Jokosher/PlatformUtils/Unix.py
+/usr/share/jokosher/Jokosher/PlatformUtils/Windows.py
+/usr/share/jokosher/Jokosher/PlatformUtils/__init__.py
+/usr/share/jokosher/Jokosher/PreferencesDialog.py
+/usr/share/jokosher/Jokosher/Profiler.py
+/usr/share/jokosher/Jokosher/Project.py
+/usr/share/jokosher/Jokosher/ProjectManager.py
+/usr/share/jokosher/Jokosher/ProjectTemplate.py
+/usr/share/jokosher/Jokosher/ProjectTemplateDialog.py
+/usr/share/jokosher/Jokosher/RecordingView.py
+/usr/share/jokosher/Jokosher/TimeLine.py
+/usr/share/jokosher/Jokosher/TimeLineBar.py
+/usr/share/jokosher/Jokosher/TimeView.py
+/usr/share/jokosher/Jokosher/TransportManager.py
+/usr/share/jokosher/Jokosher/UndoSystem.py
+/usr/share/jokosher/Jokosher/Utils.py
+/usr/share/jokosher/Jokosher/VUWidget.py
+/usr/share/jokosher/Jokosher/WelcomeDialog.py
+/usr/share/jokosher/Jokosher/Workspace.py
+/usr/share/jokosher/Jokosher/__init__.py
+/usr/share/jokosher/Jokosher/elements/__init__.py
+/usr/share/jokosher/Jokosher/elements/singledecodebin.py
+/usr/share/jokosher/Jokosher/ui/EventLaneHSeparator.py
+/usr/share/jokosher/Jokosher/ui/MessageArea.py
+/usr/share/jokosher/Jokosher/ui/StatusBar.py
+/usr/share/jokosher/Jokosher/ui/__init__.py
+/usr/share/jokosher/extensions/ExtensionConsole-0.2.egg-info/PKG-INFO
+/usr/share/jokosher/extensions/ExtensionConsole-0.2.egg-info/SOURCES.txt
+/usr/share/jokosher/extensions/ExtensionConsole-0.2.egg-info/dependency_links.txt
+/usr/share/jokosher/extensions/ExtensionConsole-0.2.egg-info/entry_points.txt
+/usr/share/jokosher/extensions/ExtensionConsole-0.2.egg-info/top_level.txt
+/usr/share/jokosher/extensions/ExtensionConsole-0.2.egg-info/zip-safe
+/usr/share/jokosher/extensions/ExtensionConsole/ExtensionConsole.glade
+/usr/share/jokosher/extensions/ExtensionConsole/ExtensionConsole.py
+/usr/share/jokosher/extensions/ExtensionConsole/SearchDialog.py
+/usr/share/jokosher/extensions/ExtensionConsole/__init__.py
+/usr/share/jokosher/extensions/ExtensionConsole/pyconsole.py
+/usr/share/jokosher/extensions/FreesoundSearch-0.3.egg-info/PKG-INFO
+/usr/share/jokosher/extensions/FreesoundSearch-0.3.egg-info/SOURCES.txt
+/usr/share/jokosher/extensions/FreesoundSearch-0.3.egg-info/dependency_links.txt
+/usr/share/jokosher/extensions/FreesoundSearch-0.3.egg-info/entry_points.txt
+/usr/share/jokosher/extensions/FreesoundSearch-0.3.egg-info/top_level.txt
+/usr/share/jokosher/extensions/FreesoundSearch-0.3.egg-info/zip-safe
+/usr/share/jokosher/extensions/FreesoundSearch/FreesoundSearch.glade
+/usr/share/jokosher/extensions/FreesoundSearch/FreesoundSearch.py
+/usr/share/jokosher/extensions/FreesoundSearch/__init__.py
+/usr/share/jokosher/extensions/FreesoundSearch/freesound.py
+/usr/share/jokosher/extensions/FreesoundSearch/images/banner.png
+/usr/share/jokosher/extensions/GNOMEAudioProfiles.py
+/usr/share/jokosher/extensions/InstrumentTypeManager-0.2.egg-info/PKG-INFO
+/usr/share/jokosher/extensions/InstrumentTypeManager-0.2.egg-info/SOURCES.txt
+/usr/share/jokosher/extensions/InstrumentTypeManager-0.2.egg-info/dependency_links.txt
+/usr/share/jokosher/extensions/InstrumentTypeManager-0.2.egg-info/entry_points.txt
+/usr/share/jokosher/extensions/InstrumentTypeManager-0.2.egg-info/top_level.txt
+/usr/share/jokosher/extensions/InstrumentTypeManager-0.2.egg-info/zip-safe
+/usr/share/jokosher/extensions/InstrumentTypeManager/InstrumentTypeManager.glade
+/usr/share/jokosher/extensions/InstrumentTypeManager/InstrumentTypeManager.py
+/usr/share/jokosher/extensions/InstrumentTypeManager/__init__.py
+/usr/share/jokosher/extensions/Minimal-0.9.egg-info/PKG-INFO
+/usr/share/jokosher/extensions/Minimal-0.9.egg-info/SOURCES.txt
+/usr/share/jokosher/extensions/Minimal-0.9.egg-info/dependency_links.txt
+/usr/share/jokosher/extensions/Minimal-0.9.egg-info/entry_points.txt
+/usr/share/jokosher/extensions/Minimal-0.9.egg-info/top_level.txt
+/usr/share/jokosher/extensions/Minimal-0.9.egg-info/zip-safe
+/usr/share/jokosher/extensions/Minimal/Minimal.glade
+/usr/share/jokosher/extensions/Minimal/Minimal.py
+/usr/share/jokosher/extensions/Minimal/__init__.py
+/usr/share/jokosher/extensions/PidginExtension-0.1.egg-info/PKG-INFO
+/usr/share/jokosher/extensions/PidginExtension-0.1.egg-info/SOURCES.txt
+/usr/share/jokosher/extensions/PidginExtension-0.1.egg-info/dependency_links.txt
+/usr/share/jokosher/extensions/PidginExtension-0.1.egg-info/entry_points.txt
+/usr/share/jokosher/extensions/PidginExtension-0.1.egg-info/top_level.txt
+/usr/share/jokosher/extensions/PidginExtension-0.1.egg-info/zip-safe
+/usr/share/jokosher/extensions/PidginExtension/PidginExtension.py
+/usr/share/jokosher/extensions/PidginExtension/__init__.py
+/usr/share/jokosher/extensions/PidginExtension/pidgin.png
+/usr/share/jokosher/extensions/SetTempo-0.1.egg-info/PKG-INFO
+/usr/share/jokosher/extensions/SetTempo-0.1.egg-info/SOURCES.txt
+/usr/share/jokosher/extensions/SetTempo-0.1.egg-info/dependency_links.txt
+/usr/share/jokosher/extensions/SetTempo-0.1.egg-info/entry_points.txt
+/usr/share/jokosher/extensions/SetTempo-0.1.egg-info/top_level.txt
+/usr/share/jokosher/extensions/SetTempo-0.1.egg-info/zip-safe
+/usr/share/jokosher/extensions/SetTempo/SetTempo.glade
+/usr/share/jokosher/extensions/SetTempo/SetTempo.py
+/usr/share/jokosher/extensions/SetTempo/__init__.py
+/usr/share/jokosher/extensions/jokosher-dbus.py
+/usr/share/jokosher/jokosher-0.11.3-py2.6.egg-info
+/usr/share/jokosher/jokosher-logo.png
+/usr/share/jokosher/pixmaps/effect_amplifiers.png
+/usr/share/jokosher/pixmaps/effect_broken.png
+/usr/share/jokosher/pixmaps/effect_chorus.png
+/usr/share/jokosher/pixmaps/effect_compressors.png
+/usr/share/jokosher/pixmaps/effect_delays.png
+/usr/share/jokosher/pixmaps/effect_distortion.png
+/usr/share/jokosher/pixmaps/effect_equalizers.png
+/usr/share/jokosher/pixmaps/effect_filters.png
+/usr/share/jokosher/pixmaps/effect_flangers.png
+/usr/share/jokosher/pixmaps/effect_miscellaneous.png
+/usr/share/jokosher/pixmaps/effect_modulators.png
+/usr/share/jokosher/pixmaps/effect_oscillators.png
+/usr/share/jokosher/pixmaps/effect_phasers.png
+/usr/share/jokosher/pixmaps/effect_reverbs.png
+/usr/share/jokosher/pixmaps/effect_simulators.png
+/usr/share/jokosher/pixmaps/effect_stock_volume.png
+/usr/share/jokosher/pixmaps/effect_unclassified.png
+/usr/share/jokosher/pixmaps/icon_arm.png
+/usr/share/jokosher/pixmaps/icon_cancel.png
+/usr/share/jokosher/pixmaps/icon_click.png
+/usr/share/jokosher/pixmaps/icon_disarm.png
+/usr/share/jokosher/pixmaps/icon_effectsapply.png
+/usr/share/jokosher/pixmaps/icon_fpdelete.png
+/usr/share/jokosher/pixmaps/icon_fpsnap.png
+/usr/share/jokosher/pixmaps/icon_group.png
+/usr/share/jokosher/pixmaps/icon_mix.png
+/usr/share/jokosher/pixmaps/icon_record.png
+/usr/share/jokosher/pixmaps/icon_solo.png
+/usr/share/jokosher/pixmaps/icon_split.png
+/usr/share/jokosher/pixmaps/icon_trim.png
+/usr/share/jokosher/pixmaps/jokosher-logo.png
+/usr/share/jokosher/pixmaps/jokosher.png
+/usr/share/jokosher/pixmaps/newproject.png
+/usr/share/jokosher/pixmaps/stock_volume-mute.png
+/usr/share/jokosher/pixmaps/stock_volume.png
+/usr/share/jokosher/pixmaps/welcomeheader.png
+/usr/share/locale/ace/LC_MESSAGES/jokosher.mo
+/usr/share/locale/ar/LC_MESSAGES/jokosher.mo
+/usr/share/locale/bg/LC_MESSAGES/jokosher.mo
+/usr/share/locale/ca/LC_MESSAGES/jokosher.mo
+/usr/share/locale/cs/LC_MESSAGES/jokosher.mo
+/usr/share/locale/cy/LC_MESSAGES/jokosher.mo
+/usr/share/locale/da/LC_MESSAGES/jokosher.mo
+/usr/share/locale/de/LC_MESSAGES/jokosher.mo
+/usr/share/locale/el/LC_MESSAGES/jokosher.mo
+/usr/share/locale/en_AU/LC_MESSAGES/jokosher.mo
+/usr/share/locale/en_CA/LC_MESSAGES/jokosher.mo
+/usr/share/locale/en_GB/LC_MESSAGES/jokosher.mo
+/usr/share/locale/en_PH/LC_MESSAGES/jokosher.mo
+/usr/share/locale/eo/LC_MESSAGES/jokosher.mo
+/usr/share/locale/es/LC_MESSAGES/jokosher.mo
+/usr/share/locale/fa/LC_MESSAGES/jokosher.mo
+/usr/share/locale/fi/LC_MESSAGES/jokosher.mo
+/usr/share/locale/fr/LC_MESSAGES/jokosher.mo
+/usr/share/locale/gl/LC_MESSAGES/jokosher.mo
+/usr/share/locale/gu/LC_MESSAGES/jokosher.mo
+/usr/share/locale/he/LC_MESSAGES/jokosher.mo
+/usr/share/locale/hi/LC_MESSAGES/jokosher.mo
+/usr/share/locale/hu/LC_MESSAGES/jokosher.mo
+/usr/share/locale/id/LC_MESSAGES/jokosher.mo
+/usr/share/locale/it/LC_MESSAGES/jokosher.mo
+/usr/share/locale/ja/LC_MESSAGES/jokosher.mo
+/usr/share/locale/kk/LC_MESSAGES/jokosher.mo
+/usr/share/locale/lt/LC_MESSAGES/jokosher.mo
+/usr/share/locale/lv/LC_MESSAGES/jokosher.mo
+/usr/share/locale/mk/LC_MESSAGES/jokosher.mo
+/usr/share/locale/ml/LC_MESSAGES/jokosher.mo
+/usr/share/locale/mr/LC_MESSAGES/jokosher.mo
+/usr/share/locale/ms/LC_MESSAGES/jokosher.mo
+/usr/share/locale/nb/LC_MESSAGES/jokosher.mo
+/usr/share/locale/nl/LC_MESSAGES/jokosher.mo
+/usr/share/locale/pl/LC_MESSAGES/jokosher.mo
+/usr/share/locale/pt/LC_MESSAGES/jokosher.mo
+/usr/share/locale/pt_BR/LC_MESSAGES/jokosher.mo
+/usr/share/locale/ro/LC_MESSAGES/jokosher.mo
+/usr/share/locale/ru/LC_MESSAGES/jokosher.mo
+/usr/share/locale/sk/LC_MESSAGES/jokosher.mo
+/usr/share/locale/sl/LC_MESSAGES/jokosher.mo
+/usr/share/locale/sv/LC_MESSAGES/jokosher.mo
+/usr/share/locale/tl/LC_MESSAGES/jokosher.mo
+/usr/share/locale/tr/LC_MESSAGES/jokosher.mo
+/usr/share/locale/uk/LC_MESSAGES/jokosher.mo
+/usr/share/locale/zh_CN/LC_MESSAGES/jokosher.mo
+/usr/share/mime/packages/jokosher.xml
+/usr/share/omf/jokosher/jokosher-C.omf
+/usr/share/pixmaps/jokosher.png""".split("\n")
 

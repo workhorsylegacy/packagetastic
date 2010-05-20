@@ -227,8 +227,22 @@ class MetaPackage(object):
 	def install(self):
 		run_as_root("make install")
 
-	def setup_py_install(self):
-		run_as_root("python setup.py install --record=install-files.txt")
+	def setup_py_install(self, flags=''):
+		run_as_root("python setup.py install --record=install-files.txt " + flags)
+
+	def python_unpack_eggs(self, egg_directory):
+		curdir = os.getcwd()
+		os.chdir(egg_directory)
+		for entry in os.listdir('.'):
+			if not entry.endswith('.egg'): continue
+
+			print "Unpacking python egg: " + entry
+			name = entry.split('-')[0]
+			version = entry.split('-')[1]
+			run_as_root("unzip -q '" + entry + "'")
+			run_as_root("mv 'EGG-INFO' '" + name + "-" + version + ".egg-info'")
+			run_as_root("rm '" + entry + "'")
+		os.chdir(curdir)
 
 	def to_hash(self):
 		retval={ 'authors' : self.authors, 

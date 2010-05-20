@@ -2,6 +2,14 @@
 # -*- coding: UTF-8 -*-
 
 package_names = {
+	'python-pkg-resources' : { 
+		'fedora' : [], 
+		'ubuntu' : ['python-pkg-resources']
+	},
+	'unzip' : { 
+		'fedora' : [], 
+		'ubuntu' : ['unzip']
+	},
 	'python-indicate' : { 
 		'fedora' : [], 
 		'ubuntu' : ['python-indicate']
