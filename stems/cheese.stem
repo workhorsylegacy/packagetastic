@@ -13,7 +13,7 @@ class Meta(MetaPackage):
 		self._copyright = [u'2004-2010 fixme']
 		self._homepage = 'http://launchpad.net/bzr-gtk'
 		self._license = 'LGPL2.1'
-		self._source = 'http://ftp.gnome.org/pub/GNOME/sources/cheese/2.29/cheese-2.29.91.tar.gz'
+		self._source = 'http://ftp.gnome.org/pub/GNOME/sources/cheese/2.30/cheese-2.30.1.tar.gz'
 
 		self._build_requirements = [
 			'gnome-pkg-tools >= 0.10', 
@@ -44,7 +44,7 @@ class Meta(MetaPackage):
 								u" user's play instinct."
 
 		self._changelog = [
-				Changelog(version="2.29.91", release=1, time="Sat, 15 May 2010 18:40:54 -0700", text=u"Initial release")
+				Changelog(version="2.30.1", release=1, time="Sat, 15 May 2010 18:40:54 -0700", text=u"Initial release")
 		]
 
 	def build(self):
@@ -69,7 +69,8 @@ class Cheese(BinaryPackage):
 		self._additional_description = u"A tool to take pictures and videos from your webcam"
 
 		self._files = \
-"""/usr/bin/cheese""".split("\n")
+"""/usr/bin/cheese
+/usr/share/applications/cheese.desktop""".split("\n")
 
 class CheeseCommon(BinaryPackage):
 	def __init__(self):
@@ -85,7 +86,8 @@ class CheeseCommon(BinaryPackage):
 		self._additional_description = u"Common files for the Cheese tool to take pictures and videos"
 
 		self._files = \
-"""/usr/share/cheese/cheese-prefs.ui
+"""/usr/libexec/cheese/cheese-bugreport.sh
+/usr/share/cheese/cheese-prefs.ui
 /usr/share/cheese/cheese-ui.xml
 /usr/share/cheese/cheese.ui
 /usr/share/cheese/effects/Hulk.png
@@ -125,6 +127,7 @@ class CheeseCommon(BinaryPackage):
 /usr/share/cheese/pixmaps/cheese-3.svg
 /usr/share/cheese/pixmaps/thumbnail-frame.png
 /usr/share/dbus-1/services/org.gnome.Cheese.service
+/usr/etc/gconf/schemas/cheese.schemas
 /usr/share/gnome/help/cheese/C/cheese.xml
 /usr/share/gnome/help/cheese/C/figures/cheese-effects.jpg
 /usr/share/gnome/help/cheese/C/figures/cheese-fullscreen.jpg
@@ -140,6 +143,13 @@ class CheeseCommon(BinaryPackage):
 /usr/share/gnome/help/cheese/ca/figures/cheese-preferences.jpg
 /usr/share/gnome/help/cheese/ca/figures/cheese-share.jpg
 /usr/share/gnome/help/cheese/ca/figures/cheese-wide.jpg
+/usr/share/gnome/help/cheese/cs/cheese.xml
+/usr/share/gnome/help/cheese/cs/figures/cheese-effects.jpg
+/usr/share/gnome/help/cheese/cs/figures/cheese-fullscreen.jpg
+/usr/share/gnome/help/cheese/cs/figures/cheese-main.jpg
+/usr/share/gnome/help/cheese/cs/figures/cheese-preferences.jpg
+/usr/share/gnome/help/cheese/cs/figures/cheese-share.jpg
+/usr/share/gnome/help/cheese/cs/figures/cheese-wide.jpg
 /usr/share/gnome/help/cheese/de/cheese.xml
 /usr/share/gnome/help/cheese/de/figures/cheese-effects.jpg
 /usr/share/gnome/help/cheese/de/figures/cheese-fullscreen.jpg
@@ -238,8 +248,79 @@ class CheeseCommon(BinaryPackage):
 /usr/share/icons/hicolor/32x32/apps/cheese.png
 /usr/share/icons/hicolor/48x48/apps/cheese.png
 /usr/share/icons/hicolor/scalable/apps/cheese.svg
+/usr/share/locale/af/LC_MESSAGES/cheese.mo
+/usr/share/locale/ar/LC_MESSAGES/cheese.mo
+/usr/share/locale/as/LC_MESSAGES/cheese.mo
+/usr/share/locale/ast/LC_MESSAGES/cheese.mo
+/usr/share/locale/be/LC_MESSAGES/cheese.mo
+/usr/share/locale/be@latin/LC_MESSAGES/cheese.mo
+/usr/share/locale/bg/LC_MESSAGES/cheese.mo
+/usr/share/locale/bn/LC_MESSAGES/cheese.mo
+/usr/share/locale/bn_IN/LC_MESSAGES/cheese.mo
+/usr/share/locale/ca/LC_MESSAGES/cheese.mo
+/usr/share/locale/ca@valencia/LC_MESSAGES/cheese.mo
+/usr/share/locale/cs/LC_MESSAGES/cheese.mo
+/usr/share/locale/da/LC_MESSAGES/cheese.mo
+/usr/share/locale/de/LC_MESSAGES/cheese.mo
+/usr/share/locale/dz/LC_MESSAGES/cheese.mo
+/usr/share/locale/el/LC_MESSAGES/cheese.mo
+/usr/share/locale/en@shaw/LC_MESSAGES/cheese.mo
+/usr/share/locale/en_GB/LC_MESSAGES/cheese.mo
+/usr/share/locale/es/LC_MESSAGES/cheese.mo
+/usr/share/locale/et/LC_MESSAGES/cheese.mo
+/usr/share/locale/eu/LC_MESSAGES/cheese.mo
+/usr/share/locale/fi/LC_MESSAGES/cheese.mo
+/usr/share/locale/fr/LC_MESSAGES/cheese.mo
+/usr/share/locale/ga/LC_MESSAGES/cheese.mo
+/usr/share/locale/gl/LC_MESSAGES/cheese.mo
+/usr/share/locale/gu/LC_MESSAGES/cheese.mo
+/usr/share/locale/he/LC_MESSAGES/cheese.mo
+/usr/share/locale/hi/LC_MESSAGES/cheese.mo
+/usr/share/locale/hr/LC_MESSAGES/cheese.mo
+/usr/share/locale/hu/LC_MESSAGES/cheese.mo
+/usr/share/locale/id/LC_MESSAGES/cheese.mo
+/usr/share/locale/it/LC_MESSAGES/cheese.mo
+/usr/share/locale/ja/LC_MESSAGES/cheese.mo
+/usr/share/locale/kn/LC_MESSAGES/cheese.mo
+/usr/share/locale/ko/LC_MESSAGES/cheese.mo
+/usr/share/locale/ku/LC_MESSAGES/cheese.mo
+/usr/share/locale/lt/LC_MESSAGES/cheese.mo
+/usr/share/locale/lv/LC_MESSAGES/cheese.mo
+/usr/share/locale/mai/LC_MESSAGES/cheese.mo
+/usr/share/locale/mk/LC_MESSAGES/cheese.mo
+/usr/share/locale/ml/LC_MESSAGES/cheese.mo
+/usr/share/locale/mr/LC_MESSAGES/cheese.mo
+/usr/share/locale/ms/LC_MESSAGES/cheese.mo
+/usr/share/locale/nb/LC_MESSAGES/cheese.mo
+/usr/share/locale/nds/LC_MESSAGES/cheese.mo
+/usr/share/locale/nl/LC_MESSAGES/cheese.mo
+/usr/share/locale/nn/LC_MESSAGES/cheese.mo
+/usr/share/locale/oc/LC_MESSAGES/cheese.mo
+/usr/share/locale/or/LC_MESSAGES/cheese.mo
+/usr/share/locale/pa/LC_MESSAGES/cheese.mo
+/usr/share/locale/pl/LC_MESSAGES/cheese.mo
+/usr/share/locale/ps/LC_MESSAGES/cheese.mo
+/usr/share/locale/pt/LC_MESSAGES/cheese.mo
+/usr/share/locale/pt_BR/LC_MESSAGES/cheese.mo
+/usr/share/locale/ro/LC_MESSAGES/cheese.mo
+/usr/share/locale/ru/LC_MESSAGES/cheese.mo
+/usr/share/locale/sl/LC_MESSAGES/cheese.mo
+/usr/share/locale/sq/LC_MESSAGES/cheese.mo
+/usr/share/locale/sr/LC_MESSAGES/cheese.mo
+/usr/share/locale/sr@latin/LC_MESSAGES/cheese.mo
+/usr/share/locale/sv/LC_MESSAGES/cheese.mo
+/usr/share/locale/ta/LC_MESSAGES/cheese.mo
+/usr/share/locale/te/LC_MESSAGES/cheese.mo
+/usr/share/locale/th/LC_MESSAGES/cheese.mo
+/usr/share/locale/tr/LC_MESSAGES/cheese.mo
+/usr/share/locale/uk/LC_MESSAGES/cheese.mo
+/usr/share/locale/vi/LC_MESSAGES/cheese.mo
+/usr/share/locale/zh_CN/LC_MESSAGES/cheese.mo
+/usr/share/locale/zh_HK/LC_MESSAGES/cheese.mo
+/usr/share/locale/zh_TW/LC_MESSAGES/cheese.mo
 /usr/share/omf/cheese/cheese-C.omf
 /usr/share/omf/cheese/cheese-ca.omf
+/usr/share/omf/cheese/cheese-cs.omf
 /usr/share/omf/cheese/cheese-de.omf
 /usr/share/omf/cheese/cheese-el.omf
 /usr/share/omf/cheese/cheese-en_GB.omf
@@ -291,9 +372,11 @@ class LibCheeseGtkDev(BinaryPackage):
 """/usr/include/cheese/cheese-avatar-chooser.h
 /usr/include/cheese/cheese-camera-device-monitor.h
 /usr/include/cheese/cheese-widget.h
-/usr/lib/libcheese-gtk.so
+/usr/lib/libcheese-gtk.a
+/usr/lib/libcheese-gtk.la
 /usr/lib/pkgconfig/cheese-gtk.pc
 /usr/share/gtk-doc/html/cheese/CheeseAvatarChooser.html
+/usr/share/gtk-doc/html/cheese/CheeseCameraDeviceMonitor.html
 /usr/share/gtk-doc/html/cheese/CheeseWidget.html
 /usr/share/gtk-doc/html/cheese/api-index-full.html
 /usr/share/gtk-doc/html/cheese/ch01.html

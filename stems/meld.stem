@@ -15,11 +15,13 @@ class Meta(MetaPackage):
 		self._license = 'GPL2+'
 		self._source = 'http://ftp.gnome.org/pub/gnome/sources/meld/1.3/meld-1.3.0.tar.gz'
 
-		self._build_requirements = ['desktop-file-utils', 
-									'gettext', 
-									'intltool', 
-									'scrollkeeper', 
-									'libxml-parser-perl']
+		self._build_requirements = [
+			'gnome-pkg-tools', 
+			'python', 
+			'python-support >= 0.4.0', 
+			'intltool', 
+			'scrollkeeper'
+		]
 
 		self._short_description = u"graphical tool to diff and merge files"
 
@@ -29,9 +31,7 @@ class Meta(MetaPackage):
 		self._changelog = [Changelog(version="1.3.0", release=1, time="Thu, 22 Oct 2009 11:13:31 -0700", text=u"Initial release") ]
 
 	def build(self):
-		self.configure()
-		self.make()
-		self.make_install()
+		self.python_setup_install("--prefix=/usr --install-lib=/usr/share/meld")
 
 class Meld(BinaryPackage):
 	def __init__(self):
@@ -40,15 +40,133 @@ class Meld(BinaryPackage):
 		self._category = 'Development/Tools'
 		self._package_type = 'python application'
 		self._priority = 'optional'
-		self._install_requirements = ['python-gtk2 (>= 2.8.0)', 
-										'python-glade2', 
-										'python-gobject (>= 2.8.0)']
+		self._install_requirements = [
+			'python-gtk2 >= 2.4', 
+			'python-glade2 >= 2.4', 
+			'yelp', 
+			'python-gnome2', 
+			'python-gconf'
+		]
 
-		self._files = ['/usr/bin/meld', 
-						'/usr/share/meld/', 
-						'/usr/share/applications/meld.desktop', 
-						'/usr/share/application-registry/meld*', 
-						'/usr/share/pixmaps/meld.png', 
-						'/usr/share/gnome/help/meld/', 
-						'/usr/share/omf/meld/']
+		self._files = \
+"""/usr/bin/meld
+/usr/lib/meld/diffutil.py
+/usr/lib/meld/dirdiff.py
+/usr/lib/meld/filediff.py
+/usr/lib/meld/findbar.py
+/usr/lib/meld/gnomeglade.py
+/usr/lib/meld/historyentry.py
+/usr/lib/meld/meldapp.py
+/usr/lib/meld/melddoc.py
+/usr/lib/meld/misc.py
+/usr/lib/meld/paths.py
+/usr/lib/meld/prefs.py
+/usr/lib/meld/sourceviewer.py
+/usr/lib/meld/task.py
+/usr/lib/meld/tree.py
+/usr/lib/meld/undo.py
+/usr/lib/meld/vc/__init__.py
+/usr/lib/meld/vc/_null.py
+/usr/lib/meld/vc/_vc.py
+/usr/lib/meld/vc/bzr.py
+/usr/lib/meld/vc/cdv.py
+/usr/lib/meld/vc/cvs.py
+/usr/lib/meld/vc/darcs.py
+/usr/lib/meld/vc/git.py
+/usr/lib/meld/vc/mercurial.py
+/usr/lib/meld/vc/monotone.py
+/usr/lib/meld/vc/rcs.py
+/usr/lib/meld/vc/svn.py
+/usr/lib/meld/vc/tla.py
+/usr/lib/meld/vcview.py
+/usr/share/applications/meld.desktop
+/usr/share/doc/meld/AUTHORS
+/usr/share/doc/meld/changelog.Debian.gz
+/usr/share/doc/meld/changelog.gz
+/usr/share/doc/meld/copyright
+/usr/share/gnome/help/meld/C/figures/dirdiff.png
+/usr/share/gnome/help/meld/C/figures/filediff.png
+/usr/share/gnome/help/meld/C/meld.xml
+/usr/share/gnome/help/meld/es/figures/dirdiff.png
+/usr/share/gnome/help/meld/es/figures/filediff.png
+/usr/share/gnome/help/meld/es/meld.xml
+/usr/share/gnome/help/meld/fr/figures/dirdiff.png
+/usr/share/gnome/help/meld/fr/figures/filediff.png
+/usr/share/gnome/help/meld/fr/meld.xml
+/usr/share/locale/ar/LC_MESSAGES/meld.mo
+/usr/share/locale/bg/LC_MESSAGES/meld.mo
+/usr/share/locale/ca/LC_MESSAGES/meld.mo
+/usr/share/locale/cs/LC_MESSAGES/meld.mo
+/usr/share/locale/de/LC_MESSAGES/meld.mo
+/usr/share/locale/dz/LC_MESSAGES/meld.mo
+/usr/share/locale/el/LC_MESSAGES/meld.mo
+/usr/share/locale/en_CA/LC_MESSAGES/meld.mo
+/usr/share/locale/en_GB/LC_MESSAGES/meld.mo
+/usr/share/locale/es/LC_MESSAGES/meld.mo
+/usr/share/locale/fi/LC_MESSAGES/meld.mo
+/usr/share/locale/fr/LC_MESSAGES/meld.mo
+/usr/share/locale/hu/LC_MESSAGES/meld.mo
+/usr/share/locale/it/LC_MESSAGES/meld.mo
+/usr/share/locale/ja/LC_MESSAGES/meld.mo
+/usr/share/locale/ko/LC_MESSAGES/meld.mo
+/usr/share/locale/nb/LC_MESSAGES/meld.mo
+/usr/share/locale/ne/LC_MESSAGES/meld.mo
+/usr/share/locale/nl/LC_MESSAGES/meld.mo
+/usr/share/locale/oc/LC_MESSAGES/meld.mo
+/usr/share/locale/pa/LC_MESSAGES/meld.mo
+/usr/share/locale/pt/LC_MESSAGES/meld.mo
+/usr/share/locale/pt_BR/LC_MESSAGES/meld.mo
+/usr/share/locale/ru/LC_MESSAGES/meld.mo
+/usr/share/locale/rw/LC_MESSAGES/meld.mo
+/usr/share/locale/sq/LC_MESSAGES/meld.mo
+/usr/share/locale/sr/LC_MESSAGES/meld.mo
+/usr/share/locale/sr@Latn/LC_MESSAGES/meld.mo
+/usr/share/locale/sv/LC_MESSAGES/meld.mo
+/usr/share/locale/vi/LC_MESSAGES/meld.mo
+/usr/share/locale/zh_CN/LC_MESSAGES/meld.mo
+/usr/share/locale/zh_TW/LC_MESSAGES/meld.mo
+/usr/share/man/man1/meld.1.gz
+/usr/share/meld/glade2/dirdiff-ui.xml
+/usr/share/meld/glade2/dirdiff.glade
+/usr/share/meld/glade2/filediff-ui.xml
+/usr/share/meld/glade2/filediff.glade
+/usr/share/meld/glade2/findbar.glade
+/usr/share/meld/glade2/meldapp-ui.xml
+/usr/share/meld/glade2/meldapp.glade
+/usr/share/meld/glade2/pixmaps/button_apply0.xpm
+/usr/share/meld/glade2/pixmaps/button_apply1.xpm
+/usr/share/meld/glade2/pixmaps/button_copy0.xpm
+/usr/share/meld/glade2/pixmaps/button_copy1.xpm
+/usr/share/meld/glade2/pixmaps/button_delete.xpm
+/usr/share/meld/glade2/pixmaps/close.xpm
+/usr/share/meld/glade2/pixmaps/cvs-icon-small.png
+/usr/share/meld/glade2/pixmaps/cvs-icon.png
+/usr/share/meld/glade2/pixmaps/filter-ignored-24.png
+/usr/share/meld/glade2/pixmaps/filter-modified-24.png
+/usr/share/meld/glade2/pixmaps/filter-nonvc-24.png
+/usr/share/meld/glade2/pixmaps/filter-normal-24.png
+/usr/share/meld/glade2/pixmaps/icon.png
+/usr/share/meld/glade2/pixmaps/svn-icon-small.png
+/usr/share/meld/glade2/pixmaps/svn-icon.png
+/usr/share/meld/glade2/pixmaps/tree-file-changed.png
+/usr/share/meld/glade2/pixmaps/tree-file-new.png
+/usr/share/meld/glade2/pixmaps/tree-file-newer.png
+/usr/share/meld/glade2/pixmaps/tree-file-normal.png
+/usr/share/meld/glade2/pixmaps/tree-folder-changed.png
+/usr/share/meld/glade2/pixmaps/tree-folder-new.png
+/usr/share/meld/glade2/pixmaps/tree-folder-normal.png
+/usr/share/meld/glade2/pixmaps/vc-add-24.png
+/usr/share/meld/glade2/pixmaps/vc-checkout-24.png
+/usr/share/meld/glade2/pixmaps/vc-commit-24.png
+/usr/share/meld/glade2/pixmaps/vc-icon.png
+/usr/share/meld/glade2/pixmaps/vc-remove-24.png
+/usr/share/meld/glade2/pixmaps/vc-update-24.png
+/usr/share/meld/glade2/vcview-ui.xml
+/usr/share/meld/glade2/vcview.glade
+/usr/share/menu/meld
+/usr/share/omf/meld/meld-C.omf
+/usr/share/omf/meld/meld-es.omf
+/usr/share/omf/meld/meld-fr.omf
+/usr/share/pixmaps/meld.png
+/usr/share/python-support/meld.private""".split("\n")
 

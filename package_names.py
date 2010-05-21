@@ -2,6 +2,10 @@
 # -*- coding: UTF-8 -*-
 
 package_names = {
+	'yelp' : { 
+		'fedora' : [], 
+		'ubuntu' : ['yelp']
+	},
 	'python-pkg-resources' : { 
 		'fedora' : [], 
 		'ubuntu' : ['python-pkg-resources']
