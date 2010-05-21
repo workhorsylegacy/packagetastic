@@ -2,6 +2,12 @@
 # -*- coding: UTF-8 -*-
 
 import os, sys
+
+# Make sure the distro is ubuntu
+distro_name = sys.argv[3].lower()
+if distro_name != 'ubuntu':
+	print "Only ubuntu works for now. Fedora coming soon. Exiting ..."
+	exit()
 import lib_packagetastic
 
 # Move the path to the location of the current file
@@ -24,13 +30,6 @@ else:
 	mode = "help"
 
 lib_packagetastic.setup_user_ids(int(sys.argv[4]))
-
-# Make sure the distro is ubuntu
-distro_name = sys.argv[3].lower()
-if distro_name != 'ubuntu':
-	print "Only ubuntu works for now. Fedora coming soon. Exiting ..."
-	exit()
-
 
 # Show the usage
 if mode == "help":
