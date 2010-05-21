@@ -25,6 +25,13 @@ else:
 
 lib_packagetastic.setup_user_ids(int(sys.argv[4]))
 
+# Make sure the distro is ubuntu
+distro_name = sys.argv[3].lower()
+if distro_name != 'ubuntu':
+	print "Only ubuntu works for now. Fedora coming soon. Exiting ..."
+	exit()
+
+
 # Show the usage
 if mode == "help":
 	print "usage:"
