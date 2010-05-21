@@ -1,128 +1,14 @@
-#!/usr/bin/env python
-# -*- coding: UTF-8 -*-
+#!/usr/bin/env bash
 
-import os, sys
-import lib_packagetastic
+# Make sure the user is not root. so we can get the user id.
+user_id=$UID
+if [[ "$user_id" == "0" ]] ; then
+	echo "Do not run as root. Packagetastic will ask for name/password itself. Exiting ..."
+	exit
+fi
 
-# Move the path to the location of the current file
-os.chdir(os.sys.path[0])
-
-# Make sure we are root and the uid for the normal user was passed
-if not lib_packagetastic.is_root():
-	print "This program must be run as root. Exiting ..."
-	exit()
-
-# Determine what we are going to do
-mode = ""
-if len(sys.argv) >= 5 and sys.argv[1] == "build":
-	mode = "build"
-elif len(sys.argv) >= 5 and sys.argv[1] == "install":
-	mode = "install"
-elif len(sys.argv) >= 4 and sys.argv[1] == "build_all":
-	mode = "build_all"
-else:
-	mode = "help"
-
-lib_packagetastic.setup_user_ids(int(sys.argv[4]))
-
-# Show the usage
-if mode == "help":
-	print "usage:"
-	print "./packagetastic build distro:=name package:=name 1000"
-	print "./packagetastic install distro:=name package:=name 1000"
-	print "./packagetastic build_all distro:=name 1000"
-	print ""
-	print "build: Generates a native package for the target distro."
-	print "build_all: Generates all the native packages for the target distro."
-	print ""
-	print "examples:"
-	print "./packagetastic build distro:=ubuntu package:=hello 1000"
-	print "./packagetastic build_all distro:=fedora 1000"
-	exit()
-
-# Build a package
-if mode == "build":
-	package_name, distro_name = None, None
-
-	# Get the arguments
-	for arg in sys.argv[2:]:
-		if arg.startswith('package:='):
-			package_name = arg.lower().split(':=')[1]
-		elif arg.startswith('distro:='):
-			distro_name = arg.lower().split(':=')[1]
-
-	# Make sure we got something
-	pairs = {'package' : package_name, 'distro' : distro_name}
-	for key, value in pairs.iteritems():
-		if value == None:
-			print "No argument for " + key + " was found. Exiting ..."
-			exit()
-
-	# Setup packagetastic
-	lib_packagetastic.init_packagetastic(distro_name)
-
-	# Build the package
-	lib_packagetastic.build(distro_name, package_name)
-
-# Install a package
-if mode == "install":
-	package_name, distro_name = None, None
-
-	# Get the arguments
-	for arg in sys.argv[2:]:
-		if arg.startswith('package:='):
-			package_name = arg.lower().split(':=')[1]
-		elif arg.startswith('distro:='):
-			distro_name = arg.lower().split(':=')[1]
-
-	# Make sure we got something
-	pairs = {'package' : package_name, 'distro' : distro_name}
-	for key, value in pairs.iteritems():
-		if value == None:
-			print "No argument for " + key + " was found. Exiting ..."
-			exit()
-
-	# Setup packagetastic
-	lib_packagetastic.init_packagetastic(distro_name)
-
-	# Build the package
-	lib_packagetastic.install(distro_name, package_name)
-
-# Build all packages
-if mode == "build_all":
-	distro_name = None
-
-	# Get the arguments
-	for arg in sys.argv[2:]:
-		if arg.startswith('distro:='):
-			distro_name = arg.lower().split(':=')[1]
-
-	# Make sure we got something
-	pairs = {'distro' : distro_name}
-	for key, value in pairs.iteritems():
-		if value == None:
-			print "No argument for " + key + " was found. Exiting ..."
-			exit()
-
-	# Setup packagetastic
-	lib_packagetastic.init_packagetastic(distro_name)
-
-	# Get a list of all the stem files
-	stem_names = []
-	for entry in os.listdir('stems/'):
-		if entry.endswith('.stem') and os.path.isfile('stems/' + entry):
-			stem_name = entry.split('.stem')[0]
-			stem_names.append(stem_name)
-	stem_names.sort()
-
-	# Build all the packages
-	for package_name in stem_names:
-		try:
-			lib_packagetastic.build(distro_name, package_name)
-		except KeyboardInterrupt:
-			raise
-		except:
-			pass
-
+# Run the program as root, but
+# pass in the current distro name and user id
+sudo python packagetastic.py $@ `lsb_release -is` $UID
 
 
