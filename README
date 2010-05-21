@@ -2,7 +2,7 @@
 
 Packagetastic is a Linux packaging system, that works with dpkg and rpm.
  
-Right now it only works on 32 bit Ubuntu 10.04. Fedora is dissabled while the
+Right now it only works on 32 bit Ubuntu 10.04. Fedora is disabled while the
 project is rewritten.
 
 Development happens at:
@@ -36,6 +36,7 @@ Step #3 - Building packages:
 
 	# Run packagetastic with arguments for package and distro
 	# For now, use ubuntu as the distro name instead of debian
-	sudo ./packagetastic build distro:=ubuntu package:=hello $UID
+	./packagetastic build hello
+	./packagetastic install hello
 
 
