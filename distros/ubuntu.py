@@ -162,13 +162,26 @@ class Builder(object):
 				run_as_root('mv ' + entry + ' ' + home + '/.packagetastic/' + meta.name + entry)
 
 		# Compress all the files into a package
+		cwd = os.getcwd()
+		os.chdir(home + '/.packagetastic/')
 		user_name = commands.getoutput('whoami')
 		run_as_root('chown -R ' + user_name + ' ' + home + '/.packagetastic/' + meta.name)
-		package = home + '/.packagetastic/' + meta.name
-		run_as_user('tar --force-local --no-wildcards -v -p -cf ' + package + '_' + meta.version + '_ubuntu-10.04_i386.pkg --use-compress-program=gzip ' + package)
+		run_as_user('tar --force-local --no-wildcards -v -p -cf ' + meta.name + '_' + meta.version + '_ubuntu_i386.pkg --use-compress-program=gzip ' + meta.name)
+		run_as_user('rm -rf ' + meta.name)
+		os.chdir(cwd)
 
 	def install(self, meta, packages):
 		home = os.path.expanduser('~')
+
+		if not os.path.isfile(home + '/.packagetastic/' + meta.name + '_' + meta.version + '_ubuntu_i386.pkg'):
+			print "No package for '" + meta.name + "' was found. Exiting ..."
+			exit()
+
+		# Uncompress the package
+		cwd = os.getcwd()
+		os.chdir(home + '/.packagetastic/')
+		run_as_user('tar -xzvf ' + meta.name + '_' + meta.version + '_ubuntu_i386.pkg')
+		os.chdir(cwd)
 
 		# Install all the requirements
 		raise_privileges()
@@ -225,6 +238,9 @@ class Builder(object):
 			# Append the new available to the existing available
 			if not is_available:
 				run_as_root("cat " + home + "/.packagetastic/" + meta.name + "/" + package.name + ".available" + " >> /var/lib/dpkg/available")
+
+		# Remove the uncompressed package
+		run_as_user('rm -rf ' + home + '/.packagetastic/' + meta.name)
 
 		run_as_root("touch /var/lib/dpkg/lock")
 
